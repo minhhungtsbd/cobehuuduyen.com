@@ -1018,17 +1018,33 @@ const indexHtml = `<!DOCTYPE html>
       </div>
 
       <div class="vietqr-box">
-        <strong style="display:block;font-size:0.9rem;color:#6b1111;">QUÉT MÃ VIETQR ĐỂ GIEO DUYÊN CÔNG ĐỨC</strong>
+        <span class="vietqr-box-title">QUÉT MÃ VIETQR ĐỂ GIEO DUYÊN CÔNG ĐỨC</span>
         <img
           id="charity-vietqr-img"
           src="https://img.vietqr.io/image/VCB-0051000567270-compact2.png?amount=200000&addInfo=GIEODUYEN&accountName=NGUYEN%20THI%20THU%20HONG"
           alt="Mã VietQR Vietcombank 0051000567270 Nguyễn Thị Thu Hồng"
           loading="lazy"
         />
-        <div style="font-size:0.84rem;line-height:1.5;">
-          Ngân hàng: <strong>Vietcombank</strong> • STK: <strong>0051000567270</strong><br />
-          Chủ TK: <strong>Nguyễn Thị Thu Hồng</strong><br />
-          Nội dung CK: <strong id="charity-transfer-syntax" style="color:#b82525;">GIEODUYEN PHAT TU</strong>
+        <div class="vietqr-bank-details">
+          <div class="vietqr-detail-row">
+            <span class="vietqr-detail-label">Ngân hàng:</span>
+            <span class="vietqr-detail-val">Vietcombank (VCB)</span>
+          </div>
+          <div class="vietqr-detail-row">
+            <span class="vietqr-detail-label">Số tài khoản:</span>
+            <span>
+              <strong class="vietqr-account-highlight">0051000567270</strong>
+              <button type="button" class="vietqr-copy-tag" onclick="navigator.clipboard.writeText('0051000567270');alert('Đã sao chép STK: 0051000567270')">Sao chép</button>
+            </span>
+          </div>
+          <div class="vietqr-detail-row">
+            <span class="vietqr-detail-label">Chủ tài khoản:</span>
+            <span class="vietqr-detail-val" style="color:#8b1e1e;font-size:1.05rem;">NGUYỄN THỊ THU HỒNG</span>
+          </div>
+          <div class="vietqr-detail-row">
+            <span class="vietqr-detail-label">Nội dung chuyển khoản:</span>
+            <strong id="charity-transfer-syntax" style="color:#b82525;font-size:1rem;">GIEODUYEN PHAT TU</strong>
+          </div>
         </div>
       </div>
 
@@ -1080,16 +1096,30 @@ const indexHtml = `<!DOCTYPE html>
         </label>
 
         <div class="vietqr-box">
-          <strong style="display:block;font-size:0.84rem;color:#6b1111;">QUÉT MÃ VIETQR THANH TOÁN NHANH</strong>
+          <span class="vietqr-box-title">QUÉT MÃ VIETQR THANH TOÁN ĐƠN THỈNH</span>
           <img
             id="cart-vietqr-img"
             src="https://img.vietqr.io/image/VCB-0051000567270-compact2.png?amount=0&addInfo=THINH%20VAT%20PHAM&accountName=NGUYEN%20THI%20THU%20HONG"
             alt="VietQR Thanh Toán Đơn Hàng"
             loading="lazy"
           />
-          <small style="display:block;font-size:0.76rem;">
-            Vietcombank: <strong>0051000567270</strong> — <strong>Nguyễn Thị Thu Hồng</strong>
-          </small>
+          <div class="vietqr-bank-details">
+            <div class="vietqr-detail-row">
+              <span class="vietqr-detail-label">Ngân hàng:</span>
+              <span class="vietqr-detail-val">Vietcombank</span>
+            </div>
+            <div class="vietqr-detail-row">
+              <span class="vietqr-detail-label">Số tài khoản:</span>
+              <span>
+                <strong class="vietqr-account-highlight">0051000567270</strong>
+                <button type="button" class="vietqr-copy-tag" onclick="navigator.clipboard.writeText('0051000567270');alert('Đã sao chép STK: 0051000567270')">Sao chép</button>
+              </span>
+            </div>
+            <div class="vietqr-detail-row">
+              <span class="vietqr-detail-label">Chủ tài khoản:</span>
+              <span class="vietqr-detail-val" style="color:#8b1e1e;font-size:1.05rem;">NGUYỄN THỊ THU HỒNG</span>
+            </div>
+          </div>
         </div>
 
         <button type="button" class="btn btn-gold" id="btn-checkout-zalo" style="width:100%;margin-bottom:0.5rem;">
