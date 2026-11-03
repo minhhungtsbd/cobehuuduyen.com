@@ -11,7 +11,7 @@
 
   const DATA = window.__COBEHUUDUYEN_DATA__ || {};
   const CONFIG = DATA.config || {};
-  const PRODUCTS = (DATA.products && DATA.products.products) || [];
+  let PRODUCTS = [...((DATA.products && DATA.products.products) || [])];
   const FORTUNES = DATA.fortunes || {};
   const CHARITY = DATA.charity || {};
   const SANCTUARY = DATA.sanctuary || { rooms: [] };
@@ -19,12 +19,25 @@
   const STORAGE_CART_KEY = "cbhd_cart_v1";
   const STORAGE_THEME_KEY = "cbhd_theme_v1";
   const STORAGE_NICKNAME_KEY = "cbhd_nickname_v1";
-  const STORAGE_MERIT_KEY = "cbhd_merit_count_v1";
+  const STORAGE_MERIT_KEY = "cbhd_merit_points_v2";
 
   let cart = loadCart();
   let activeCategory = "all";
   let activeElementFilter = "all";
   let searchQuery = "";
+
+  function getMeritPoints() {
+    const val = parseInt(localStorage.getItem(STORAGE_MERIT_KEY) || "30", 10);
+    return Number.isNaN(val) ? 30 : Math.max(0, val);
+  }
+
+  function awardMeritPoints(points) {
+    const next = getMeritPoints() + (Number(points) || 0);
+    localStorage.setItem(STORAGE_MERIT_KEY, String(next));
+    const el = document.getElementById("home-merit-points");
+    if (el) el.textContent = String(next);
+    return next;
+  }
 
   // ---------- Utility Helpers ----------
   function formatVND(amount) {
@@ -1269,12 +1282,15 @@
       .filter(Boolean)
       .join("\n");
 
+    const bonusPoints = Math.min(100, Math.max(20, Math.round(total / 10000)));
+    const newMerit = awardMeritPoints(bonusPoints);
+
     copyToClipboard(
       orderSummary,
-      "✅ Đã sao chép đơn hàng & đồng bộ lên hệ thống Telegram / D1!"
+      `✅ Đã lưu đơn chờ duyệt & tặng +${bonusPoints} Điểm Công Đức (Tổng: ${newMerit}đ)!`
     );
 
-    // 1. Tự động đẩy về Telegram Group & Cloudflare D1 Database (Kèm Turnstile Token)
+    // 1. Tự động đẩy về Telegram Group & Cloudflare D1 Database (Kèm Turnstile Token, status = pending)
     syncEventToCloud({
       eventType: "order",
       nickname: name,
@@ -1367,9 +1383,10 @@
         .filter(Boolean)
         .join("\n");
 
+      awardMeritPoints(10);
       copyToClipboard(
         bookingMsg,
-        "✨ Đã sao chép phiếu đặt lịch & gửi thông báo về Telegram của Thầy!"
+        "✨ Đã sao chép phiếu đặt lịch, gửi về Admin/Telegram & tặng +10 Điểm Công Đức!"
       );
 
       syncEventToCloud({
@@ -1388,7 +1405,7 @@
         previewBox.innerHTML = `
           <strong style="color:var(--gold-light);display:block;margin-bottom:0.35rem;">✅ Đã Ghi Nhận & Đồng Bộ Lịch Hẹn!</strong>
           <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;">
-            Thông tin của <strong>${name}</strong> đã được lưu và gửi thông báo tới hệ thống của Cô Bé Hữu Duyên. Bạn bấm chọn kênh bên dưới để trò chuyện ngay:
+            Thông tin của <strong>${name}</strong> đã được lưu vào hệ thống quản trị của Cô Bé Hữu Duyên. Bạn bấm chọn kênh bên dưới để trò chuyện ngay:
           </p>
           <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
             <a href="https://zalo.me/0702311558?text=${encodeURIComponent(bookingMsg)}" target="_blank" rel="noopener" class="btn btn-gold" style="padding:0.55rem 1rem;font-size:0.84rem;">
@@ -1403,7 +1420,71 @@
     });
   }
 
-  // ---------- 9. Charity & Merit Donation Modal (Auto Telegram & D1 + Turnstile) ----------
+  // ---------- 8B. Wholesale Inquiry Form ("Liên Hệ Đặt Hàng Sỉ") ----------
+  function initWholesaleForm() {
+    const form = document.getElementById("wholesale-inquiry-form");
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!checkCooldown("wholesale_submit", 8000)) return;
+
+      const name = (document.getElementById("wholesale-name")?.value || "").trim();
+      const phone = (document.getElementById("wholesale-phone")?.value || "").trim();
+      const category = (document.getElementById("wholesale-category")?.value || "").trim();
+      const quantity = (document.getElementById("wholesale-qty")?.value || "").trim();
+      const note = (document.getElementById("wholesale-note")?.value || "").trim();
+
+      if (!name || !phone) {
+        showToast("⚠️ Vui lòng nhập Tên đại lý / khách sỉ và Số điện thoại Zalo!");
+        return;
+      }
+
+      const tsToken = getTurnstileToken(form);
+      if (window.turnstile && !tsToken) {
+        showToast("🛡️ Vui lòng xác thực Cloudflare Turnstile trước khi gửi yêu cầu báo giá sỉ!");
+        return;
+      }
+
+      markCooldown("wholesale_submit");
+      const wholesaleMsg = [
+        "📦 ĐĂNG KÝ NHẬP SỈ VẬT PHẨM & HÀNG MÃ — CÔ BÉ HỮU DUYÊN",
+        `• Đại lý / Tín chủ: ${name}`,
+        `• SĐT / Zalo: ${phone}`,
+        `• Nhóm hàng quan tâm: ${category}`,
+        `• Số lượng / Quy mô dự kiến: ${quantity}`,
+        note ? `• Ghi chú thêm: ${note}` : ""
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      awardMeritPoints(15);
+      copyToClipboard(
+        wholesaleMsg,
+        "📦 Đã lưu yêu cầu đặt sỉ vào Admin D1 & gửi thông báo về Telegram!"
+      );
+
+      syncEventToCloud({
+        eventType: "wholesale",
+        nickname: name,
+        phone,
+        message: wholesaleMsg,
+        "cf-turnstile-response": tsToken,
+        payload: { category, quantity, note }
+      });
+      resetTurnstileInContainer(form);
+
+      setTimeout(() => {
+        window.open(
+          `https://zalo.me/0702311558?text=${encodeURIComponent(wholesaleMsg)}`,
+          "_blank",
+          "noopener"
+        );
+      }, 450);
+    });
+  }
+
+  // ---------- 9. Charity & Merit Donation Modal (Pending Admin Approval + Merit Points) ----------
   function initCharityActions() {
     const modal = document.getElementById("charity-donate-modal");
     const closeBtn = document.getElementById("close-charity-modal");
@@ -1461,7 +1542,7 @@
     customAmountInput?.addEventListener("input", updateCharityQr);
     donorNameInput?.addEventListener("input", updateCharityQr);
 
-    // Confirm Merit Donation -> Add to Golden Ledger + Send to Telegram & D1 + Open Zalo
+    // Confirm Merit Donation -> Save to D1 (Pending Admin Approval) + Award Merit Points + Open Zalo
     document.getElementById("btn-confirm-charity-zalo")?.addEventListener("click", async () => {
       if (!checkCooldown("charity_submit", 8000)) return;
 
@@ -1487,21 +1568,13 @@
         "• Đã chuyển khoản vào Vietcombank 0051000567270 (Nguyễn Thị Thu Hồng)"
       ].join("\n");
 
-      // Prepend to Golden Ledger table on page immediately
-      const tbody = document.getElementById("charity-ledger-tbody");
-      if (tbody) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${donor}</strong></td>
-          <td style="color:var(--gold-light);font-weight:700;">${formatVND(amt)}</td>
-          <td>${currentCampaignName}</td>
-          <td style="color:var(--text-secondary);font-style:italic;">“${wish}”</td>
-          <td style="color:var(--jade-green);">Vừa xong</td>
-        `;
-        tbody.prepend(tr);
-      }
+      const bonusPoints = Math.min(120, Math.max(25, Math.round(amt / 5000)));
+      const newMerit = awardMeritPoints(bonusPoints);
 
-      copyToClipboard(msg, "🙏 Nam Mô Công Đức Lâm Bồ Tát! Đã ghi nhận vào Sổ Vàng & gửi Telegram!");
+      copyToClipboard(
+        msg,
+        `🙏 Đã gửi xác nhận chờ Admin duyệt lên Sổ Vàng & tặng +${bonusPoints} Điểm Công Đức (Tổng: ${newMerit}đ)!`
+      );
 
       syncEventToCloud({
         eventType: "charity",
@@ -1527,6 +1600,77 @@
     });
   }
 
+  // ---------- 10. Real D1 Database Sync for Homepage (Approved Golden Ledger, Total Raised & Products) ----------
+  async function loadPublicHomeDataFromD1() {
+    const meritEl = document.getElementById("home-merit-points");
+    if (meritEl) meritEl.textContent = String(getMeritPoints());
+
+    try {
+      const res = await fetch("/api/events?mode=home_public");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data || !data.ok) return;
+
+      // 1. Merge Custom / Edited Products from D1 Database
+      if (Array.isArray(data.customProducts) && data.customProducts.length > 0) {
+        const customMap = new Map(data.customProducts.map((p) => [p.id, p]));
+        const merged = PRODUCTS.map((p) => (customMap.has(p.id) ? customMap.get(p.id) : p));
+        data.customProducts.forEach((cp) => {
+          if (!PRODUCTS.some((p) => p.id === cp.id)) {
+            merged.unshift(cp);
+          }
+        });
+        PRODUCTS = merged;
+        renderProducts();
+      }
+
+      // 2. Update "Tổng quỹ đã gieo duyên" (Demo base + Real Approved D1 sum)
+      const baseRaised = Number((CHARITY.summary && CHARITY.summary.totalRaised) || 148500000);
+      const d1ApprovedSum = Number(data.approvedTotalAmount || 0);
+      const totalRaisedEl = document.getElementById("charity-total-raised-val");
+      if (totalRaisedEl && d1ApprovedSum > 0) {
+        totalRaisedEl.textContent = formatVND(baseRaised + d1ApprovedSum);
+      }
+
+      // 3. Prepend Approved Donors from D1 into "📜 Sổ Vàng Ghi Danh Công Đức Gần Đây"
+      if (Array.isArray(data.approvedDonors) && data.approvedDonors.length > 0) {
+        const tbody = document.getElementById("charity-ledger-tbody");
+        if (tbody) {
+          const d1RowsHtml = data.approvedDonors
+            .map((row) => {
+              let campaign = "Quỹ Từ Thiện Cô Bé Hữu Duyên";
+              let wish = row.message || "Cầu bình an, hồi hướng công đức";
+              try {
+                if (row.payload_json) {
+                  const parsed = JSON.parse(row.payload_json);
+                  if (parsed.campaign) campaign = parsed.campaign;
+                  if (parsed.wish) wish = parsed.wish;
+                }
+              } catch {
+                // ignore
+              }
+              const dateLabel = row.created_at
+                ? new Date(row.created_at + "Z").toLocaleDateString("vi-VN")
+                : "Đã duyệt";
+              return `
+                <tr class="d1-approved-row">
+                  <td><strong>🪷 ${row.nickname || "Phật tử Hữu Duyên"}</strong> <span style="font-size:0.7rem;color:var(--jade-green);">(Đã duyệt)</span></td>
+                  <td style="color:var(--gold-light);font-weight:700;">${formatVND(row.amount || 0)}</td>
+                  <td>${campaign}</td>
+                  <td style="color:var(--text-secondary);font-style:italic;">“${wish}”</td>
+                  <td style="color:var(--jade-green);">${dateLabel}</td>
+                </tr>
+              `;
+            })
+            .join("");
+          tbody.insertAdjacentHTML("afterbegin", d1RowsHtml);
+        }
+      }
+    } catch {
+      // Fallback silently to default static data if offline
+    }
+  }
+
   // ---------- Bootstrapping ----------
   document.addEventListener("DOMContentLoaded", () => {
     initTheme();
@@ -1537,7 +1681,9 @@
     initShopControls();
     initCartEvents();
     initBookingForm();
+    initWholesaleForm();
     initCharityActions();
+    loadPublicHomeDataFromD1();
 
     const productModal = document.getElementById("product-detail-modal");
     productModal?.addEventListener("click", (e) => {

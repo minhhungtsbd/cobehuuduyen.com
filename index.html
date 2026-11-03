@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="/assets/styles.css?v=f23c7ef404" />
+  <link rel="stylesheet" href="/assets/styles.css?v=56153ec820" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://cobehuuduyen.com/#organization","name":"Cô Bé Hữu Duyên — Tâm Linh, Phong Thuỷ & Thiện Nguyện","alternateName":"Cô Bé Hữu Duyên","url":"https://cobehuuduyen.com","logo":"https://cobehuuduyen.com/favicon.svg","description":"Trang web chính thức của Cô Bé Hữu Duyên: Gieo quẻ Kinh Dịch, Xin xăm Quán Âm, Bói bài Tarot, Đặt lịch xem bói thực tế 1-1, Vật phẩm Phong thuỷ - Hàng mã cao cấp - Lưu niệm tâm linh và Quỹ Từ thiện Gieo Duyên Lành.","sameAs":["https://www.facebook.com/nhu.lam.545518","https://www.tiktok.com/@cobehuuduyen","https://zalo.me/0702311558"],"contactPoint":{"@type":"ContactPoint","telephone":"+84-702311558","contactType":"customer service","areaServed":"VN","availableLanguage":["Vietnamese"]}},{"@type":"WebSite","@id":"https://cobehuuduyen.com/#website","url":"https://cobehuuduyen.com","name":"Cô Bé Hữu Duyên — Tâm Linh, Phong Thuỷ & Thiện Nguyện","publisher":{"@id":"https://cobehuuduyen.com/#organization"}}]}</script>
 </head>
@@ -59,9 +59,10 @@
       </a>
 
       <nav class="main-nav" id="main-nav" aria-label="Điều hướng chính">
-        <a href="#tung-kinh" class="nav-link nav-link-highlight">🙏 Phòng Tụng Kinh Online</a>
+        <a href="/phong-tung-kinh.html" class="nav-link nav-link-highlight">🙏 Phòng Tụng Kinh Online</a>
         <a href="#xem-boi" class="nav-link">☯️ Xem Bói</a>
         <a href="#vat-pham" class="nav-link">🪷 Hàng Mã & Phong Thuỷ</a>
+        <a href="#dat-si" class="nav-link">📦 Đặt Sỉ</a>
         <a href="#dat-lich" class="nav-link">📿 Đặt Lịch 1-1</a>
         <a href="#tu-thien" class="nav-link">💛 Từ Thiện</a>
       </nav>
@@ -111,7 +112,7 @@
           </p>
 
           <div class="hero-cta-group">
-            <a href="#tung-kinh" class="btn btn-gold">🙏 Vào Phòng Tụng Kinh Online</a>
+            <a href="/phong-tung-kinh.html" class="btn btn-gold">🙏 Vào Phòng Tụng Kinh Online</a>
             <a href="#xem-boi" class="btn btn-crimson">☯️ Gieo Quẻ & Xin Xăm</a>
             <a href="#vat-pham" class="btn btn-outline">🪷 Thỉnh Hàng Mã & Phong Thuỷ</a>
           </div>
@@ -188,150 +189,55 @@
       </div>
     </section>
 
-    <!-- NEW SECTION: ĐIỆN THỜ & PHÒNG TỤNG KINH ONLINE (3 PHÒNG LINH THIÊNG) -->
+    <!-- GATEWAY SECTION: ĐIỆN THỜ & PHÒNG TỤNG KINH ONLINE (TRANG RIÊNG /phong-tung-kinh.html) -->
     <section class="section section-alt" id="tung-kinh">
       <div class="container">
-        <div class="section-header">
-          <span class="section-eyebrow">Đạo Tràng Trực Tuyến • Đồng Thanh Tụng Niệm • Cảm Ứng Đạo Giao</span>
-          <h2 class="section-title">Điện Thờ & Phòng Tụng Kinh Online Cùng Phật Tử</h2>
-          <p class="section-desc">
-            Chọn 1 trong 3 Điện Thờ linh thiêng bên dưới, đặt <strong>Pháp danh / Tên tín chủ</strong> của bạn để cùng các Phật tử thắp hương, dâng hoa sen, gõ mõ tụng kinh, thỉnh chuông Bát Nhã và thả Đèn Hoa Đăng nguyện cầu.
-          </p>
-        </div>
-
-        <!-- 3 Room Cards -->
-        <div class="sanctuary-room-selector" role="tablist" aria-label="Chọn phòng tụng kinh online">
-          
-            <button type="button" class="room-select-card active" data-room-id="tam-bao">
-              <span class="room-live-pill">● Đang mở cửa đạo tràng • Phòng Tụng Kinh & Niệm Phật</span>
-              <h3 style="font-size:1.22rem;color:var(--gold-light);margin-bottom:0.25rem;">Điện Phật Tam Bảo</h3>
-              <p style="font-size:0.82rem;color:var(--text-secondary);">Đức Phật Thích Ca Mâu Ni & Đức Phật A Di Đà</p>
-            </button>
-            <button type="button" class="room-select-card " data-room-id="quan-am">
-              <span class="room-live-pill">● Đang mở cửa đạo tràng • Phòng Trì Chú Đại Bi & Cầu An</span>
-              <h3 style="font-size:1.22rem;color:var(--gold-light);margin-bottom:0.25rem;">Điện Quán Thế Âm Bồ Tát</h3>
-              <p style="font-size:0.82rem;color:var(--text-secondary);">Đại Từ Đại Bi Cứu Khổ Cứu Nạn Quán Thế Âm Bồ Tát</p>
-            </button>
-            <button type="button" class="room-select-card " data-room-id="thanh-mau">
-              <span class="room-live-pill">● Đang mở cửa đạo tràng • Phòng Dâng Lễ Mẫu & Cầu Tài Lộc</span>
-              <h3 style="font-size:1.22rem;color:var(--gold-light);margin-bottom:0.25rem;">Điện Tam Toà Thánh Mẫu & Cô Bé</h3>
-              <p style="font-size:0.82rem;color:var(--text-secondary);">Tam Toà Thánh Mẫu • Chầu Bà • Cô Bé Thượng Ngàn Hữu Duyên</p>
-            </button>
-        </div>
-
-        <div class="sanctuary-main-grid">
-          <!-- Left: Sacred Altar & Interactive Rituals -->
-          <div class="altar-chamber">
-            <div class="altar-top-bar">
-              <div>
-                <h3 id="sanctuary-room-title" style="font-size:1.4rem;color:#fbe59b;">Điện Phật Tam Bảo</h3>
-                <small id="sanctuary-deity-title" style="color:#d7c7b5;">Đức Phật Thích Ca Mâu Ni & Đức Phật A Di Đà</small>
-              </div>
-              <div class="nickname-box" title="Đặt Pháp danh hoặc Tên tín chủ của bạn trong phòng">
-                <span style="font-size:0.8rem;color:#d7c7b5;">🪷 Pháp danh/Tên:</span>
-                <input type="text" id="sanctuary-nickname-input" placeholder="Nhập tên của bạn..." value="Phật tử Hữu Duyên" />
-              </div>
-            </div>
-
-            <!-- Visual Altar Stage -->
-            <div class="altar-stage-visual" id="altar-stage-visual">
-              <div class="deity-halo" id="sanctuary-deity-halo">
-                <svg width="110" height="110" viewBox="0 0 120 120" fill="none">
-                  <circle cx="60" cy="60" r="52" stroke="#FBE59B" stroke-width="2" stroke-dasharray="4 4"/>
-                  <path d="M60 18C68 34 78 46 78 60C78 72 70 80 60 84C50 80 42 72 42 60C42 46 52 34 60 18Z" fill="#FBE59B"/>
-                  <path d="M32 82C46 90 74 90 88 82" stroke="#D4AF37" stroke-width="4" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <p id="sanctuary-mantra-short" style="margin-top:0.75rem;font-family:'Noto Serif',serif;font-weight:700;color:#fbe59b;text-align:center;">
-                🙏 Nam Mô Bổn Sư Thích Ca Mâu Ni Phật • Nam Mô A Di Đà Phật
-              </p>
-
-              <!-- Offerings Table -->
-              <div class="altar-offerings-table">
-                <div class="offering-slot active" id="slot-lamp">
-                  <span style="font-size:1.45rem;">🕯️</span>
-                  <span>Đèn Liên Hoa</span>
-                </div>
-                <div class="offering-slot active" id="slot-incense">
-                  <div class="incense-smoke-container">
-                    <span class="smoke-wisp"></span>
-                    <span class="smoke-wisp"></span>
-                    <span style="font-size:1.55rem;">🏺</span>
-                  </div>
-                  <span>Lư Hương Trầm</span>
-                </div>
-                <div class="offering-slot active" id="slot-flower">
-                  <span style="font-size:1.45rem;">🪷</span>
-                  <span>Hoa Sen & Quả</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Interactive Ritual Buttons -->
-            <div class="ritual-actions-bar">
-              <button type="button" class="ritual-btn" id="ritual-incense-btn">🔥 Dâng Hương Trầm</button>
-              <button type="button" class="ritual-btn" id="ritual-flower-btn">🪷 Dâng Hoa Quả</button>
-              <button type="button" class="ritual-btn" id="ritual-lamp-btn">🕯️ Thắp Đèn Trí Tuệ</button>
-              <button type="button" class="ritual-btn" id="ritual-bell-btn">🔔 Thỉnh Chuông</button>
-              <button type="button" class="ritual-btn" id="ritual-mo-btn">🥁 Gõ Mõ Tụng Kinh</button>
-              <button type="button" class="ritual-btn" id="ritual-mala-btn">📿 Lần Chuỗi 108 Hạt</button>
-            </div>
-
-            <!-- Scripture Teleprompter -->
-            <div class="scripture-scroll-box">
-              <div class="scripture-header">
-                <strong id="sanctuary-chant-title" style="color:#fbe59b;font-size:0.92rem;">📖 Bát Nhã Ba La Mật Đa Tâm Kinh & Niệm Phật hiệu</strong>
-                <button type="button" class="btn btn-gold" id="btn-auto-chant" style="padding:0.38rem 0.85rem;font-size:0.78rem;">
-                  ▶️ Tự Động Chạy Kinh Theo Nhịp Mõ
-                </button>
-              </div>
-              <div class="chant-lines-list" id="sanctuary-chant-lines">
-                <div class="chant-line current" data-line-idx="0">Nam Mô Bổn Sư Thích Ca Mâu Ni Phật (3 lần)</div><div class="chant-line " data-line-idx="1">Quán Tự Tại Bồ Tát hành thâm Bát Nhã Ba La Mật Đa thời, chiếu kiến ngũ uẩn giai không, độ nhất thiết khổ ách.</div><div class="chant-line " data-line-idx="2">Xá Lợi Tử! Sắc bất dị không, không bất dị sắc, sắc tức thị không, không tức thị sắc, thọ tưởng hành thức diệc phục như thị.</div><div class="chant-line " data-line-idx="3">Xá Lợi Tử! Thị chư pháp không tướng, bất sanh bất diệt, bất cấu bất tịnh, bất tăng bất giảm.</div><div class="chant-line " data-line-idx="4">Thị cố không trung vô sắc, vô thọ tưởng hành thức, vô nhãn nhĩ tỷ thiệt thân ý, vô sắc thanh hương vị xúc pháp.</div><div class="chant-line " data-line-idx="5">Y Bát Nhã Ba La Mật Đa cố, tâm vô quái ngại. Vô quái ngại cố, vô hữu khủng bố, viễn ly điên đảo mộng tưởng, cứu cánh Niết Bàn.</div><div class="chant-line " data-line-idx="6">Yết đế yết đế, ba la yết đế, ba la tăng yết đế, Bồ đề tát bà ha.</div><div class="chant-line " data-line-idx="7">Nguyện đem công đức này, hướng về khắp tất cả, đệ tử và chúng sanh, đều trọn thành Phật đạo.</div>
-              </div>
+        <div class="sanctuary-gateway-banner">
+          <div>
+            <span class="result-rank-badge">Không Gian Tụng Kinh Riêng Biệt • Có Giọng Đọc Kinh & Tiếng Mõ Thực Tế</span>
+            <h2 style="font-size:2rem;color:var(--gold-light);margin:0.45rem 0 0.65rem;">
+              🙏 Điện Thờ & Phòng Tụng Kinh Online Cùng Phật Tử
+            </h2>
+            <p style="font-size:0.95rem;color:var(--text-secondary);margin-bottom:1.1rem;">
+              Bước vào không gian Đạo Tràng trực tuyến tách biệt trang nghiêm với <strong>3 Điện Thờ theo chủ đề riêng</strong> (Điện Phật Tam Bảo, Điện Quán Thế Âm Bồ Tát, Điện Tam Toà Thánh Mẫu & Cô Bé), <strong>12 Bồ Đoàn toạ thiền hiển thị Phật tử đang online</strong>, đồng bộ câu kinh theo thời gian thực cùng <strong>Giọng Đọc Kinh & Tiếng Chuông Mõ</strong>.
+            </p>
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+              <a href="/phong-tung-kinh.html" class="btn btn-gold" style="padding:0.85rem 1.5rem;font-size:0.96rem;">
+                🪷 Bước Vào Điện Thờ & Phòng Tụng Kinh Online →
+              </a>
+              <span style="font-size:0.85rem;color:var(--gold-light);background:var(--bg-secondary);padding:0.55rem 0.95rem;border-radius:99px;border:1px solid var(--border-subtle);">
+                📿 Điểm Công Đức hiện có của bạn: <strong id="home-merit-points">30</strong> điểm
+              </span>
             </div>
           </div>
 
-          <!-- Right: Community Prayer Wall & Merit Counter -->
-          <aside class="sanctuary-sidebar">
-            <div class="merit-counter-card">
-              <div>
-                <small style="color:var(--text-muted);display:block;">Công đức tụng niệm của bạn:</small>
-                <strong style="font-size:1.25rem;color:var(--gold-light);"><span id="sanctuary-merit-count">18</span> Hạt Công Đức</strong>
-              </div>
-              <span style="font-size:2rem;">📿</span>
-            </div>
-
-            <div>
-              <h3 style="font-size:1.2rem;color:var(--gold-light);margin-bottom:0.3rem;">🏮 Thả Đèn Hoa Đăng Cầu Nguyện</h3>
-              <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem;">
-                Lời nguyện cầu của bạn sẽ bay lên điện thờ, hiển thị cùng đạo tràng và lưu vào sổ cầu an của Cô Bé Hữu Duyên.
-              </p>
-              <form id="sanctuary-prayer-form">
-                <div class="form-group">
-                  <textarea
-                    id="sanctuary-wish-input"
-                    rows="2"
-                    class="form-control"
-                    placeholder="Nhập lời cầu bình an, sức khoẻ, tài lộc cho bản thân & gia đình..."
-                  ></textarea>
+          <div style="display:grid;gap:0.7rem;">
+            
+              <a href="/phong-tung-kinh.html?room=tam-bao" class="social-card-link" style="text-decoration:none;">
+                <div>
+                  <span style="font-size:0.72rem;color:var(--jade-green);font-weight:700;">● Đang tụng kinh • Phòng Tụng Kinh & Niệm Phật</span>
+                  <strong style="color:var(--gold-light);display:block;font-size:1.05rem;">Điện Phật Tam Bảo</strong>
+                  <small style="color:var(--text-secondary);">Đức Phật Thích Ca Mâu Ni & Đức Phật A Di Đà</small>
                 </div>
-                <div class="turnstile-guard-wrap">
-                  <span class="turnstile-guard-label">🛡️ Xác thực chống Spam tự động (Cloudflare Turnstile)</span>
-                  <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+                <span class="btn btn-outline" style="padding:0.4rem 0.8rem;font-size:0.78rem;white-space:nowrap;">Vào Điện →</span>
+              </a>
+              <a href="/phong-tung-kinh.html?room=quan-am" class="social-card-link" style="text-decoration:none;">
+                <div>
+                  <span style="font-size:0.72rem;color:var(--jade-green);font-weight:700;">● Đang tụng kinh • Phòng Trì Chú Đại Bi & Cầu An</span>
+                  <strong style="color:var(--gold-light);display:block;font-size:1.05rem;">Điện Quán Thế Âm Bồ Tát</strong>
+                  <small style="color:var(--text-secondary);">Đại Từ Đại Bi Cứu Khổ Cứu Nạn Quán Thế Âm Bồ Tát</small>
                 </div>
-                <button type="submit" class="btn btn-gold" style="width:100%;padding:0.65rem 1rem;font-size:0.88rem;">
-                  🏮 Thả Đèn Hoa Đăng & Hồi Hướng Công Đức
-                </button>
-              </form>
-            </div>
-
-            <div>
-              <h4 style="font-size:0.95rem;color:var(--gold-light);margin-bottom:0.6rem;">
-                👥 Phật Tử & Tín Chủ Đang Cùng Tụng Kinh Trong Phòng:
-              </h4>
-              <div class="prayer-feed-list" id="sanctuary-prayer-feed"></div>
-            </div>
-          </aside>
+                <span class="btn btn-outline" style="padding:0.4rem 0.8rem;font-size:0.78rem;white-space:nowrap;">Vào Điện →</span>
+              </a>
+              <a href="/phong-tung-kinh.html?room=thanh-mau" class="social-card-link" style="text-decoration:none;">
+                <div>
+                  <span style="font-size:0.72rem;color:var(--jade-green);font-weight:700;">● Đang tụng kinh • Phòng Dâng Lễ Mẫu & Cầu Tài Lộc</span>
+                  <strong style="color:var(--gold-light);display:block;font-size:1.05rem;">Điện Tam Toà Thánh Mẫu & Cô Bé</strong>
+                  <small style="color:var(--text-secondary);">Tam Toà Thánh Mẫu • Chầu Bà • Cô Bé Thượng Ngàn Hữu Duyên</small>
+                </div>
+                <span class="btn btn-outline" style="padding:0.4rem 0.8rem;font-size:0.78rem;white-space:nowrap;">Vào Điện →</span>
+              </a>
+          </div>
         </div>
       </div>
     </section>
@@ -912,6 +818,82 @@
               </div>
             </article>
         </div>
+
+        <!-- WHOLESALE INQUIRY BANNER ("LIÊN HỆ ĐẶT HÀNG SỈ") -->
+        <div class="wholesale-banner-card" id="dat-si">
+          <div>
+            <span class="result-rank-badge">Chiết Khấu Tốt Nhất • Nguồn Hàng Tận Xưởng</span>
+            <h3 style="font-size:1.6rem;color:var(--gold-light);margin:0.4rem 0 0.6rem;">
+              📦 Liên Hệ Đặt Hàng Sỉ (Đồ Hàng Mã, Vật Phẩm Phong Thuỷ & Trầm Hương)
+            </h3>
+            <p style="font-size:0.92rem;color:var(--text-secondary);margin-bottom:1rem;">
+              <strong>Cô Bé Hữu Duyên</strong> chuyên cung cấp sỉ số lượng lớn các bộ lễ Hàng Mã truyền thống, Vòng Chu Sa, Tỳ Hưu, Nhang Trầm Hương sạch và Vật Phẩm Lưu Niệm Bình An cho các cửa hàng, đại lý, đền phủ và đạo tràng trên toàn quốc.
+            </p>
+            <ul class="service-check-list" style="margin:0.85rem 0;">
+              <li>
+                <span>✔</span>
+                <div>
+                  <strong style="color:var(--gold-light);">Giá sỉ tận gốc – Hỗ trợ đóng gói & vận chuyển toàn quốc</strong>
+                  <div style="font-size:0.83rem;color:var(--text-secondary);">Nhận gia công bộ lễ cúng theo yêu cầu riêng của từng vùng miền và bản mệnh.</div>
+                </div>
+              </li>
+              <li>
+                <span>✔</span>
+                <div>
+                  <strong style="color:var(--gold-light);">Hỗ trợ tư vấn danh mục bán chạy & bài trí cửa hàng</strong>
+                  <div style="font-size:0.83rem;color:var(--text-secondary);">Liên hệ trực tiếp Zalo Thầy: <strong>0702.311.558</strong> để nhận bảng giá sỉ mới nhất.</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card);padding:1.4rem;border-radius:18px;border:1px solid var(--border-subtle);">
+            <h4 style="font-size:1.2rem;color:var(--gold-light);margin-bottom:0.65rem;">📝 Đăng Ký Nhận Bảng Giá Sỉ Qua Zalo</h4>
+            <form id="wholesale-inquiry-form">
+              <div class="oracle-form-row">
+                <div class="form-group">
+                  <label for="wholesale-name">Tên Đại Lý / Cửa Hàng / Tín Chủ *</label>
+                  <input type="text" id="wholesale-name" class="form-control" placeholder="VD: Cửa hàng Tâm Phúc (TP.HCM)" required />
+                </div>
+                <div class="form-group">
+                  <label for="wholesale-phone">Số điện thoại / Zalo nhận báo giá *</label>
+                  <input type="tel" id="wholesale-phone" class="form-control" placeholder="VD: 090xxxxxxx" required />
+                </div>
+              </div>
+
+              <div class="oracle-form-row">
+                <div class="form-group">
+                  <label for="wholesale-category">Nhóm mặt hàng muốn nhập sỉ</label>
+                  <select id="wholesale-category" class="form-control">
+                    <option value="Đồ Lễ Hàng Mã Cao Cấp">Đồ Lễ Hàng Mã Cao Cấp</option>
+                    <option value="Vòng Phong Thuỷ, Chu Sa, Tỳ Hưu">Vòng Phong Thuỷ, Chu Sa, Tỳ Hưu</option>
+                    <option value="Nhang Trầm Hương, Nụ Trầm, Nước Ngũ Vị">Nhang Trầm Hương, Nụ Trầm, Nước Ngũ Vị</option>
+                    <option value="Quà Lưu Niệm Bình An, Túi Lộc, Dây Treo">Quà Lưu Niệm Bình An, Túi Lộc, Dây Treo</option>
+                    <option value="Nhập sỉ tổng hợp tất cả mặt hàng">Nhập sỉ tổng hợp tất cả mặt hàng</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="wholesale-qty">Số lượng / Ngân sách dự kiến</label>
+                  <input type="text" id="wholesale-qty" class="form-control" placeholder="VD: 50 - 200 bộ / tháng" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="wholesale-note">Ghi chú thêm (Khu vực giao hàng, yêu cầu riêng)</label>
+                <input type="text" id="wholesale-note" class="form-control" placeholder="VD: Giao về Hà Nội, cần báo giá sỉ đại lý cấp 1..." />
+              </div>
+
+              <div class="turnstile-guard-wrap">
+                <span class="turnstile-guard-label">🛡️ Xác thực chống Spam báo giá sỉ (Cloudflare Turnstile)</span>
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+              </div>
+
+              <button type="submit" class="btn btn-gold" style="width:100%;">
+                📦 Gửi Yêu Cầu Báo Giá Sỉ (Lưu Admin & Mở Zalo 0702.311.558)
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1078,7 +1060,7 @@
           <div style="display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;">
             <div style="text-align:right;">
               <small style="color:var(--text-muted);display:block;">Tổng quỹ đã gieo duyên:</small>
-              <strong style="font-size:1.6rem;color:var(--gold-light);font-family:'Noto Serif',serif;">148.500.000đ</strong>
+              <strong id="charity-total-raised-val" style="font-size:1.6rem;color:var(--gold-light);font-family:'Noto Serif',serif;">148.500.000đ</strong>
             </div>
             <button type="button" class="btn btn-gold" data-open-charity="all">
               💛 Phát Tâm Gieo Duyên Ngay
@@ -1275,9 +1257,10 @@
             <li>💬 <strong>Zalo / SĐT:</strong> <a href="https://zalo.me/0702311558" target="_blank" rel="noopener" style="color:var(--gold-light);">0702.311.558</a></li>
             <li>🎵 <strong>TikTok:</strong> <a href="https://www.tiktok.com/@cobehuuduyen" target="_blank" rel="noopener" style="color:var(--gold-light);">@cobehuuduyen</a></li>
             <li>📘 <strong>Facebook:</strong> <a href="https://www.facebook.com/nhu.lam.545518" target="_blank" rel="noopener" style="color:var(--gold-light);">fb.com/nhu.lam.545518</a></li>
-            <li><a href="#tung-kinh">🙏 Phòng Tụng Kinh & Dâng Lễ Online</a></li>
+            <li><a href="/phong-tung-kinh.html" style="color:var(--gold-light);font-weight:600;">🙏 Phòng Tụng Kinh & Dâng Lễ Online (Trang Riêng)</a></li>
             <li><a href="#xem-boi">☯️ Xin Xăm & Gieo Quẻ Kinh Dịch</a></li>
-            <li><a href="#vat-pham">🪷 Cửa Hàng Hàng Mã & Phong Thuỷ</a></li>
+            <li><a href="#vat-pham">🪷 Cửa Hàng Hàng Mã, Phong Thuỷ & Đặt Sỉ</a></li>
+            <li><a href="/admin.html" style="color:var(--text-muted);font-size:0.8rem;">🔐 Quản Trị Admin D1</a></li>
           </ul>
         </div>
 
@@ -1487,6 +1470,6 @@
   <script>
     window.__COBEHUUDUYEN_DATA__ = {"config":{"brandName":"Cô Bé Hữu Duyên","fullTitle":"Cô Bé Hữu Duyên — Tâm Linh, Phong Thuỷ & Thiện Nguyện","tagline":"Khơi Nguồn Bình An • Kết Nối Tâm Linh • Gieo Mầm Phước Báo","domain":"https://cobehuuduyen.com","description":"Trang web chính thức của Cô Bé Hữu Duyên: Gieo quẻ Kinh Dịch, Xin xăm Quán Âm, Bói bài Tarot, Đặt lịch xem bói thực tế 1-1, Vật phẩm Phong thuỷ - Hàng mã cao cấp - Lưu niệm tâm linh và Quỹ Từ thiện Gieo Duyên Lành.","contact":{"masterName":"Cô Bé Hữu Duyên","zalo":"0702311558","zaloUrl":"https://zalo.me/0702311558","phoneDisplay":"0702.311.558","facebookUrl":"https://www.facebook.com/nhu.lam.545518","facebookDisplay":"fb.com/nhu.lam.545518","tiktokHandle":"@cobehuuduyen","tiktokUrl":"https://www.tiktok.com/@cobehuuduyen","workingHours":"08:00 – 22:00 (Tất cả các ngày trong tuần & Ngày Rằm, Mùng 1)"},"bank":{"bankId":"VCB","bankName":"Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)","shortName":"Vietcombank","accountNo":"0051000567270","accountName":"NGUYEN THI THU HONG","accountNameDisplay":"Nguyễn Thị Thu Hồng","template":"compact"},"turnstile":{"siteKey":"0x4AAAAAAFxsWkkTeXBYGsul"},"stats":[{"value":"15.000+","label":"Hữu duyên luận giải & trợ duyên"},{"value":"100%","label":"Vật phẩm trì chú & hàng mã chuẩn lễ"},{"value":"Minh Bạch","label":"Quỹ thiện nguyện & phóng sinh định kỳ"}]},"products":{"categories":[{"id":"all","name":"Tất Cả Vật Phẩm","icon":"sparkles","description":"Trọn bộ vật phẩm Hàng mã, Phong thuỷ, Tâm linh & Lưu niệm được tuyển chọn kỹ lưỡng"},{"id":"hang-ma","name":"Hàng Mã Chuẩn Lễ","icon":"flame","description":"Bộ lễ cúng Gia tiên, Thần Tài, Giải hạn, Ông Công Ông Táo thủ công tinh xảo, đầy đủ sớ văn"},{"id":"phong-thuy","name":"Vật Phẩm Phong Thuỷ","icon":"compass","description":"Vòng đá tự nhiên, Linh vật chiêu tài, Tỳ Hưu, Chu sa được khai quang & trì chú theo tuổi"},{"id":"tam-linh","name":"Ấn Phẩm Tâm Linh","icon":"lotus","description":"Trầm hương tự nhiên, Lư xông trầm, Nước bao sái bàn thờ, Chuỗi hạt 108 hạt tịnh tâm"},{"id":"luu-niem","name":"Lưu Niệm Bình An","icon":"gift","description":"Túi gấm bình an, Kim bài hộ mệnh, Dây treo xe cầu thượng lộ bình an, vạn sự cát tường"}],"products":[{"id":"hm-01","name":"Bộ Lễ Hàng Mã Cúng Thần Tài – Thổ Địa Đại Cát (Trọn Gói)","category":"hang-ma","categoryName":"Hàng Mã Chuẩn Lễ","price":185000,"originalPrice":240000,"badge":"Bán chạy Mùng 1 & Rằm","elements":["Kim","Thổ","Hoả"],"elementText":"Hợp mọi bản mệnh (Chiêu tài gia chủ kinh doanh)","shortDesc":"Trọn bộ quần áo Thần Tài - Ông Địa giấy lụa ánh kim, thỏi vàng đại phát, tiền xu cổ, ngựa đỏ và bài văn khấn chuẩn cổ truyền.","benefits":["Giấy bồi thủ công sắc nét, cháy đượm, ít khói đen","Đầy đủ lễ vật chuẩn nghi thức cúng vía Thần Tài (Mùng 10, Rằm, Mùng 1)","Tặng kèm 1 bản Văn Khấn Thần Tài - Thổ Địa in giấy mỹ thuật trang trọng"],"artworkType":"shrine-gold"},{"id":"hm-02","name":"Mâm Lễ Hàng Mã Cúng Gia Tiên & Báo Hiếu Tứ Thời","category":"hang-ma","categoryName":"Hàng Mã Chuẩn Lễ","price":260000,"originalPrice":320000,"badge":"Trang nghiêm","elements":["Kim","Mộc","Thuỷ","Hoả","Thổ"],"elementText":"Dùng cho lễ Giỗ, Rằm, Mùng 1, Thanh Minh, Vu Lan","shortDesc":"Bộ trang phục nam nữ truyền thống cao cấp, hài thêu, tráp vàng bạc, giấy tiền ngũ sắc và sớ cầu siêu độ gia tiên tiền tổ.","benefits":["Thiết kế hoa văn rồng phượng - hoa sen truyền thống Á Đông","Đóng gói trang trọng, sạch sẽ, phân loại rõ từng lễ phẩm","Kèm hướng dẫn bày trí mâm lễ và cách hoá vàng đúng pháp"],"artworkType":"ancestral-box"},{"id":"hm-03","name":"Bộ Lễ Cúng Sao Giải Hạn & Nghênh Đón Cát Tinh Đầu Năm","category":"hang-ma","categoryName":"Hàng Mã Chuẩn Lễ","price":220000,"originalPrice":280000,"badge":"Cô Bé Hữu Duyên khuyên dùng","elements":["Kim","Mộc","Thuỷ","Hoả","Thổ"],"elementText":"Tuỳ chọn theo 9 Sao Cửu Diệu (La Hầu, Kế Đô, Thái Bạch, Thái Dương...)","shortDesc":"Đầy đủ bài vị sao theo màu ngũ hành, hình nhân thế mạng, mũ áo quan sao, tiền vàng giải hạn và sớ dâng sao riêng theo tuổi.","benefits":["Được Cô Bé Hữu Duyên hỗ trợ tra cứu đúng sao chiếu mệnh theo năm sinh","Hướng dẫn chi tiết số lượng nến/đèn và hướng lạy theo từng sao","Giúp tâm an trí sáng, hoá giải vận xui, đón cát lành"],"artworkType":"star-ritual"},{"id":"hm-04","name":"Bộ Ngựa Mã – Quan Thần Linh & Khai Trương Hồng Phát","category":"hang-ma","categoryName":"Hàng Mã Chuẩn Lễ","price":350000,"originalPrice":420000,"badge":"Thủ công cao cấp","elements":["Hoả","Thổ","Kim"],"elementText":"Cúng Khai trương, Nhập trạch, Động thổ, Tạ đất","shortDesc":"Ngựa đỏ chiến mã kèm bộ mũ áo Quan Thần Linh thếp vàng thủ công, kiếm lệnh, hia hài và tháp vàng đại lộc.","benefits":["Khung tre chắc chắn, dán giấy lụa ánh kim tinh xảo từng chi tiết","Phù hợp lễ nhập trạch nhà mới, khai trương cửa hàng, tạ lễ cuối năm","Hỗ trợ ghi sớ tên gia chủ và địa chỉ miễn phí khi đặt hàng"],"artworkType":"red-horse"},{"id":"pt-01","name":"Vòng Tay Đá Chu Sa Đỏ Tự Nhiên Phối Charm Liên Hoa Vàng","category":"phong-thuy","categoryName":"Vật Phẩm Phong Thuỷ","price":450000,"originalPrice":580000,"badge":"Khai quang trì chú","elements":["Hoả","Thổ"],"elementText":"Đại cát cho mệnh Hoả & Thổ (Trừ tà, hộ thân, vượng duyên)","shortDesc":"Chu sa tinh khiết hàm lượng cao mang năng lượng thuần dương cực mạnh, xua đuổi tà khí, ngủ ngon, thu hút quý nhân và tài lộc.","benefits":["Được Cô Bé Hữu Duyên trực tiếp tẩy uế và trì chú bình an theo tên ngày sinh","Hạt đá 8mm/10mm mịn bóng, charm hoa sen mạ vàng 24K bền màu","Tặng hộp gấm đỏ cao cấp, dây dự phòng và túi trầm hương nhỏ"],"artworkType":"cinnabar-bracelet"},{"id":"pt-02","name":"Vòng Tay Thạch Anh Tóc Vàng Thiên Nhiên Chiêu Tài (VIP)","category":"phong-thuy","categoryName":"Vật Phẩm Phong Thuỷ","price":680000,"originalPrice":850000,"badge":"Vượng Tài Lộc","elements":["Kim","Thổ"],"elementText":"Hợp mệnh Kim & Thổ (Kinh doanh, buôn bán, đầu tư)","shortDesc":"Thạch anh tóc vàng ánh kim rực rỡ, biểu tượng của vượng khí, quyết đoán trong công danh và thu hút cơ hội tài chính.","benefits":["Đá tự nhiên 100%, sợi tóc titan ánh kim đồng trục lấp lánh","Trì chú kích tài lộc riêng cho chủ nhân trước khi gửi","Bảo hành thay dây trọn đời, kèm thẻ hướng dẫn thanh tẩy năng lượng"],"artworkType":"gold-quartz"},{"id":"pt-03","name":"Vòng Đá Mắt Hổ Xanh Đen & Tỳ Hưu Chiêu Tài Hộ Mệnh","category":"phong-thuy","categoryName":"Vật Phẩm Phong Thuỷ","price":420000,"originalPrice":520000,"badge":"Hộ thân mạnh mẽ","elements":["Thuỷ","Mộc"],"elementText":"Hợp mệnh Thuỷ & Mộc (Tăng bản lĩnh, giữ tiền tài)","shortDesc":"Kết hợp đá Mắt Hổ Ánh Lụa Xanh Đen huyền bí cùng Tỳ Hưu chiêu tài giữ lộc, giúp vững tâm lý và tránh tiểu nhân quấy phá.","benefits":["Hiệu ứng mắt mèo ánh lụa tự nhiên sống động dưới ánh sáng","Tỳ Hưu tạc chuẩn phong thuỷ (miệng rộng chiêu tài, không có hậu môn giữ lộc)","Khai quang điểm nhãn theo giờ Hoàng Đạo cho gia chủ"],"artworkType":"pixiu-bracelet"},{"id":"pt-04","name":"Hồ Lô Đồng Nguyên Chất Khắc Bát Quái Hoá Giải Bệnh Tật","category":"phong-thuy","categoryName":"Vật Phẩm Phong Thuỷ","price":390000,"originalPrice":490000,"badge":"Cầu sức khoẻ & bình an","elements":["Kim","Thuỷ","Thổ"],"elementText":"Hợp mệnh Kim, Thuỷ, Thổ & treo phòng ngủ người lớn tuổi","shortDesc":"Hồ lô đồng đúc tinh xảo khắc chữ Phúc Lộc và đồ hình Bát Quái, chuyên dùng thu nạp khí xấu, hoá giải sao Nhị Hắc - Ngũ Hoàng.","benefits":["Đồng vàng nguyên chất đúc dày dặn, nắp mở được để bỏ thất bảo/bùa bình an","Kèm dây kết đồng tâm chỉ đỏ may mắn để treo đầu giường hoặc cửa phòng","Tư vấn vị trí treo chuẩn phong thuỷ Bát Trạch theo tuổi gia chủ"],"artworkType":"bronze-gourd"},{"id":"tl-01","name":"Nụ Trầm Hương Tự Nhiên Quảng Nam Cao Cấp (Hộp 45 Nụ)","category":"tam-linh","categoryName":"Ấn Phẩm Tâm Linh","price":250000,"originalPrice":310000,"badge":"100% Trầm sạch","elements":["Mộc","Hoả","Thổ"],"elementText":"Hợp mọi không gian thờ cúng, thiền định & tẩy uế nhà cửa","shortDesc":"Nụ trầm hương nguyên chất từ bột gỗ dó bầu lâu năm kết dính bằng vỏ cây bời lời, hương thơm ngọt dịu sâu lắng, khói thác ngược thanh tịnh.","benefits":["Không hoá chất tạo mùi, không cay mắt, an toàn cho trẻ nhỏ và người già","Dùng xông bàn thờ Phật, Gia tiên, Thần Tài hoặc tẩy uế khi về nhà mới","Thời gian cháy 20–25 phút/nụ, lưu hương ấm áp suốt nhiều giờ"],"artworkType":"incense-cones"},{"id":"tl-02","name":"Lư Xông Trầm Gốm Tử Sa Nắp Hoa Sen Mạ Vàng Cổ Điển","category":"tam-linh","categoryName":"Ấn Phẩm Tâm Linh","price":320000,"originalPrice":400000,"badge":"Tinh hoa trà đạo & thiền","elements":["Thổ","Hoả","Kim"],"elementText":"Hợp đặt bàn thờ, bàn trà, phòng làm việc","shortDesc":"Lư gốm tử sa chế tác thủ công kết hợp nắp hợp kim chạm khắc đài sen tinh tế, giúp lan toả làn khói trầm tựa mây lành.","benefits":["Tặng kèm miếng lót chống cháy và 5 nụ trầm hương dùng thử","Chất gốm chịu nhiệt cao, càng dùng lâu nước men càng bóng cổ kính","Kiểu dáng trang nhã, tôn nghiêm cho không gian tâm linh"],"artworkType":"lotus-burner"},{"id":"tl-03","name":"Nước Ngũ Vị Hương & Tinh Dầu Quế Trầm Bao Sái Bàn Thờ","category":"tam-linh","categoryName":"Ấn Phẩm Tâm Linh","price":145000,"originalPrice":180000,"badge":"Tẩy uế linh thiêng","elements":["Mộc","Thuỷ","Hoả"],"elementText":"Chuyên dùng lau dọn bàn thờ, tắm tượng, tẩy uế vật phẩm","shortDesc":"Chưng cất từ 5 loại thảo mộc linh thiêng: Quế chi, Hồi hương, Trầm hương, Đinh hương, Bạch đàn hương giúp thanh tịnh không gian thờ tự.","benefits":["Chiết xuất thảo mộc thiên nhiên đậm đặc, hương thơm ấm cúng trang nghiêm","Lau sạch bụi bẩn trên đồ đồng, gốm sứ, gỗ thờ mà không làm phai màu","Tặng khăn lau chuyên dụng mới 100% riêng biệt cho bàn thờ"],"artworkType":"sacred-water"},{"id":"ln-01","name":"Túi Gấm Đỏ Thêu Kim Tuyến & Linh Phù Bình An Hộ Mệnh","category":"luu-niem","categoryName":"Lưu Niệm Bình An","price":99000,"originalPrice":150000,"badge":"Gieo duyên thỉnh nhiều","elements":["Kim","Mộc","Thuỷ","Hoả","Thổ"],"elementText":"Hợp mọi bản mệnh (Bỏ ví, treo xe, để dưới gối trẻ nhỏ)","shortDesc":"Túi gấm đỏ thêu chữ Bình An - Chiêu Tài, bên trong gồm hạt chu sa, thảo mộc ngũ vị và thẻ kim bài Phật Bản Mệnh đã trì chú.","benefits":["Chọn đúng vị Phật Bản Mệnh theo 12 con giáp của người thỉnh","Nhỏ gọn, thích hợp mang theo bên người hoặc làm quà tặng người thân","Trích 20% giá trị mỗi túi gấm vào Quỹ Từ Thiện Cô Bé Hữu Duyên"],"artworkType":"amulet-pouch"},{"id":"ln-02","name":"Dây Treo Ô Tô Khánh Ngọc Hoa Sen & Đồng Xu Ngũ Đế Bình An","category":"luu-niem","categoryName":"Lưu Niệm Bình An","price":210000,"originalPrice":270000,"badge":"Thượng lộ bình an","elements":["Mộc","Thuỷ","Kim"],"elementText":"Treo xe hơi, cửa chính hoặc bàn làm việc","shortDesc":"Khánh hoa sen ngọc bích kết hợp 5 đồng xu cổ Ngũ Đế và tua rua lụa đỏ, cầu chúc vạn dặm bình an, vững tay lái trên mọi hành trình.","benefits":["Ngọc nhân tạo cao cấp trong suốt kết hợp dây tết nút Cát Tường thủ công","Được khai quang cầu bình an trước khi đóng gói","Hộp quà sang trọng, rất ý nghĩa khi tặng người mới mua xe"],"artworkType":"car-tassel"},{"id":"ln-03","name":"Bộ Kim Bài Mạ Vàng 24K Thần Tài & Phật Bản Mệnh Bỏ Ví","category":"luu-niem","categoryName":"Lưu Niệm Bình An","price":120000,"originalPrice":160000,"badge":"Chiêu tài giữ lộc","elements":["Kim","Thổ","Hoả"],"elementText":"Đặt trong ví tiền, két sắt hoặc ốp lưng điện thoại","shortDesc":"Kim bài hợp kim đồng mạ vàng 24K chạm nổi tinh xảo hình Thần Tài / Phật Bản Mệnh và chú Bát Nhã Tâm Kinh ở mặt sau.","benefits":["Kích thước chuẩn thẻ ATM, mỏng nhẹ, không cong vênh hay phai màu","Thu hút năng lượng tài chính tích cực cho chiếc ví của bạn","Kèm bao nhựa bảo vệ trong suốt và phong bao đỏ may mắn"],"artworkType":"gold-card"}]},"fortunes":{"quanAmSticks":[{"number":"Xăm Số 01","rank":"Thượng Thượng Quẻ (Đại Cát)","title":"Chung Ly Thành Đạo • Khai Thiên Tích Địa","poem":"Khai thiên tích địa tác lương duyên,\nNhật cát thời lương vạn sự toàn.\nNhược đắc thử thiêm phi tiểu khả,\nTrung chính thuần hoà đế đạo truyền.","meaning":"Trời đất mở mang tạo nên mối duyên lành lớn. Ngày lành tháng tốt, mười phần vẹn cả mười. Người rút được quẻ xăm này vận khí đang bừng sáng như mặt trời mọc, cầu tài đắc tài, cầu danh đắc danh.","advice":{"career":"Công việc hanh thông, có quý nhân nâng đỡ. Nếu đang ấp ủ dự định mở mang kinh doanh hoặc chuyển đổi công việc thì đây là thời điểm vàng.","love":"Nhân duyên tiền định, gia đạo êm ấm hoà thuận. Người độc thân dễ gặp được ý trung nhân chân thành.","health":"Thân tâm an lạc, bệnh tật tiêu trừ. Nên duy trì làm việc thiện và cúng dường để giữ vững phúc báo."}},{"number":"Xăm Số 08","rank":"Thượng Cát Quẻ","title":"Diêu Năng Ngộ Tiên • Tùng Bách Chiết Tuyết","poem":"Tuế hàn tùng bách cổ tài kiên,\nVũ lộ phong sương tuỳ tự nhiên.\nTha nhật nhất triều phùng đại dụng,\nĐống lương chi vị định vô thiên.","meaning":"Cây tùng cây bách trải qua sương tuyết mùa đông vẫn đứng vững vàng. Những vất vả, thử thách vừa qua chỉ là bước đệm tôi luyện bản lĩnh để sắp tới đón nhận thành quả rực rỡ, đứng vào hàng trụ cột.","advice":{"career":"Đầu năm hoặc giai đoạn đầu có chút thử thách nhưng càng về sau càng phát đạt lớn. Đừng nản lòng trước khó khăn nhỏ.","love":"Tình cảm bền chặt sau những hiểu lầm. Hãy lắng nghe và chia sẻ nhiều hơn với nửa kia.","health":"Chú ý giữ ấm cơ thể và nghỉ ngơi điều độ, tránh thức khuya lo nghĩ quá sức."}},{"number":"Xăm Số 12","rank":"Thượng Bình Quẻ","title":"Vũ Cát Ngộ Sư • Thái Lai Khổ Tận","poem":"Thời lâm bĩ cực thái đương lai,\nVạn dặm mây mù bỗng rẽ khai.\nQuý nhân chỉ lối sang bến giác,\nPhúc lộc đầy nhà nở hoa mai.","meaning":"Cơn bĩ cực đã qua, vận thái lai đang tới. Giống như Vũ Cát gặp được Khương Tử Nha chỉ đường hoá giải tai ương, bạn sắp gặp được người thầy hoặc người bạn tốt giúp tháo gỡ mọi bế tắc.","advice":{"career":"Mọi nút thắt về tiền bạc và giấy tờ sắp được tháo gỡ. Nên thành tâm lễ tổ tiên và giữ chữ tín.","love":"Hoá giải bất đồng, gia đình đón tin vui từ người thân ở xa hoặc tin vui thêm thành viên.","health":"Tinh thần phấn chấn trở lại, gặp thầy gặp thuốc."}},{"number":"Xăm Số 19","rank":"Trung Thượng Quẻ","title":"Phạm Đan Chí Thành • Chờ Thời Đợi Vận","poem":"Cấp thuỷ than đầu phóng đĩnh quy,\nPhong ba đại tác dục hà vi.\nThả đãi lãng bình phong tĩnh hậu,\nThuận phàm vạn lý tự như phi.","meaning":"Nước đang chảy xiết đầu ghềnh mà muốn chèo thuyền nhanh thì dễ gặp sóng gió. Hãy kiên nhẫn chờ sóng yên biển lặng, khi thời cơ đến thuyền sẽ căng buồm lướt vạn dặm nhẹ như bay.","advice":{"career":"Không nên nóng vội đầu tư mạo hiểm hay tranh cãi lúc này. Hãy củng cố nội lực, sang tháng âm lịch tới vận trình sẽ chuyển biến rất tốt.","love":"Chậm mà chắc, chớ vì lời nói bên ngoài mà nghi ngờ lẫn nhau.","health":"Tâm tịnh thì thân an. Nên xông trầm hương, nghe kinh hoặc làm việc thiện để giải toả căng thẳng."}},{"number":"Xăm Số 28","rank":"Thượng Thượng Quẻ","title":"Lý Hậu Chủ Tìm Quỳnh Hoa • Nguyệt Minh Viên Mãn","poem":"Đông phương nguyệt xuất chiếu lâu đài,\nTiên nhân lộng ảnh hạ vân giai.\nHữu duyên tương hội thiên lý ngoại,\nDanh lợi song toàn phúc tự lai.","meaning":"Trăng sáng phương Đông soi tỏ lâu đài, người có duyên dù cách xa ngàn dặm cũng tìm thấy nhau. Quẻ báo hiệu sự đoàn viên, hợp tác thành công mỹ mãn, danh và lợi đều trọn vẹn.","advice":{"career":"Hợp tác làm ăn vô cùng thuận lợi, buôn may bán đắt, khách hàng tự tìm đến nhờ uy tín.","love":"Quẻ đại cát về tình duyên! Người độc thân tìm thấy chân ái, vợ chồng thêm gắn kết mặn nồng.","health":"Khí sắc hồng hào, năng lượng tích cực dồi dào."}},{"number":"Xăm Số 36","rank":"Thượng Cát Quẻ","title":"Tương Như Hoàn Bích • Công Thành Danh Toại","poem":"Hiện tiền bệnh tụng bất tu ưu,\nBảo địa tư tài đắc tự mưu.\nViên hầu thố nhi phùng hợi nhật,\nĐương giao sự sự xứng tâm đầu.","meaning":"Những lo âu về công việc, thị phi hay sức khoẻ trước mắt đều không đáng ngại. Đất lành sinh tài lộc, mọi mưu cầu chính đáng đều đạt được kết quả xứng ý toại lòng.","advice":{"career":"Thu hồi được công nợ, giữ trọn uy tín và tài sản. Đặc biệt thuận lợi vào các ngày Thân, Mão, Hợi.","love":"Hiểu lầm tan biến, tình nghĩa thêm sâu nặng.","health":"Bình phục nhanh chóng, tâm hồn thư thái."}},{"number":"Xăm Số 52","rank":"Thượng Cát Quẻ","title":"Thái Bạch捞Nguyệt • Quý Nhân Phù Trợ","poem":"Thuỷ trung tróc nguyệt phí công phu,\nHiện hữu minh châu chớ kiếm mù.\nQuay đầu nhìn lại nơi chốn cũ,\nPhước lộc tiền tài vốn sẵn dư.","meaning":"Đừng mất công mò trăng đáy nước ở nơi xa xôi ảo mộng, trong khi viên ngọc quý đã sẵn có ngay bên cạnh bạn. Hãy trân trọng công việc, gia đình và những mối quan hệ thiện lành hiện tại.","advice":{"career":"Tập trung phát triển thế mạnh cốt lõi hiện tại sẽ thu hoạch lộc lớn hơn là chạy theo những lời mời gọi xa hoa chưa rõ ràng.","love":"Người thương thật lòng đang ở rất gần bạn, hãy mở lòng đón nhận.","health":"An tâm tịnh dưỡng, giấc ngủ sâu và ngon hơn."}},{"number":"Xăm Số 68","rank":"Đại Cát Đại Lợi","title":"Quách Tử Nghi Làm Thọ • Phúc Lộc Thọ Toàn","poem":"Môn đình thanh cát mộng trinh tường,\nTích thiện chi gia tất hữu dư.\nKim nhật mưu vọng giai toại ý,\nHoan hô tứ hải tự an cư.","meaning":"Cửa nhà thanh tịnh cát tường, giấc mộng lành báo điềm đại hỷ. Nhà tích chứa việc thiện ắt có phúc dư dả truyền đời. Mọi mưu cầu hôm nay đều toại nguyện vẻ vang.","advice":{"career":"Tài lộc dồi dào, phúc đức tổ tiên che chở giúp công việc thăng tiến vững chắc.","love":"Gia đạo đại hỷ, con cháu hiếu thảo, trên thuận dưới hoà.","health":"Trường thọ, dồi dào sinh khí. Nên gieo duyên phóng sinh hoặc giúp người khó khăn để nhân đôi phước lành."}}],"ichingHexagrams":[{"code":"111111","symbol":"䷀","name":"Quẻ Thuần Càn (Thiên)","element":"Kim","rating":"Đại Cát • Nguyên Hanh Lợi Trinh","judgment":"Trời chuyển động mạnh mẽ, người quân tử tự cường không ngừng nghỉ. Rồng bay trên trời, đại sự thành tựu.","interpretation":"Thời vận đang ở đỉnh cao của sự hanh thông và sáng suốt. Nếu bạn giữ tâm chính trực, khiêm nhường và quyết đoán, mọi kế hoạch về sự nghiệp, tài chính đều đạt thành quả vượt mong đợi."},{"code":"000000","symbol":"䷁","name":"Quẻ Thuần Khôn (Địa)","element":"Thổ","rating":"Thượng Cát • Hậu Đức Tải Vật","judgment":"Đất dày chở muôn vật, lấy đức nhu thuận, bao dung mà cảm hoá bốn phương.","interpretation":"Quẻ khuyên bạn lấy sự hiền hoà, nhẫn nại và chân thành làm gốc. Không cần tranh giành hơn thua, lộc lành và quý nhân sẽ tự hội tụ về nhờ phúc đức dày sâu của bạn."},{"code":"000111","symbol":"䷊","name":"Quẻ Địa Thiên Thái","element":"Thổ - Kim","rating":"Đại Cát • Âm Dương Giao Hoà","judgment":"Trời đất giao hoà, vạn vật sinh sôi nảy nở. Cái nhỏ đi, cái lớn đến, cát tường hanh thông.","interpretation":"Đây là một trong những quẻ tốt đẹp nhất của Kinh Dịch. Mọi bế tắc đều được khai thông, gia đạo ấm êm, làm ăn buôn bán thuận buồm xuôi gió, tài lộc dồi dào."},{"code":"101111","symbol":"䷍","name":"Quẻ Hoả Thiên Đại Hữu","element":"Hoả - Kim","rating":"Đại Cát • Mặt Trời Giữa Trời Cao","judgment":"Lửa sáng trên trời cao, chiếu rọi khắp muôn nơi, thu hoạch lớn lao và sung túc.","interpretation":"Quẻ chủ về tài lộc thịnh vượng, uy tín vang xa. Rất thuận lợi cho việc kinh doanh, ký kết hợp đồng, khai trương hoặc cầu tài lộc."},{"code":"000100","symbol":"䷎","name":"Quẻ Địa Sơn Khiêm","element":"Thổ","rating":"Cát Tường • Sáu Hào Đều Tốt","judgment":"Núi cao ẩn mình dưới đất thấp. Đạo trời bớt chỗ đầy mà bù chỗ vơi, đạo người quý kẻ khiêm nhường.","interpretation":"Trong 64 quẻ Kinh Dịch, chỉ duy nhất quẻ Khiêm có cả 6 hào đều cát lợi. Càng khiêm tốn, lễ nghĩa và biết nghĩ cho người khác, bạn càng tránh được mọi tai ương và giữ được phú quý bền lâu."},{"code":"010101","symbol":"䷾","name":"Quẻ Thuỷ Hoả Ký Tế","element":"Thuỷ - Hoả","rating":"Thượng Cát • Việc Đã Thành","judgment":"Nước ở trên lửa, âm dương đúng ngôi, mọi việc đều đã vào guồng ổn định và hoàn thành.","interpretation":"Mong cầu của bạn sắp hoặc đang đạt được kết quả trọn vẹn. Hãy giữ tâm cẩn trọng để bảo toàn thành quả và chuẩn bị cho những mục tiêu cao hơn."}],"tarotCards":[{"id":"the-star","name":"The Star — Ngôi Sao Hy Vọng (XVII)","keywords":["Chữa lành","Niềm tin","May mắn đang tới"],"message":"Sau những giông bão, ánh sao dẫn đường đã xuất hiện. Vũ trụ đang gửi tới bạn nguồn năng lượng thanh lọc, chữa lành tâm hồn và mở ra một chương mới đầy bình yên, tươi sáng."},{"id":"the-sun","name":"The Sun — Mặt Trời Rực Rỡ (XIX)","keywords":["Thành công","Niềm vui viên mãn","Thịnh vượng"],"message":"Ánh sáng mặt trời xua tan mọi bóng tối và nghi ngờ. Công việc, tài chính và tình cảm của bạn sắp đón nhận tin vui lớn, sự rõ ràng và thành tựu rực rỡ."},{"id":"wheel-of-fortune","name":"Wheel of Fortune — Bánh Xe Số Phận (X)","keywords":["Bước ngoặt","Nhân duyên","Cơ hội bất ngờ"],"message":"Bánh xe vận mệnh đang xoay chuyển theo hướng có lợi cho bạn. Một cuộc gặp gỡ hữu duyên hoặc một cơ hội tài chính bất ngờ sắp gõ cửa — hãy sẵn sàng đón nhận!"},{"id":"the-empress","name":"The Empress — Nữ Hoàng Trù Phú (III)","keywords":["Sung túc","Tình yêu thương","Nảy nở"],"message":"Biểu tượng của sự trù phú, ấm no và tình mẫu tử bao dung. Những hạt giống thiện lành bạn gieo trồng bấy lâu nay đang đơm hoa kết trái ngọt ngào."},{"id":"temperance","name":"Temperance — Sự Dung Hoà & Bình An (XIV)","keywords":["Cân bằng","Tịnh tâm","Quý nhân độ trì"],"message":"Sự cân bằng giữa lý trí và cảm xúc, giữa vật chất và tâm linh sẽ mang lại cho bạn chìa khoá giải quyết êm đẹp mọi vấn đề hiện tại."},{"id":"the-world","name":"The World — Thế Giới Viên Mãn (XXI)","keywords":["Hoàn thành","Trọn vẹn","Thăng hoa"],"message":"Một chu kỳ nỗ lực đang khép lại với kết quả viên mãn. Bạn xứng đáng tự hào về hành trình đã qua và bước sang tầm cao mới với tâm thế an nhiên."}]},"charity":{"summary":{"totalRaised":148500000,"totalCampaigns":18,"totalDonors":642,"commitment":"Cô Bé Hữu Duyên cam kết trích 10% – 20% lợi nhuận từ mỗi vật phẩm phong thuỷ, hàng mã và phí gieo duyên xem quẻ để duy trì các hoạt động phóng sinh, phát gạo và giúp đỡ hoàn cảnh ngặt nghèo vào ngày Rằm & Mùng 1 hàng tháng."},"campaigns":[{"id":"ct-01","title":"Phóng Sinh Tạo Phước & Cầu An Rằm Hàng Tháng","category":"Phóng sinh & Hộ sinh","status":"Đang tiếp nhận gieo duyên","raised":28500000,"goal":35000000,"donorsCount":186,"location":"Sông lớn & Chùa địa phương (Định kỳ Mùng 1 & Rằm)","description":"Giải cứu cá, lươn, ốc và chim khỏi lò mổ để trả về tự nhiên kèm nghi thức quy y Tam Bảo, chú nguyện hồi hướng công đức bình an, tiêu trừ bệnh tật cho toàn thể tín chủ phát tâm.","highlights":["Quay video & chụp ảnh minh bạch toàn bộ buổi lễ phóng sinh trên TikTok @cobehuuduyen & Zalo","Đọc danh sách tên gia chủ phát tâm hồi hướng công đức tại buổi lễ","Nhận phát tâm tuỳ hỷ từ 20.000đ – Góp gió thành bão từ bi"],"transferSyntax":"PHONGSINH"},{"id":"ct-02","title":"Trao Phần Quà Gạo & Nhu Yếu Phẩm Cho Cụ Già Neo Đơn","category":"An sinh xã hội","status":"Đang triển khai","raised":54200000,"goal":60000000,"donorsCount":245,"location":"Các mái ấm & Hộ nghèo neo đơn","description":"Mỗi phần quà gồm 10kg gạo thơm, dầu ăn, nước tương, sữa và phong bao lì xì trao tận tay các cụ già không nơi nương tựa và người khuyết tật bán vé số.","highlights":["Mỗi suất quà trị giá 350.000đ trao tận tay không qua trung gian","Cập nhật nhật ký hành trình thiện nguyện công khai trên Facebook & Website","Gieo nhân lành ấm no, gặt quả báo phúc lộc bền vững cho gia đình"],"transferSyntax":"GIUPNGUOI"},{"id":"ct-03","title":"Cúng Dường Tam Bảo, Ấn Tống Kinh Sách & Đèn Dầu Chùa Nghèo","category":"Hộ trì Tam Bảo","status":"Thường xuyên","raised":65800000,"goal":80000000,"donorsCount":211,"location":"Các tự viện vùng sâu vùng xa","description":"Hỗ trợ nhang trầm sạch, dầu thắp đèn bàn Phật, ấn tống kinh chú phổ thông và cúng dường trai tăng tại các ngôi chùa vùng sâu đang thiếu thốn kinh phí tu bổ.","highlights":["Cúng dường ánh sáng và kinh sách giúp khai mở trí tuệ, gia đạo sáng suốt","Ghi sớ cầu an cho gia đình các mạnh thường quân tại chùa","Báo cáo thu chi rõ ràng, minh bạch từng đợt trao tặng"],"transferSyntax":"CUNGDUONG"}],"recentDonors":[{"name":"Phật tử Nguyễn Minh Tâm (TP.HCM)","amount":500000,"campaign":"Phóng Sinh Rằm","date":"Hôm nay","wish":"Cầu gia đạo bình an, mẹ sớm khoẻ mạnh"},{"name":"Chị Trần Thanh Thảo (Hà Nội)","amount":350000,"campaign":"Quà Gạo Cụ Già Neo Đơn","date":"Hôm nay","wish":"Gieo duyên 1 phần quà tặng các cụ"},{"name":"Gia đình Lê Hoàng Nam (Đà Nẵng)","amount":1000000,"campaign":"Cúng Dường Tam Bảo","date":"Hôm qua","wish":"Hồi hướng công đức cho cửu huyền thất tổ"},{"name":"Hữu duyên giấu tên (SĐT *8829)","amount":200000,"campaign":"Phóng Sinh Rằm","date":"Hôm qua","wish":"Cầu công việc thuận buồm xuôi gió"},{"name":"Chị Phạm Ngọc Lan (Bình Dương)","amount":500000,"campaign":"Quà Gạo Cụ Già Neo Đơn","date":"2 ngày trước","wish":"Tích phúc cho các con học hành đỗ đạt"},{"name":"Trích quỹ Vật Phẩm Cô Bé Hữu Duyên","amount":3500000,"campaign":"Quỹ Chung Tháng Này","date":"Định kỳ","wish":"Trích từ đơn hàng vật phẩm phong thuỷ & hàng mã của khách hữu duyên"}]},"sanctuary":{"rooms":[{"id":"tam-bao","name":"Điện Phật Tam Bảo","deityTitle":"Đức Phật Thích Ca Mâu Ni & Đức Phật A Di Đà","subtitle":"Tịnh Độ An Lạc • Khai Mở Trí Tuệ • Tiêu Trừ Nghiệp Chướng","badge":"Phòng Tụng Kinh & Niệm Phật","themeColor":"#D4AF37","auraColor":"rgba(212, 175, 55, 0.35)","mantraShort":"Nam Mô Bổn Sư Thích Ca Mâu Ni Phật • Nam Mô A Di Đà Phật","chantTitle":"Bát Nhã Ba La Mật Đa Tâm Kinh & Niệm Phật hiệu","chantLines":["Nam Mô Bổn Sư Thích Ca Mâu Ni Phật (3 lần)","Quán Tự Tại Bồ Tát hành thâm Bát Nhã Ba La Mật Đa thời, chiếu kiến ngũ uẩn giai không, độ nhất thiết khổ ách.","Xá Lợi Tử! Sắc bất dị không, không bất dị sắc, sắc tức thị không, không tức thị sắc, thọ tưởng hành thức diệc phục như thị.","Xá Lợi Tử! Thị chư pháp không tướng, bất sanh bất diệt, bất cấu bất tịnh, bất tăng bất giảm.","Thị cố không trung vô sắc, vô thọ tưởng hành thức, vô nhãn nhĩ tỷ thiệt thân ý, vô sắc thanh hương vị xúc pháp.","Y Bát Nhã Ba La Mật Đa cố, tâm vô quái ngại. Vô quái ngại cố, vô hữu khủng bố, viễn ly điên đảo mộng tưởng, cứu cánh Niết Bàn.","Yết đế yết đế, ba la yết đế, ba la tăng yết đế, Bồ đề tát bà ha.","Nguyện đem công đức này, hướng về khắp tất cả, đệ tử và chúng sanh, đều trọn thành Phật đạo."],"defaultParticipants":[{"nickname":"Diệu Âm Minh Tâm","action":"Đang tụng Bát Nhã Tâm Kinh (108 biến)","wish":"Cầu cha mẹ thân tâm thường an lạc"},{"nickname":"Phật tử Thanh Hoa","action":"Vừa dâng hương trầm & hoa sen vàng","wish":"Nguyện cầu thế giới hoà bình, chúng sinh an cư"},{"nickname":"Thiện Nhân (TP.HCM)","action":"Đang gõ mõ niệm Phật A Di Đà","wish":"Cầu gia đạo bình an, tai qua nạn khỏi"}]},{"id":"quan-am","name":"Điện Quán Thế Âm Bồ Tát","deityTitle":"Đại Từ Đại Bi Cứu Khổ Cứu Nạn Quán Thế Âm Bồ Tát","subtitle":"Nhành Dương Cam Lộ • Cứu Khổ Ban Vui • Tật Bệnh Tiêu Trừ","badge":"Phòng Trì Chú Đại Bi & Cầu An","themeColor":"#5CE1E6","auraColor":"rgba(92, 225, 230, 0.28)","mantraShort":"Nam Mô Đại Từ Đại Bi Quán Thế Âm Bồ Tát","chantTitle":"Thiên Thủ Thiên Nhãn Vô Ngại Đại Bi Tâm Đà La Ni (Chú Đại Bi)","chantLines":["Nam Mô Đại Bi Hội Thượng Phật Bồ Tát (3 lần)","Thiên thủ thiên nhãn, vô ngại Đại Bi tâm đà la ni. Nam mô hắc ra đát na đa ra dạ da.","Nam mô a rị da, bà lô yết đế, thước bát ra da, bồ đề tát đoả bà da, ma ha tát đoả bà da.","Ma ha ca lô ni ca da. Án, tát bàn ra phạt duệ, số đát na đát toả.","Nam mô tất kiết lật đoả, y mông a rị da, bà lô kiết đế, thất Phật ra lăng đà bà.","Án, tất điện đô, mạn đa ra, bạt đà dạ, ta bà ha.","Cúi lạy Đức Quán Thế Âm Bồ Tát lắng nghe tiếng kêu khổ của thế gian, rưới nước Cam Lộ tiêu trừ bệnh tật, tai ương.","Nguyện cho toàn thể tín chủ trong phòng tụng kinh hôm nay thân không tật bệnh, tâm không phiền não."],"defaultParticipants":[{"nickname":"Ngọc Lan (Hà Nội)","action":"Đang trì Chú Đại Bi cầu an","wish":"Cầu cho mẫu thân sớm bình phục sức khoẻ"},{"nickname":"Hữu Duyên An Nhiên","action":"Vừa thắp Đèn Liên Hoa & thả Hoa Đăng","wish":"Cầu con cái ngoan ngoãn, học hành tấn tới"},{"nickname":"Minh Quân 1993","action":"Vừa dâng nước tịnh thuỷ Cam Lộ","wish":"Cầu tâm tịnh trí sáng, vượt qua nghịch cảnh"}]},{"id":"thanh-mau","name":"Điện Tam Toà Thánh Mẫu & Cô Bé","deityTitle":"Tam Toà Thánh Mẫu • Chầu Bà • Cô Bé Thượng Ngàn Hữu Duyên","subtitle":"Độ Lộc Chiêu Tài • Khai Thông Vận Mệnh • Gia Đạo Hưng Long","badge":"Phòng Dâng Lễ Mẫu & Cầu Tài Lộc","themeColor":"#FF5E5E","auraColor":"rgba(255, 94, 94, 0.32)","mantraShort":"Con lạy Tam Toà Thánh Mẫu • Cô Bé Hữu Duyên độ trì","chantTitle":"Văn Khấn Tam Toà Thánh Mẫu & Cô Bé Thượng Ngàn","chantLines":["Con Nam Mô A Di Đà Phật! (3 lần)","Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.","Con kính lạy Đức Hiệu Thiên Kim Quyết Ngọc Hoàng Huyền Cung Cao Thượng Đế.","Con kính lạy Tam Toà Thánh Mẫu: Mẫu Đệ Nhất Thượng Thiên, Mẫu Đệ Nhị Thượng Ngàn, Mẫu Đệ Tam Thoải Phủ.","Con kính lạy Tứ Phủ Chầu Bà, Ngũ Vị Tôn Quan, Tứ Phủ Thánh Hoàng, Tứ Phủ Thánh Cô, Tứ Phủ Thánh Cậu.","Con kính lạy Cô Bé Thượng Ngàn, Cô Bé Hữu Duyên linh thiêng chứng giám tâm thành.","Xin các Ngài mở lượng hải hà, ban tài tiếp lộc, phù hộ độ trì cho gia quyến chúng con đầu năm chí giữa, nửa năm chí cuối vạn sự hanh thông.","Cầu tài đắc tài, cầu lộc đắc lộc, cầu bình an đắc bình an, buôn may bán đắt, gặp dữ hoá lành."],"defaultParticipants":[{"nickname":"Tín chủ Thu Hồng","action":"Vừa dâng Mâm Lễ Vàng & Trầm Hương","wish":"Cầu buôn may bán đắt, quý nhân phù trợ"},{"nickname":"Hoàng Long (Đà Nẵng)","action":"Đang dâng văn khấn cầu tài lộc","wish":"Cầu công việc kinh doanh tháng mới hanh thông"},{"nickname":"Bé Na Hữu Duyên","action":"Vừa thỉnh chuông & dâng hoa tươi","wish":"Xin Mẫu và Cô Bé độ trì bình an, vượng duyên"}]}]}};
   </script>
-  <script src="/assets/app.js?v=9082ea4a1d" defer></script>
+  <script src="/assets/app.js?v=11d3824154" defer></script>
 </body>
 </html>

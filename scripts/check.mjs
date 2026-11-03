@@ -6,6 +6,8 @@ const errors = [];
 
 const requiredFiles = [
   "index.html",
+  "phong-tung-kinh.html",
+  "admin.html",
   "404.html",
   "favicon.svg",
   "og-banner.svg",
@@ -13,7 +15,9 @@ const requiredFiles = [
   "robots.txt",
   "_headers",
   "assets/styles.css",
-  "assets/app.js"
+  "assets/app.js",
+  "assets/sanctuary-page.js",
+  "assets/admin-page.js"
 ];
 
 for (const rel of requiredFiles) {
