@@ -15,9 +15,60 @@ const CORS_HEADERS = {
 };
 
 function checkAuth(request, env) {
-  const expected = env.ADMIN_PASSWORD || "0702311558";
+  const expected = env.ADMIN_PASSWORD || env.DMIN_PASSWORD || "0702311558";
   const provided = request.headers.get("X-Admin-Password") || "";
   return provided === expected;
+}
+
+async function ensureAdminSchema(db) {
+  if (!db) return;
+  try {
+    await db.exec(`
+      CREATE TABLE IF NOT EXISTS spiritual_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_type TEXT NOT NULL,
+        room_id TEXT DEFAULT '',
+        nickname TEXT NOT NULL,
+        phone TEXT DEFAULT '',
+        amount INTEGER DEFAULT 0,
+        message TEXT DEFAULT '',
+        status TEXT DEFAULT 'pending',
+        merit_awarded INTEGER DEFAULT 0,
+        payload_json TEXT DEFAULT '{}',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS products_catalog (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        category_name TEXT NOT NULL,
+        price INTEGER NOT NULL,
+        original_price INTEGER DEFAULT 0,
+        badge TEXT DEFAULT 'Vật phẩm tâm linh',
+        elements_json TEXT DEFAULT '["Kim","Mộc","Thuỷ","Hoả","Thổ"]',
+        element_text TEXT DEFAULT 'Hợp mọi bản mệnh',
+        short_desc TEXT DEFAULT '',
+        benefits_json TEXT DEFAULT '[]',
+        artwork_type TEXT DEFAULT 'shrine-gold',
+        is_active INTEGER DEFAULT 1,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+  } catch {
+    // ignore
+  }
+
+  // Tự động kiểm tra và thêm cột status nếu bảng cũ chưa có
+  try {
+    await db.prepare("ALTER TABLE spiritual_events ADD COLUMN status TEXT DEFAULT 'pending'").run();
+  } catch {
+    // column already exists
+  }
+  try {
+    await db.prepare("ALTER TABLE spiritual_events ADD COLUMN merit_awarded INTEGER DEFAULT 0").run();
+  } catch {
+    // column already exists
+  }
 }
 
 export async function onRequestOptions() {
@@ -41,21 +92,29 @@ export async function onRequestGet(context) {
   }
 
   try {
+    await ensureAdminSchema(env.DB);
+
     const eventsRes = await env.DB.prepare(
       `SELECT id, event_type, room_id, nickname, phone, amount, message, status, merit_awarded, payload_json, created_at
        FROM spiritual_events
        ORDER BY id DESC LIMIT 150`
     ).all();
 
-    const productsRes = await env.DB.prepare(
-      `SELECT * FROM products_catalog ORDER BY updated_at DESC`
-    ).all();
+    let customProducts = [];
+    try {
+      const productsRes = await env.DB.prepare(
+        `SELECT * FROM products_catalog ORDER BY updated_at DESC`
+      ).all();
+      customProducts = productsRes.results || [];
+    } catch {
+      customProducts = [];
+    }
 
     return new Response(
       JSON.stringify({
         ok: true,
         events: eventsRes.results || [],
-        customProducts: productsRes.results || []
+        customProducts
       }),
       { status: 200, headers: CORS_HEADERS }
     );
@@ -84,6 +143,7 @@ export async function onRequestPost(context) {
   }
 
   try {
+    await ensureAdminSchema(env.DB);
     const body = await request.json();
     const action = body.action || "";
 
