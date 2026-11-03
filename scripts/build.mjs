@@ -1021,7 +1021,7 @@ const indexHtml = `<!DOCTYPE html>
         <span class="vietqr-box-title">QUÉT MÃ VIETQR ĐỂ GIEO DUYÊN CÔNG ĐỨC</span>
         <img
           id="charity-vietqr-img"
-          src="https://img.vietqr.io/image/VCB-0051000567270-compact2.png?amount=200000&addInfo=GIEODUYEN&accountName=NGUYEN%20THI%20THU%20HONG"
+          src="https://img.vietqr.io/image/VCB-0051000567270-compact.png?amount=200000&addInfo=GIEODUYEN&accountName=NGUYEN%20THI%20THU%20HONG"
           alt="Mã VietQR Vietcombank 0051000567270 Nguyễn Thị Thu Hồng"
           loading="lazy"
         />
@@ -1099,7 +1099,7 @@ const indexHtml = `<!DOCTYPE html>
           <span class="vietqr-box-title">QUÉT MÃ VIETQR THANH TOÁN ĐƠN THỈNH</span>
           <img
             id="cart-vietqr-img"
-            src="https://img.vietqr.io/image/VCB-0051000567270-compact2.png?amount=0&addInfo=THINH%20VAT%20PHAM&accountName=NGUYEN%20THI%20THU%20HONG"
+            src="https://img.vietqr.io/image/VCB-0051000567270-compact.png?amount=0&addInfo=THINH%20VAT%20PHAM&accountName=NGUYEN%20THI%20THU%20HONG"
             alt="VietQR Thanh Toán Đơn Hàng"
             loading="lazy"
           />

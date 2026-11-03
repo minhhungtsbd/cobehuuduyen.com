@@ -54,7 +54,7 @@
       (addInfo || "CO BE HUU DUYEN").slice(0, 50)
     );
     const amt = Math.max(0, Math.round(Number(amount) || 0));
-    return `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amt}&addInfo=${cleanInfo}&accountName=${accountName}`;
+    return `https://img.vietqr.io/image/${bankId}-${accountNo}-compact.png?amount=${amt}&addInfo=${cleanInfo}&accountName=${accountName}`;
   }
 
   function copyToClipboard(text, successMsg) {
