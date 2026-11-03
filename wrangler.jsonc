@@ -1,5 +1,12 @@
 {
   "name": "cobehuuduyen",
   "pages_build_output_dir": "./dist",
-  "compatibility_date": "2026-11-03"
+  "compatibility_date": "2026-11-03",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cobehuuduyen-db",
+      "database_id": "ca9127bf-c039-4fad-86a6-37d9399d6a43"
+    }
+  ]
 }
