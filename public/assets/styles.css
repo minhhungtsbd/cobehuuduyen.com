@@ -1665,26 +1665,27 @@ img, svg {
   background: #ffffff;
   color: #120d0a;
   border-radius: 18px;
-  padding: 1.25rem 1.4rem;
+  padding: 1.15rem 1.15rem;
   text-align: center;
-  margin: 1.1rem 0;
+  margin: 1rem 0;
   border: 2px solid var(--gold-primary);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .vietqr-box-title {
   display: block;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
+  line-height: 1.38;
   font-weight: 800;
   color: #8b1e1e;
   letter-spacing: 0.02em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
 }
 
 .vietqr-box img {
-  max-width: 250px;
+  max-width: 235px;
   width: 100%;
-  margin: 0.6rem auto;
+  margin: 0.5rem auto;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
 }
@@ -1693,13 +1694,13 @@ img, svg {
   background: #fdfaf3;
   border: 1px solid #e8d7a5;
   border-radius: 12px;
-  padding: 0.85rem 1rem;
-  margin-top: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  margin-top: 0.65rem;
   text-align: left;
   display: grid;
-  gap: 0.4rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  gap: 0.38rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
   color: #2b1f14;
 }
 
@@ -1707,39 +1708,50 @@ img, svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
 }
 
 .vietqr-detail-label {
   color: #6e5d4f;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .vietqr-detail-val {
   font-weight: 700;
   color: #1a120b;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.vietqr-account-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .vietqr-account-highlight {
-  font-size: 1.25rem;
+  font-size: 1.04rem;
   font-weight: 800;
   color: #b82525;
-  letter-spacing: 0.05em;
-  font-family: monospace, sans-serif;
+  letter-spacing: 0.02em;
+  font-family: "Plus Jakarta Sans", monospace, sans-serif;
 }
 
 .vietqr-copy-tag {
   background: #eedcb1;
   color: #633f00;
-  font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  padding: 0.14rem 0.45rem;
   border-radius: 6px;
   cursor: pointer;
-  margin-left: 0.4rem;
   font-weight: 600;
   border: none;
+  white-space: nowrap;
 }
 .vietqr-copy-tag:hover {
   background: #d4af37;
