@@ -50,6 +50,7 @@ async function ensureAdminSchema(db) {
         short_desc TEXT DEFAULT '',
         benefits_json TEXT DEFAULT '[]',
         artwork_type TEXT DEFAULT 'shrine-gold',
+        image_url TEXT DEFAULT '',
         is_active INTEGER DEFAULT 1,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
@@ -66,6 +67,11 @@ async function ensureAdminSchema(db) {
   }
   try {
     await db.prepare("ALTER TABLE spiritual_events ADD COLUMN merit_awarded INTEGER DEFAULT 0").run();
+  } catch {
+    // column already exists
+  }
+  try {
+    await db.prepare("ALTER TABLE products_catalog ADD COLUMN image_url TEXT DEFAULT ''").run();
   } catch {
     // column already exists
   }
@@ -203,11 +209,12 @@ export async function onRequestPost(context) {
       const shortDesc = String(p.shortDesc || "");
       const benefitsJson = JSON.stringify(Array.isArray(p.benefits) ? p.benefits : []);
       const artworkType = String(p.artworkType || "shrine-gold");
+      const imageUrl = String(p.imageUrl || p.image_url || "").trim();
 
       await env.DB.prepare(
         `INSERT INTO products_catalog
-          (id, name, category, category_name, price, original_price, badge, elements_json, element_text, short_desc, benefits_json, artwork_type, is_active, updated_at)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, 1, CURRENT_TIMESTAMP)
+          (id, name, category, category_name, price, original_price, badge, elements_json, element_text, short_desc, benefits_json, artwork_type, image_url, is_active, updated_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, 1, CURRENT_TIMESTAMP)
          ON CONFLICT(id) DO UPDATE SET
           name = excluded.name,
           category = excluded.category,
@@ -220,6 +227,7 @@ export async function onRequestPost(context) {
           short_desc = excluded.short_desc,
           benefits_json = excluded.benefits_json,
           artwork_type = excluded.artwork_type,
+          image_url = excluded.image_url,
           is_active = 1,
           updated_at = CURRENT_TIMESTAMP`
       )
@@ -235,7 +243,8 @@ export async function onRequestPost(context) {
           elementText,
           shortDesc,
           benefitsJson,
-          artworkType
+          artworkType,
+          imageUrl
         )
         .run();
 

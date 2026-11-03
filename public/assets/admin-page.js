@@ -189,7 +189,9 @@
     if (!tbody) return;
 
     const mergedMap = new Map();
-    defaultProducts.forEach((p) => mergedMap.set(p.id, { ...p, source: "Mặc định" }));
+    defaultProducts.forEach((p) =>
+      mergedMap.set(p.id, { ...p, imageUrl: p.imageUrl || "", source: "Mặc định" })
+    );
     customProducts.forEach((cp) => {
       let elements = ["Kim", "Mộc", "Thuỷ", "Hoả", "Thổ"];
       try {
@@ -206,6 +208,8 @@
         originalPrice: cp.original_price,
         badge: cp.badge,
         elements,
+        artworkType: cp.artwork_type || "shrine-gold",
+        imageUrl: cp.image_url || cp.imageUrl || "",
         shortDesc: cp.short_desc,
         source: "D1 Custom"
       });
@@ -217,6 +221,13 @@
       .map(
         (p) => `
       <tr>
+        <td>
+          ${
+            p.imageUrl
+              ? `<img src="${p.imageUrl}" alt="${p.name}" class="admin-prod-thumb" loading="lazy" onerror="this.outerHTML='<div class=\\'admin-prod-thumb-empty\\'>Lỗi ảnh</div>';" />`
+              : `<div class="admin-prod-thumb-empty">Biểu tượng</div>`
+          }
+        </td>
         <td><code>${p.id}</code></td>
         <td><strong>${p.name}</strong><div style="font-size:0.78rem;color:var(--text-muted);">${p.shortDesc || ""}</div></td>
         <td>${p.categoryName}</td>
@@ -249,6 +260,11 @@
         document.getElementById("prod-badge").value = found.badge || "Vật phẩm trì chú";
         document.getElementById("prod-elements").value = (found.elements || []).join(", ");
         document.getElementById("prod-desc").value = found.shortDesc || "";
+        const imgInput = document.getElementById("prod-image-url");
+        if (imgInput) {
+          imgInput.value = found.imageUrl || "";
+          updateImagePreview(found.imageUrl || "");
+        }
         document.getElementById("prod-form-card")?.scrollIntoView({ behavior: "smooth" });
         showToast(`✏️ Đang nạp thông tin sản phẩm "${found.name}" lên form chỉnh sửa`);
       });
@@ -263,6 +279,17 @@
         loadDashboardData();
       });
     });
+  }
+
+  function updateImagePreview(url) {
+    const box = document.getElementById("prod-img-preview-box");
+    if (!box) return;
+    const cleanUrl = String(url || "").trim();
+    if (cleanUrl) {
+      box.innerHTML = `<img src="${cleanUrl}" alt="Preview" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='<span style=\\'font-size:0.7rem;color:var(--crimson-light);\\'>Lỗi ảnh</span>';" />`;
+    } else {
+      box.innerHTML = `<span style="font-size:0.75rem;color:var(--text-muted);">Xem</span>`;
+    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -342,6 +369,7 @@
         ? elementsRaw.split(",").map((s) => s.trim()).filter(Boolean)
         : ["Kim", "Mộc", "Thuỷ", "Hoả", "Thổ"];
       const shortDesc = document.getElementById("prod-desc").value.trim();
+      const imageUrl = (document.getElementById("prod-image-url")?.value || "").trim();
 
       if (!name || price <= 0) {
         showToast("⚠️ Vui lòng nhập Tên sản phẩm và Giá bán hợp lệ!");
@@ -360,14 +388,20 @@
           badge,
           artworkType,
           elements,
+          imageUrl,
           shortDesc
         }
       });
 
       e.target.reset();
       document.getElementById("prod-id").value = "";
+      updateImagePreview("");
       showToast(`✅ Đã lưu sản phẩm "${name}" vào cơ sở dữ liệu D1!`);
       loadDashboardData();
+    });
+
+    document.getElementById("prod-image-url")?.addEventListener("input", (e) => {
+      updateImagePreview(e.target.value);
     });
 
     if (adminPassword) {

@@ -993,8 +993,12 @@
       <article class="product-card" data-product-id="${p.id}">
         <div class="product-visual">
           <span class="product-badge">${p.badge}</span>
-          ${getProductArtworkSvg(p.artworkType)}
-          <span class="product-element-tag">☯️ Mệnh: ${p.elements.join(", ")}</span>
+          ${
+            p.imageUrl
+              ? `<img src="${p.imageUrl}" alt="${p.name}" class="product-real-img" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><div class="product-fallback-svg" style="display:none;">${getProductArtworkSvg(p.artworkType)}</div>`
+              : getProductArtworkSvg(p.artworkType)
+          }
+          <span class="product-element-tag">☯️ Mệnh: ${(p.elements || []).join(", ")}</span>
         </div>
         <div class="product-body">
           <div class="product-cat-label">${p.categoryName}</div>
@@ -1079,6 +1083,11 @@
         </div>
         <button type="button" class="icon-btn" id="close-product-modal">✕ Đóng</button>
       </div>
+      ${
+        product.imageUrl
+          ? `<div style="text-align:center;margin-bottom:1.15rem;max-height:260px;overflow:hidden;border-radius:14px;border:1px solid var(--border-gold);background:var(--bg-card);"><img src="${product.imageUrl}" alt="${product.name}" style="width:100%;max-height:260px;object-fit:cover;" /></div>`
+          : ""
+      }
       <p style="color:var(--text-secondary);margin-bottom:1rem;">${product.shortDesc}</p>
       <div style="background:var(--bg-secondary);padding:1rem;border-radius:12px;border:1px solid var(--border-subtle);margin-bottom:1rem;">
         <p style="margin-bottom:0.5rem;"><strong>☯️ Bản mệnh phù hợp:</strong> ${product.elementText}</p>
@@ -1613,9 +1622,32 @@
 
       // 1. Merge Custom / Edited Products from D1 Database
       if (Array.isArray(data.customProducts) && data.customProducts.length > 0) {
-        const customMap = new Map(data.customProducts.map((p) => [p.id, p]));
+        const normalizedCustom = data.customProducts.map((cp) => {
+          let elements = ["Kim", "Mộc", "Thuỷ", "Hoả", "Thổ"];
+          try {
+            if (cp.elements_json) elements = JSON.parse(cp.elements_json);
+          } catch {
+            // ignore
+          }
+          return {
+            id: cp.id,
+            name: cp.name,
+            category: cp.category,
+            categoryName: cp.category_name,
+            price: Number(cp.price || 0),
+            originalPrice: Number(cp.original_price || 0),
+            badge: cp.badge || "Vật phẩm tâm linh",
+            elements: Array.isArray(cp.elements) ? cp.elements : elements,
+            elementText: cp.element_text || "Hợp mọi bản mệnh",
+            shortDesc: cp.short_desc || "",
+            artworkType: cp.artwork_type || "shrine-gold",
+            imageUrl: cp.image_url || cp.imageUrl || ""
+          };
+        });
+
+        const customMap = new Map(normalizedCustom.map((p) => [p.id, p]));
         const merged = PRODUCTS.map((p) => (customMap.has(p.id) ? customMap.get(p.id) : p));
-        data.customProducts.forEach((cp) => {
+        normalizedCustom.forEach((cp) => {
           if (!PRODUCTS.some((p) => p.id === cp.id)) {
             merged.unshift(cp);
           }

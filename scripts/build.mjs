@@ -549,7 +549,11 @@ const indexHtml = `<!DOCTYPE html>
             <article class="product-card" data-product-id="${p.id}">
               <div class="product-visual">
                 <span class="product-badge">${p.badge}</span>
-                ${getArtworkSvg(p.artworkType)}
+                ${
+                  p.imageUrl
+                    ? `<img src="${p.imageUrl}" alt="${p.name}" class="product-real-img" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><div class="product-fallback-svg" style="display:none;">${getArtworkSvg(p.artworkType)}</div>`
+                    : getArtworkSvg(p.artworkType)
+                }
                 <span class="product-element-tag">☯️ Mệnh: ${p.elements.join(", ")}</span>
               </div>
               <div class="product-body">
@@ -1353,6 +1357,9 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
                 <small style="color:#bda894;font-size:0.75rem;">🔄 Đồng bộ câu kinh trực tiếp cùng toàn bộ Phật tử trong phòng (+2 Điểm Công Đức / câu)</small>
               </div>
               <div style="display:flex;gap:0.45rem;flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline" id="btn-switch-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Đổi giữa giọng nữ dịu dàng và giọng nam trầm ấm">
+                  🎙️ Giọng: Hoài My (Nữ)
+                </button>
                 <button type="button" class="btn btn-outline" id="btn-toggle-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);">
                   🔊 Giọng Đọc Kinh: BẬT
                 </button>
@@ -1651,6 +1658,19 @@ const adminPageHtml = `<!DOCTYPE html>
               </div>
             </div>
 
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label for="prod-image-url">🖼️ Đường dẫn hình ảnh sản phẩm (Image URL)</label>
+              <div style="display:flex;gap:0.75rem;align-items:center;">
+                <input type="url" id="prod-image-url" class="form-control" placeholder="Dán liên kết ảnh: https://example.com/hinh-anh.jpg (hoặc link Facebook, Zalo, Imgur...)" />
+                <div id="prod-img-preview-box" style="width:46px;height:46px;border-radius:10px;border:1px solid var(--border-gold);background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                  <span style="font-size:0.75rem;color:var(--text-muted);">Xem</span>
+                </div>
+              </div>
+              <small style="color:var(--text-muted);font-size:0.78rem;display:block;margin-top:0.3rem;">
+                💡 Dán link ảnh sản phẩm để hiển thị ảnh thật trên trang chủ và trang admin. Nếu để trống, hệ thống sẽ tự động dùng biểu tượng nghệ thuật phong thuỷ.
+              </small>
+            </div>
+
             <div class="form-group">
               <label for="prod-desc">Mô tả chi tiết vật phẩm</label>
               <textarea id="prod-desc" rows="2" class="form-control" placeholder="Mô tả công năng phong thuỷ, thành phần bộ lễ..."></textarea>
@@ -1663,6 +1683,7 @@ const adminPageHtml = `<!DOCTYPE html>
             <table class="ledger-table">
               <thead>
                 <tr>
+                  <th style="width:58px;">Ảnh</th>
                   <th>Mã SP</th>
                   <th>Tên vật phẩm</th>
                   <th>Danh mục</th>

@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS products_catalog (
   short_desc TEXT DEFAULT '',
   benefits_json TEXT DEFAULT '[]',
   artwork_type TEXT DEFAULT 'shrine-gold',
+  image_url TEXT DEFAULT '',
   is_active INTEGER DEFAULT 1,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

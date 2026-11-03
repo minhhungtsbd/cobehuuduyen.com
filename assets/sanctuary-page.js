@@ -33,6 +33,7 @@
   let currentLineIdx = 0;
   let isSyncChanting = false;
   let isVoiceEnabled = true;
+  let currentVoiceModel = "vi-VN-HoaiMyNeural"; // Microsoft Neural TTS: vi-VN-HoaiMyNeural hoặc vi-VN-NamMinhNeural
   let chantTimer = null;
   let onlineTimer = null;
   let userSeatIndex = Math.floor(Math.random() * 12);
@@ -241,35 +242,27 @@
     const clean = String(rawLine || "").trim();
     if (!clean) return [];
 
-    // Nếu câu kinh có "(3 lần)" -> Lặp lại đúng 3 lần câu niệm trang nghiêm, không đọc chữ "mở ngoặc ba lần"
+    // Nếu câu kinh có "(3 lần)" -> Lặp lại đúng 3 lần câu niệm trang nghiêm
     if (/\(\s*3\s*lần\s*\)/i.test(clean)) {
       const basePhrase = clean.replace(/\(\s*3\s*lần\s*\)/gi, "").trim();
       return [basePhrase, basePhrase, basePhrase];
     }
 
-    // Ngắt nhịp theo dấu chấm, chấm phẩy, dấu chấm than, hai chấm, dấu phẩy để giọng đọc có nhịp thở tự nhiên
-    const parts = clean
-      .split(/(?<=[.!;:?])\s+|(?<=,)\s+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    // Gộp các vế quá ngắn (< 12 ký tự) với vế kế tiếp để tránh ngắt vụn
-    const merged = [];
-    for (let i = 0; i < parts.length; i++) {
-      if (merged.length > 0 && parts[i].length < 12) {
-        merged[merged.length - 1] += " " + parts[i];
-      } else {
-        merged.push(parts[i]);
-      }
+    // Với Microsoft Neural TTS, giữ nguyên trọn vẹn cả câu kinh để đọc đúng ngữ điệu và ngắt nghỉ tự nhiên theo dấu câu
+    // Chỉ tách vế nếu câu kinh đặc biệt dài (> 180 ký tự) tại dấu chấm hoặc chấm phẩy
+    if (clean.length > 180 && /[.;]/.test(clean)) {
+      const parts = clean.split(/(?<=[.;])\s+/).map((s) => s.trim()).filter(Boolean);
+      return parts.length > 0 ? parts : [clean];
     }
-    return merged.length > 0 ? merged : [clean];
+
+    return [clean];
   }
 
   function delayMs(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // Đọc 1 vế kinh và trả về Promise chỉ hoàn tất KHI ĐỌC XONG HẾT VẾ ĐÓ (Tuyệt đối không cắt ngang!)
+  // Đọc trọn vẹn vế/câu kinh và trả về Promise chỉ hoàn tất KHI ĐỌC XONG HẾT (Tuyệt đối không cắt ngang giữa chừng!)
   function speakSingleClause(clauseText, sessionId) {
     return new Promise((resolve) => {
       if (sessionId !== activeChantSessionId) {
@@ -278,15 +271,16 @@
       }
 
       const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
-      const estimatedSilentMs = Math.max(2200, wordsCount * 420);
+      const estimatedSilentMs = Math.max(3000, wordsCount * 450);
 
       if (!isVoiceEnabled) {
         setTimeout(resolve, estimatedSilentMs);
         return;
       }
 
-      // 1. Ưu tiên phát giọng đọc AI Tiếng Việt Tự Nhiên qua /api/tts (Không bị ngang/robot)
-      const audio = new Audio(`/api/tts?text=${encodeURIComponent(clauseText)}`);
+      // Phát Giọng Đọc Microsoft Neural TTS (Hoài My / Nam Minh) qua /api/tts
+      const audioUrl = `/api/tts?text=${encodeURIComponent(clauseText)}&voice=${encodeURIComponent(currentVoiceModel)}`;
+      const audio = new Audio(audioUrl);
       currentTtsAudio = audio;
       let settled = false;
 
@@ -296,11 +290,11 @@
         resolve();
       };
 
-      // Safety timeout phòng trường hợp mạng chậm (dư dả thời gian cho câu dài)
-      const maxWaitTimer = setTimeout(finish, Math.max(9000, wordsCount * 850));
+      // Safety timeout hào phóng (16s - 35s tuỳ độ dài) đảm bảo không bao giờ bị cắt ngang câu khi mạng chậm
+      const maxWaitTimer = setTimeout(finish, Math.max(16000, wordsCount * 1200));
 
       audio.onloadedmetadata = () => {
-        // Giọng đọc trầm ấm, khoan thai đúng chất tụng kinh
+        // Giọng tụng kinh an tĩnh, khoan thai
         audio.playbackRate = 0.94;
       };
 
@@ -311,7 +305,7 @@
 
       audio.onerror = () => {
         clearTimeout(maxWaitTimer);
-        // 2. Fallback sang Web Speech API nếu đang chạy local offline
+        // Fallback sang Web Speech API nếu thiết bị offline
         speakClauseFallbackWebSpeech(clauseText, sessionId).then(finish);
       };
 
@@ -766,6 +760,24 @@
           showToast(`🙏 Đã bước vào ${found.name}`);
         }
       });
+    });
+
+    // Đổi Giọng Đọc Microsoft Neural TTS (Hoài My - Nữ / Nam Minh - Nam)
+    const switchVoiceBtn = document.getElementById("btn-switch-voice");
+    switchVoiceBtn?.addEventListener("click", () => {
+      if (currentVoiceModel === "vi-VN-HoaiMyNeural") {
+        currentVoiceModel = "vi-VN-NamMinhNeural";
+        switchVoiceBtn.textContent = "🎙️ Giọng: Nam Minh (Nam)";
+        showToast("🎙️ Đã chuyển sang Giọng Nam (Nam Minh) trầm ấm, trang nghiêm");
+      } else {
+        currentVoiceModel = "vi-VN-HoaiMyNeural";
+        switchVoiceBtn.textContent = "🎙️ Giọng: Hoài My (Nữ)";
+        showToast("🎙️ Đã chuyển sang Giọng Nữ (Hoài My) thanh tịnh, từ tốn");
+      }
+      if (isVoiceEnabled && !isSyncChanting) {
+        const lines = currentRoom.chantLines || [];
+        if (lines[currentLineIdx]) speakChantLine(lines[currentLineIdx]);
+      }
     });
 
     // Bật / Tắt Giọng Đọc Tụng Kinh

@@ -68,6 +68,11 @@ async function ensureSchema(db) {
     } catch {
       // column already exists
     }
+    try {
+      await db.prepare("ALTER TABLE products_catalog ADD COLUMN image_url TEXT DEFAULT ''").run();
+    } catch {
+      // column already exists
+    }
   } catch {
     // ignore schema init errors
   }
