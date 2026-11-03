@@ -39,35 +39,35 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #faf5ed;
-  --bg-secondary: #f2e9dc;
-  --bg-card: #ffffff;
-  --bg-card-hover: #fdfaf5;
-  --bg-elevated: #efe3d2;
-  --bg-glass: rgba(250, 245, 237, 0.94);
-  --bg-accent-subtle: rgba(166, 124, 30, 0.1);
-  --bg-crimson-subtle: rgba(158, 27, 27, 0.09);
+  --bg-primary: #f2eadc;
+  --bg-secondary: #e7dbc7;
+  --bg-card: #f9f4ea;
+  --bg-card-hover: #f4ecdf;
+  --bg-elevated: #e2d4bc;
+  --bg-glass: rgba(242, 234, 220, 0.95);
+  --bg-accent-subtle: rgba(140, 95, 12, 0.12);
+  --bg-crimson-subtle: rgba(145, 24, 24, 0.1);
 
-  --text-primary: #261810;
-  --text-secondary: #543d2c;
-  --text-muted: #7d6452;
+  --text-primary: #23160d;
+  --text-secondary: #4a3525;
+  --text-muted: #6e5440;
   --text-inverse: #fffdf9;
 
-  --gold-light: #b88917;
-  --gold-primary: #9e7312;
-  --gold-dark: #755308;
-  --crimson-primary: #9e1b1b;
-  --crimson-light: #b82525;
-  --crimson-dark: #630f0f;
-  --jade-green: #1d7d5b;
+  --gold-light: #7c5106;
+  --gold-primary: #8a5b08;
+  --gold-dark: #5e3d03;
+  --crimson-primary: #8f1919;
+  --crimson-light: #a82020;
+  --crimson-dark: #5a0d0d;
+  --jade-green: #16694b;
 
-  --border-subtle: rgba(158, 115, 18, 0.25);
-  --border-strong: rgba(158, 115, 18, 0.6);
-  --shadow-card: 0 12px 30px rgba(68, 42, 22, 0.09);
-  --shadow-gold: 0 6px 22px rgba(158, 115, 18, 0.18);
-  --gradient-gold: linear-gradient(135deg, #c99722 0%, #9e7312 55%, #785407 100%);
-  --gradient-crimson: linear-gradient(135deg, #a82020 0%, #751212 100%);
-  --gradient-hero: radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.22) 0%, rgba(168, 32, 32, 0.07) 45%, #faf5ed 85%);
+  --border-subtle: rgba(138, 91, 8, 0.26);
+  --border-strong: rgba(138, 91, 8, 0.55);
+  --shadow-card: 0 10px 26px rgba(56, 36, 18, 0.1);
+  --shadow-gold: 0 6px 20px rgba(138, 91, 8, 0.15);
+  --gradient-gold: linear-gradient(135deg, #d4a438 0%, #b07d18 55%, #875c09 100%);
+  --gradient-crimson: linear-gradient(135deg, #9c1d1d 0%, #681010 100%);
+  --gradient-hero: radial-gradient(circle at 50% 20%, rgba(196, 148, 45, 0.18) 0%, rgba(145, 24, 24, 0.06) 45%, #f2eadc 85%);
 }
 
 *,
@@ -752,7 +752,8 @@ img, svg {
 }
 
 .altar-chamber {
-  background: radial-gradient(circle at 50% 28%, rgba(212, 175, 55, 0.22) 0%, rgba(107, 17, 17, 0.25) 45%, #110b09 92%);
+  background-color: #140c08;
+  background-image: radial-gradient(circle at 50% 28%, #3b240f 0%, #24110d 48%, #110b09 95%);
   border: 2px solid var(--border-strong);
   border-radius: 22px;
   padding: 1.75rem;
@@ -763,30 +764,33 @@ img, svg {
   transition: background 0.45s ease, border-color 0.45s ease;
 }
 
-/* 3 Themed Sanctuary Room Backgrounds */
+/* 3 Themed Sanctuary Room Backgrounds (100% Opaque so Light Mode never bleeds or glares) */
 .altar-chamber.shrine-theme-tam-bao {
-  background: radial-gradient(circle at 50% 24%, rgba(251, 229, 155, 0.32) 0%, rgba(122, 68, 12, 0.38) 48%, #120b07 95%);
+  background-color: #140c08;
+  background-image: radial-gradient(circle at 50% 24%, #4a2c0d 0%, #26150a 52%, #120b07 96%);
   border-color: #d4af37;
 }
 .altar-chamber.shrine-theme-tam-bao .altar-stage-visual {
-  background: radial-gradient(circle at 50% 38%, rgba(251, 229, 155, 0.34) 0%, rgba(56, 30, 10, 0.82) 72%, #110a07 100%);
+  background: radial-gradient(circle at 50% 38%, #573510 0%, #241409 70%, #110a07 100%);
 }
 
 .altar-chamber.shrine-theme-quan-am {
-  background: radial-gradient(circle at 50% 24%, rgba(92, 225, 230, 0.26) 0%, rgba(17, 75, 95, 0.42) 50%, #071318 95%);
-  border-color: #5ce1e6;
+  background-color: #07151b;
+  background-image: radial-gradient(circle at 50% 24%, #123e4d 0%, #0b2530 52%, #071318 96%);
+  border-color: #46bac0;
 }
 .altar-chamber.shrine-theme-quan-am .altar-stage-visual {
-  background: radial-gradient(circle at 50% 38%, rgba(92, 225, 230, 0.28) 0%, rgba(12, 48, 64, 0.82) 72%, #061014 100%);
+  background: radial-gradient(circle at 50% 38%, #164959 0%, #0a242e 70%, #061014 100%);
   border-color: rgba(92, 225, 230, 0.45);
 }
 
 .altar-chamber.shrine-theme-thanh-mau {
-  background: radial-gradient(circle at 50% 24%, rgba(255, 94, 94, 0.28) 0%, rgba(139, 18, 40, 0.45) 50%, #16070a 95%);
-  border-color: #ff6b6b;
+  background-color: #18070b;
+  background-image: radial-gradient(circle at 50% 24%, #52121e 0%, #2b0910 52%, #16070a 96%);
+  border-color: #e05252;
 }
 .altar-chamber.shrine-theme-thanh-mau .altar-stage-visual {
-  background: radial-gradient(circle at 50% 38%, rgba(255, 118, 118, 0.3) 0%, rgba(88, 12, 24, 0.85) 72%, #140609 100%);
+  background: radial-gradient(circle at 50% 38%, #611523 0%, #2e0911 70%, #140609 100%);
   border-color: rgba(255, 107, 107, 0.45);
 }
 
@@ -1004,26 +1008,251 @@ img, svg {
 /* Floating Sky Lanterns inside Altar */
 .floating-lantern {
   position: absolute;
-  bottom: 10px;
-  padding: 0.3rem 0.65rem;
+  bottom: 12px;
+  padding: 0.42rem 0.85rem;
   border-radius: 99px;
-  background: rgba(184, 37, 37, 0.88);
-  border: 1px solid #fbe59b;
-  color: #fbe59b;
-  font-size: 0.74rem;
+  background: radial-gradient(circle at 50% 30%, #ff9838 0%, #c92a2a 65%, #7a1212 100%);
+  border: 1.5px solid #fbe59b;
+  color: #fffdf7;
+  font-size: 0.76rem;
+  font-weight: 700;
+  box-shadow: 0 0 22px rgba(255, 160, 56, 0.75), 0 0 40px rgba(212, 175, 55, 0.4);
   pointer-events: none;
   animation: floatUpLantern 6.5s ease-out forwards;
-  z-index: 10;
+  z-index: 25;
 }
 
 @keyframes floatUpLantern {
-  0% { transform: translateY(0) scale(0.9); opacity: 0; }
-  15% { opacity: 1; }
+  0% { transform: translateY(0) scale(0.85); opacity: 0; }
+  12% { opacity: 1; transform: translateY(-28px) scale(1); }
+  50% { transform: translateY(-120px) translateX(8px) scale(1.03); }
   85% { opacity: 0.95; }
-  100% { transform: translateY(-230px) scale(1.05); opacity: 0; }
+  100% { transform: translateY(-245px) translateX(-6px) scale(1.06); opacity: 0; }
 }
 
-/* Interactive Ritual Controls */
+/* ==========================================================================
+   7 SACRED RITUAL VISUAL EFFECTS INSIDE ALTAR STAGE
+   ========================================================================== */
+/* 1. Dâng Hương Trầm (3 Glowing Incense Sticks + Fragrant Smoke Plumes) */
+.fx-incense-ceremony {
+  position: absolute;
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 22;
+  animation: fadeOutRitual 4.2s ease forwards;
+}
+
+.fx-incense-sticks {
+  display: flex;
+  gap: 7px;
+  align-items: flex-end;
+}
+
+.fx-incense-stick {
+  width: 4px;
+  height: 54px;
+  background: linear-gradient(to bottom, #ff4500 0%, #ffd700 12%, #b8860b 30%, #8b1e1e 100%);
+  border-radius: 3px;
+  position: relative;
+  box-shadow: 0 -4px 12px rgba(255, 90, 0, 0.9);
+  animation: stickInsert 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+.fx-incense-stick:nth-child(1) { transform: rotate(-7deg); }
+.fx-incense-stick:nth-child(3) { transform: rotate(7deg); }
+
+.fx-smoke-cloud {
+  position: absolute;
+  bottom: 58px;
+  width: 22px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 229, 155, 0.65) 0%, rgba(255, 255, 255, 0.35) 55%, transparent 80%);
+  filter: blur(5px);
+  animation: grandSmokeRise 3.6s ease-out forwards;
+}
+
+@keyframes stickInsert {
+  0% { transform: translateY(-35px) scaleY(0.7); opacity: 0; }
+  100% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+
+@keyframes grandSmokeRise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0.9; }
+  50% { transform: translateY(-75px) translateX(12px) scale(2.1); opacity: 0.65; }
+  100% { transform: translateY(-165px) translateX(-10px) scale(3.2); opacity: 0; }
+}
+
+/* 2. Dâng Hoa Quả (Falling & Blooming Golden Lotus Petals) */
+.fx-lotus-petal {
+  position: absolute;
+  top: -15px;
+  font-size: 1.35rem;
+  pointer-events: none;
+  z-index: 20;
+  filter: drop-shadow(0 0 8px rgba(251, 229, 155, 0.75));
+  animation: petalFallSwirl 4s ease-in-out forwards;
+}
+
+@keyframes petalFallSwirl {
+  0% { transform: translateY(0) rotate(0deg) scale(0.7); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: translateY(130px) translateX(22px) rotate(160deg) scale(1.1); }
+  85% { opacity: 0.9; }
+  100% { transform: translateY(255px) translateX(-16px) rotate(320deg) scale(0.85); opacity: 0; }
+}
+
+/* 3. Thắp Đèn Trí Tuệ (Golden Wisdom Sunburst Halo & Twin Lotus Flames) */
+.fx-wisdom-sunburst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 240px;
+  height: 240px;
+  margin-top: -140px;
+  margin-left: -120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 225, 115, 0.55) 0%, rgba(212, 175, 55, 0.25) 45%, transparent 72%);
+  border: 2px dashed rgba(251, 229, 155, 0.75);
+  box-shadow: 0 0 70px rgba(255, 215, 90, 0.7);
+  pointer-events: none;
+  z-index: 5;
+  animation: wisdomHaloExpand 4s ease-out forwards;
+}
+
+@keyframes wisdomHaloExpand {
+  0% { transform: scale(0.4) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; transform: scale(1.05) rotate(30deg); }
+  80% { opacity: 0.85; transform: scale(1.22) rotate(110deg); }
+  100% { transform: scale(1.35) rotate(145deg); opacity: 0; }
+}
+
+/* 4. Thỉnh Chuông Bát Nhã (Concentric Sonic Shockwaves & Swinging Bell) */
+.fx-bell-ripple {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 90px;
+  height: 90px;
+  margin-top: -45px;
+  margin-left: -45px;
+  border-radius: 50%;
+  border: 2.5px solid #fbe59b;
+  box-shadow: 0 0 25px rgba(251, 229, 155, 0.65), inset 0 0 15px rgba(251, 229, 155, 0.4);
+  pointer-events: none;
+  z-index: 18;
+  animation: bellSonicWave 2.8s cubic-bezier(0.15, 0.8, 0.3, 1) forwards;
+}
+
+.fx-swinging-bell {
+  position: absolute;
+  top: 16px;
+  right: 22px;
+  font-size: 2.3rem;
+  filter: drop-shadow(0 0 14px rgba(251, 229, 155, 0.85));
+  pointer-events: none;
+  z-index: 24;
+  transform-origin: top center;
+  animation: bellSwingRing 2.6s ease-in-out forwards;
+}
+
+@keyframes bellSonicWave {
+  0% { transform: scale(0.5); opacity: 0.95; }
+  100% { transform: scale(3.6); opacity: 0; }
+}
+
+@keyframes bellSwingRing {
+  0% { transform: rotate(0deg) scale(0.8); opacity: 0; }
+  15% { transform: rotate(22deg) scale(1.15); opacity: 1; }
+  30% { transform: rotate(-18deg) scale(1.1); }
+  45% { transform: rotate(14deg); }
+  60% { transform: rotate(-10deg); }
+  75% { transform: rotate(6deg); opacity: 0.9; }
+  100% { transform: rotate(0deg) scale(0.9); opacity: 0; }
+}
+
+/* 5. Gõ Mõ Tụng Kinh (Wooden Fish Strike & Rising Golden Dharma Characters) */
+.fx-wooden-fish-pop {
+  position: absolute;
+  bottom: 72px;
+  left: 26px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(38, 20, 10, 0.92);
+  border: 1.5px solid #fbe59b;
+  color: #fbe59b;
+  padding: 0.35rem 0.75rem;
+  border-radius: 99px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.6);
+  pointer-events: none;
+  z-index: 24;
+  animation: woodenFishStrikeAnim 1.4s ease-out forwards;
+}
+
+.fx-dharma-char {
+  position: absolute;
+  bottom: 90px;
+  font-family: "Noto Serif", serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #fbe59b;
+  text-shadow: 0 0 12px rgba(251, 229, 155, 0.9);
+  pointer-events: none;
+  z-index: 23;
+  animation: dharmaFloatUp 2.2s ease-out forwards;
+}
+
+@keyframes woodenFishStrikeAnim {
+  0% { transform: scale(0.7); opacity: 0; }
+  20% { transform: scale(1.18) rotate(-6deg); opacity: 1; }
+  45% { transform: scale(0.96) rotate(3deg); }
+  80% { opacity: 1; }
+  100% { transform: scale(0.9) translateY(-10px); opacity: 0; }
+}
+
+@keyframes dharmaFloatUp {
+  0% { transform: translateY(0) scale(0.75); opacity: 0; }
+  20% { opacity: 1; transform: translateY(-20px) scale(1.08); }
+  100% { transform: translateY(-135px) scale(1.2); opacity: 0; }
+}
+
+/* 6. Lần Chuỗi 108 Hạt (Rotating Golden Bodhi Mala Ring) */
+.fx-mala-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 196px;
+  height: 196px;
+  margin-top: -128px;
+  margin-left: -98px;
+  border-radius: 50%;
+  border: 6px dotted #fbe59b;
+  box-shadow: 0 0 28px rgba(251, 229, 155, 0.65);
+  pointer-events: none;
+  z-index: 19;
+  animation: malaOrbitSpin 3.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes malaOrbitSpin {
+  0% { transform: rotate(0deg) scale(0.8); opacity: 0; }
+  20% { opacity: 1; transform: rotate(45deg) scale(1.02); }
+  80% { opacity: 0.95; transform: rotate(190deg) scale(1.05); }
+  100% { transform: rotate(240deg) scale(1.12); opacity: 0; }
+}
+
+@keyframes fadeOutRitual {
+  0%, 75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Interactive Ritual Controls (Dark Solid Backing so Light Mode is Never Glaring) */
 .ritual-actions-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
@@ -1038,20 +1267,27 @@ img, svg {
   gap: 0.4rem;
   padding: 0.68rem 0.75rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(16, 10, 7, 0.82);
+  border: 1px solid rgba(251, 229, 155, 0.45);
   color: #fbe59b;
   font-size: 0.83rem;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   transition: all 0.2s ease;
 }
 
 .ritual-btn:hover,
 .ritual-btn.active {
-  background: var(--gradient-gold);
+  background: linear-gradient(135deg, #fbe59b 0%, #d4af37 55%, #9c7a1c 100%);
   color: #160f0a;
-  border-color: transparent;
+  border-color: #fff3c4;
   transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(251, 229, 155, 0.45);
+}
+.ritual-btn:hover .ritual-cost-badge,
+.ritual-btn.active .ritual-cost-badge {
+  background: rgba(22, 15, 10, 0.85);
+  color: #fbe59b;
 }
 
 /* Scripture Teleprompter Box */

@@ -652,6 +652,85 @@
     setTimeout(() => lantern.remove(), 6500);
   }
 
+  // ---------- 7 Hiệu Ứng Trực Quan Sinh Động Khi Phật Tử Hành Lễ ----------
+  function triggerRitualEffect(type) {
+    const stage = document.getElementById("altar-stage-visual");
+    if (!stage) return;
+
+    if (type === "incense") {
+      // 1. Dâng Hương Trầm: 3 nén nhang cháy sáng ngun ngút & khói trầm lượn sóng
+      const wrap = document.createElement("div");
+      wrap.className = "fx-incense-ceremony";
+      wrap.innerHTML = `
+        <div class="fx-smoke-cloud"></div>
+        <div class="fx-incense-sticks">
+          <div class="fx-incense-stick"></div>
+          <div class="fx-incense-stick"></div>
+          <div class="fx-incense-stick"></div>
+        </div>
+      `;
+      stage.appendChild(wrap);
+      setTimeout(() => wrap.remove(), 4200);
+    } else if (type === "flower") {
+      // 2. Dâng Hoa Quả: Cơn mưa hoa sen vàng & hoa cúc rải cánh trang nghiêm
+      const icons = ["🪷", "🌸", "✨", "🌺", "🪷"];
+      for (let i = 0; i < 9; i++) {
+        setTimeout(() => {
+          const petal = document.createElement("div");
+          petal.className = "fx-lotus-petal";
+          petal.style.left = `${10 + Math.random() * 80}%`;
+          petal.style.animationDuration = `${3.2 + Math.random() * 1.5}s`;
+          petal.textContent = icons[Math.floor(Math.random() * icons.length)];
+          stage.appendChild(petal);
+          setTimeout(() => petal.remove(), 4800);
+        }, i * 220);
+      }
+    } else if (type === "lamp") {
+      // 3. Thắp Đèn Trí Tuệ: Ánh hào quang mặt trời Bát Nhã toả sáng rực rỡ
+      const sunburst = document.createElement("div");
+      sunburst.className = "fx-wisdom-sunburst";
+      stage.appendChild(sunburst);
+      setTimeout(() => sunburst.remove(), 4000);
+    } else if (type === "bell") {
+      // 4. Thỉnh Chuông: Sóng âm đồng tâm lan toả & chuông đồng đung đưa ngân vang
+      const bell = document.createElement("div");
+      bell.className = "fx-swinging-bell";
+      bell.textContent = "🔔";
+      stage.appendChild(bell);
+      setTimeout(() => bell.remove(), 2600);
+
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const wave = document.createElement("div");
+          wave.className = "fx-bell-ripple";
+          stage.appendChild(wave);
+          setTimeout(() => wave.remove(), 2800);
+        }, i * 380);
+      }
+    } else if (type === "mo") {
+      // 5. Gõ Mõ: Dùi gõ mõ nổi bật + chữ Phật / Vạn linh thiêng bay lên
+      const moPop = document.createElement("div");
+      moPop.className = "fx-wooden-fish-pop";
+      moPop.innerHTML = `<span>🥁</span> <span>CỐC... Tịnh Tâm</span>`;
+      stage.appendChild(moPop);
+      setTimeout(() => moPop.remove(), 1400);
+
+      const dharmaChars = ["卍", "Phật", "Tâm", "An", "Phước", "Tuệ"];
+      const charEl = document.createElement("div");
+      charEl.className = "fx-dharma-char";
+      charEl.style.left = `${30 + Math.random() * 40}%`;
+      charEl.textContent = dharmaChars[Math.floor(Math.random() * dharmaChars.length)];
+      stage.appendChild(charEl);
+      setTimeout(() => charEl.remove(), 2200);
+    } else if (type === "mala") {
+      // 6. Lần Chuỗi 108 Hạt: Vòng tràng hạt Bồ Đề vàng xoay tròn quanh điện
+      const mala = document.createElement("div");
+      mala.className = "fx-mala-ring";
+      stage.appendChild(mala);
+      setTimeout(() => mala.remove(), 3200);
+    }
+  }
+
   function initSanctuaryEvents() {
     initSpeechVoices();
     updateMeritDisplay(0);
@@ -753,12 +832,13 @@
       }
     });
 
-    // Các nút Nghi Lễ (Trừ Điểm Công Đức tương ứng)
+    // Các nút Nghi Lễ (Trừ Điểm Công Đức tương ứng & Kích hoạt Hiệu Ứng Sinh Động)
     document.getElementById("ritual-incense-btn")?.addEventListener("click", (e) => {
       if (!spendMerit("incense")) return;
       e.currentTarget.classList.add("active");
       document.getElementById("slot-incense")?.classList.add("active");
       playTempleBellSound();
+      triggerRitualEffect("incense");
       showToast(`🔥 (-5 điểm) ${getNickname()} đã thành tâm dâng 3 nén nhang trầm thơm ngát!`);
     });
 
@@ -767,6 +847,7 @@
       e.currentTarget.classList.add("active");
       document.getElementById("slot-flower")?.classList.add("active");
       playTempleBellSound();
+      triggerRitualEffect("flower");
       showToast(`🪷 (-5 điểm) ${getNickname()} đã dâng Hoa Sen Vàng & Mâm Ngũ Quả!`);
     });
 
@@ -775,18 +856,21 @@
       e.currentTarget.classList.add("active");
       document.getElementById("slot-lamp")?.classList.add("active");
       playTempleBellSound();
+      triggerRitualEffect("lamp");
       showToast(`🕯️ (-8 điểm) ${getNickname()} đã thắp sáng Đèn Liên Hoa Trí Tuệ!`);
     });
 
     document.getElementById("ritual-bell-btn")?.addEventListener("click", () => {
       if (!spendMerit("bell")) return;
       playTempleBellSound();
+      triggerRitualEffect("bell");
       showToast("🔔 (-2 điểm) Tiếng chuông Bát Nhã ngân vang khắp điện thờ...");
     });
 
     document.getElementById("ritual-mo-btn")?.addEventListener("click", () => {
       if (!spendMerit("mo")) return;
       playRealisticWoodenFishSound();
+      triggerRitualEffect("mo");
       const nextIdx = (currentLineIdx + 1) % (currentRoom.chantLines?.length || 1);
       highlightChantLine(nextIdx, true);
     });
@@ -794,8 +878,8 @@
     document.getElementById("ritual-mala-btn")?.addEventListener("click", () => {
       if (!spendMerit("mala")) return;
       playRealisticWoodenFishSound();
-      spawnFloatingLantern(currentRoom.mantraShort);
-      showToast("📿 (-2 điểm) Lần chuỗi 108 hạt niệm Phật hiệu...");
+      triggerRitualEffect("mala");
+      showToast("📿 (-2 điểm) Lần chuỗi 108 hạt Bồ Đề niệm Phật hiệu...");
     });
 
     // Thả Đèn Hoa Đăng Cầu Nguyện (-10 Điểm Công Đức, Lưu D1 để mọi người cùng thấy, KHÔNG gửi Telegram)

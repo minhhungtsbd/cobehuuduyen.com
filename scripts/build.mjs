@@ -1353,7 +1353,7 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
                 <small style="color:#bda894;font-size:0.75rem;">🔄 Đồng bộ câu kinh trực tiếp cùng toàn bộ Phật tử trong phòng (+2 Điểm Công Đức / câu)</small>
               </div>
               <div style="display:flex;gap:0.45rem;flex-wrap:wrap;">
-                <button type="button" class="btn btn-outline" id="btn-toggle-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;color:#fbe59b;border-color:rgba(251,229,155,0.4);">
+                <button type="button" class="btn btn-outline" id="btn-toggle-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);">
                   🔊 Giọng Đọc Kinh: BẬT
                 </button>
                 <button type="button" class="btn btn-gold" id="btn-auto-chant" style="padding:0.38rem 0.85rem;font-size:0.78rem;">
