@@ -57,6 +57,8 @@
   function updateMeritDisplay(delta = 0) {
     meritPoints = Math.max(0, meritPoints + delta);
     localStorage.setItem(STORAGE_MERIT_KEY, String(meritPoints));
+    const countEl = document.getElementById("sanctuary-merit-count");
+    if (countEl) countEl.textContent = String(meritPoints);
     document.querySelectorAll(".merit-points-val").forEach((el) => {
       el.textContent = String(meritPoints);
     });
@@ -119,7 +121,29 @@
     });
   }
 
-  function playRealisticWoodenFishSound() {
+  function playSmallChimeSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    // Tiếng khánh đồng nhỏ điểm cuối mỗi câu kinh (Thanh thoát, ngân 1.8s)
+    const freqs = [528, 1056, 1584];
+    freqs.forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(f, now);
+      const amp = 0.16 / (i + 1);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(amp, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.7 - i * 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 1.8);
+    });
+  }
+
+  function playRealisticWoodenFishSound(volumeScale = 1.0) {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
@@ -128,9 +152,9 @@
     const clickOsc = ctx.createOscillator();
     const clickGain = ctx.createGain();
     clickOsc.type = "triangle";
-    clickOsc.frequency.setValueAtTime(1150, now);
-    clickOsc.frequency.exponentialRampToValueAtTime(420, now + 0.025);
-    clickGain.gain.setValueAtTime(0.35, now);
+    clickOsc.frequency.setValueAtTime(1080, now);
+    clickOsc.frequency.exponentialRampToValueAtTime(390, now + 0.025);
+    clickGain.gain.setValueAtTime(0.28 * volumeScale, now);
     clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
     clickOsc.connect(clickGain);
     clickGain.connect(ctx.destination);
@@ -141,47 +165,232 @@
     const bodyOsc = ctx.createOscillator();
     const bodyGain = ctx.createGain();
     bodyOsc.type = "sine";
-    bodyOsc.frequency.setValueAtTime(510, now);
-    bodyOsc.frequency.exponentialRampToValueAtTime(385, now + 0.11);
+    bodyOsc.frequency.setValueAtTime(495, now);
+    bodyOsc.frequency.exponentialRampToValueAtTime(370, now + 0.12);
     bodyGain.gain.setValueAtTime(0.001, now);
-    bodyGain.gain.exponentialRampToValueAtTime(0.55, now + 0.006);
-    bodyGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    bodyGain.gain.exponentialRampToValueAtTime(0.48 * volumeScale, now + 0.006);
+    bodyGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.17);
     bodyOsc.connect(bodyGain);
     bodyGain.connect(ctx.destination);
     bodyOsc.start(now);
-    bodyOsc.stop(now + 0.17);
+    bodyOsc.stop(now + 0.18);
   }
 
-  // ---------- Giọng Đọc Tụng Kinh Tiếng Việt Trang Nghiêm (Web Speech Synthesis) ----------
+  // ---------- Giọng Đọc Tụng Kinh Tự Nhiên (Cloud Neural TTS + Nhịp Phách Tụng Kinh) ----------
   let vietnameseVoice = null;
+  let activeChantSessionId = 0;
+  let currentTtsAudio = null;
+  let woodenFishInterval = null;
+
   function initSpeechVoices() {
     if (!("speechSynthesis" in window)) return;
     const pickVoice = () => {
       const voices = window.speechSynthesis.getVoices() || [];
+      const viVoices = voices.filter(
+        (v) =>
+          (v.lang && v.lang.toLowerCase().startsWith("vi")) ||
+          (v.name && v.name.toLowerCase().includes("vietnam"))
+      );
+      // Ưu tiên giọng Neural / Natural (HoaiMy, NamMinh, Google Tiếng Việt, Linh)
       vietnameseVoice =
-        voices.find((v) => v.lang && v.lang.toLowerCase().startsWith("vi")) ||
-        voices.find((v) => v.name && v.name.toLowerCase().includes("vietnam")) ||
+        viVoices.find((v) => /natural|online|hoaimy|namminh/i.test(v.name)) ||
+        viVoices.find((v) => /google|linh/i.test(v.name)) ||
+        viVoices[0] ||
         null;
     };
     pickVoice();
     window.speechSynthesis.onvoiceschanged = pickVoice;
   }
 
-  function speakChantLine(text) {
-    if (!isVoiceEnabled || !("speechSynthesis" in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "vi-VN";
-      if (vietnameseVoice) utter.voice = vietnameseVoice;
-      // Giọng đọc trầm ấm, chậm rãi trang nghiêm theo nhịp tụng kinh
-      utter.rate = 0.86;
-      utter.pitch = 0.92;
-      utter.volume = 0.95;
-      window.speechSynthesis.speak(utter);
-    } catch {
-      // ignore speech synthesis restriction
+  function stopCurrentSpeechAndRhythm() {
+    activeChantSessionId += 1;
+    if (woodenFishInterval) {
+      clearInterval(woodenFishInterval);
+      woodenFishInterval = null;
     }
+    if (currentTtsAudio) {
+      try {
+        currentTtsAudio.pause();
+        currentTtsAudio.src = "";
+      } catch {
+        // ignore
+      }
+      currentTtsAudio = null;
+    }
+    if ("speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  function startSteadyWoodenFishRhythm() {
+    if (woodenFishInterval) clearInterval(woodenFishInterval);
+    // Nhịp mõ tụng kinh khoan thai đều đặn (1 tiếng mõ nhẹ mỗi 980ms làm nền cho giọng đọc)
+    woodenFishInterval = setInterval(() => {
+      if (isSyncChanting) {
+        playRealisticWoodenFishSound(0.42);
+      }
+    }, 980);
+  }
+
+  // Tách câu kinh thành từng vế ngân nga tự nhiên & xử lý "(3 lần)"
+  function prepareChantClauses(rawLine) {
+    const clean = String(rawLine || "").trim();
+    if (!clean) return [];
+
+    // Nếu câu kinh có "(3 lần)" -> Lặp lại đúng 3 lần câu niệm trang nghiêm, không đọc chữ "mở ngoặc ba lần"
+    if (/\(\s*3\s*lần\s*\)/i.test(clean)) {
+      const basePhrase = clean.replace(/\(\s*3\s*lần\s*\)/gi, "").trim();
+      return [basePhrase, basePhrase, basePhrase];
+    }
+
+    // Ngắt nhịp theo dấu chấm, chấm phẩy, dấu chấm than, hai chấm, dấu phẩy để giọng đọc có nhịp thở tự nhiên
+    const parts = clean
+      .split(/(?<=[.!;:?])\s+|(?<=,)\s+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    // Gộp các vế quá ngắn (< 12 ký tự) với vế kế tiếp để tránh ngắt vụn
+    const merged = [];
+    for (let i = 0; i < parts.length; i++) {
+      if (merged.length > 0 && parts[i].length < 12) {
+        merged[merged.length - 1] += " " + parts[i];
+      } else {
+        merged.push(parts[i]);
+      }
+    }
+    return merged.length > 0 ? merged : [clean];
+  }
+
+  function delayMs(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  // Đọc 1 vế kinh và trả về Promise chỉ hoàn tất KHI ĐỌC XONG HẾT VẾ ĐÓ (Tuyệt đối không cắt ngang!)
+  function speakSingleClause(clauseText, sessionId) {
+    return new Promise((resolve) => {
+      if (sessionId !== activeChantSessionId) {
+        resolve();
+        return;
+      }
+
+      const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
+      const estimatedSilentMs = Math.max(2200, wordsCount * 420);
+
+      if (!isVoiceEnabled) {
+        setTimeout(resolve, estimatedSilentMs);
+        return;
+      }
+
+      // 1. Ưu tiên phát giọng đọc AI Tiếng Việt Tự Nhiên qua /api/tts (Không bị ngang/robot)
+      const audio = new Audio(`/api/tts?text=${encodeURIComponent(clauseText)}`);
+      currentTtsAudio = audio;
+      let settled = false;
+
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        resolve();
+      };
+
+      // Safety timeout phòng trường hợp mạng chậm (dư dả thời gian cho câu dài)
+      const maxWaitTimer = setTimeout(finish, Math.max(9000, wordsCount * 850));
+
+      audio.onloadedmetadata = () => {
+        // Giọng đọc trầm ấm, khoan thai đúng chất tụng kinh
+        audio.playbackRate = 0.94;
+      };
+
+      audio.onended = () => {
+        clearTimeout(maxWaitTimer);
+        finish();
+      };
+
+      audio.onerror = () => {
+        clearTimeout(maxWaitTimer);
+        // 2. Fallback sang Web Speech API nếu đang chạy local offline
+        speakClauseFallbackWebSpeech(clauseText, sessionId).then(finish);
+      };
+
+      const playPromise = audio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {
+          clearTimeout(maxWaitTimer);
+          speakClauseFallbackWebSpeech(clauseText, sessionId).then(finish);
+        });
+      }
+    });
+  }
+
+  function speakClauseFallbackWebSpeech(clauseText, sessionId) {
+    return new Promise((resolve) => {
+      if (sessionId !== activeChantSessionId || !("speechSynthesis" in window)) {
+        const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
+        setTimeout(resolve, Math.max(2000, wordsCount * 400));
+        return;
+      }
+      try {
+        const utter = new SpeechSynthesisUtterance(clauseText);
+        utter.lang = "vi-VN";
+        if (vietnameseVoice) utter.voice = vietnameseVoice;
+        utter.rate = 0.88;
+        utter.pitch = 0.95;
+        utter.volume = 0.95;
+
+        const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
+        const safetyTimer = setTimeout(resolve, Math.max(6000, wordsCount * 750));
+
+        utter.onend = () => {
+          clearTimeout(safetyTimer);
+          resolve();
+        };
+        utter.onerror = () => {
+          clearTimeout(safetyTimer);
+          resolve();
+        };
+        window.speechSynthesis.speak(utter);
+      } catch {
+        resolve();
+      }
+    });
+  }
+
+  // Đọc trọn vẹn 1 dòng kinh (gồm nhiều vế + nhịp nghỉ lấy hơi + tiếng mõ/khánh) trước khi qua câu mới
+  async function chantFullLineAndWait(lineText, sessionId) {
+    const clauses = prepareChantClauses(lineText);
+    const isTripleInvocation = /\(\s*3\s*lần\s*\)/i.test(lineText);
+
+    for (let i = 0; i < clauses.length; i++) {
+      if (sessionId !== activeChantSessionId) return;
+      playRealisticWoodenFishSound(0.65);
+      await speakSingleClause(clauses[i], sessionId);
+      if (sessionId !== activeChantSessionId) return;
+
+      if (isTripleInvocation) {
+        // Giữa mỗi lần niệm "Nam Mô..." điểm 1 tiếng chuông/khánh và nghỉ 650ms trang nghiêm
+        playSmallChimeSound();
+        await delayMs(700);
+      } else if (i < clauses.length - 1) {
+        // Nghỉ lấy hơi tự nhiên giữa các vế dấu phẩy (420ms) kèm 1 nhịp mõ
+        playRealisticWoodenFishSound(0.5);
+        await delayMs(420);
+      }
+    }
+
+    // Kết thúc trọn vẹn 1 câu kinh: Điểm tiếng khánh đồng + nghỉ 950ms rồi mới sang câu tiếp theo
+    if (sessionId === activeChantSessionId) {
+      playSmallChimeSound();
+      await delayMs(950);
+    }
+  }
+
+  function speakChantLine(text) {
+    stopCurrentSpeechAndRhythm();
+    const mySession = activeChantSessionId;
+    chantFullLineAndWait(text, mySession);
   }
 
   // ---------- Hình Nền Điện Thờ & Tượng Thờ Đặc Trưng Theo Từng Phòng ----------
@@ -467,6 +676,12 @@
         const id = card.getAttribute("data-room-id");
         const found = ROOMS.find((r) => r.id === id);
         if (found) {
+          isSyncChanting = false;
+          stopCurrentSpeechAndRhythm();
+          const autoBtnEl = document.getElementById("btn-auto-chant");
+          if (autoBtnEl) {
+            autoBtnEl.textContent = "▶️ Bắt Đầu Tụng Kinh & Gõ Mõ (+2đ/câu)";
+          }
           renderRoom(found);
           playTempleBellSound();
           showToast(`🙏 Đã bước vào ${found.name}`);
@@ -481,41 +696,60 @@
       voiceToggleBtn.textContent = isVoiceEnabled
         ? "🔊 Giọng Đọc Kinh: BẬT"
         : "🔇 Giọng Đọc Kinh: TẮT";
-      if (!isVoiceEnabled && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      } else {
+      if (!isVoiceEnabled) {
+        if (currentTtsAudio) {
+          try {
+            currentTtsAudio.pause();
+          } catch {
+            // ignore
+          }
+        }
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
+      } else if (!isSyncChanting) {
         const lines = currentRoom.chantLines || [];
         if (lines[currentLineIdx]) speakChantLine(lines[currentLineIdx]);
       }
     });
 
-    // Chế độ Đồng Tụng Kinh Tự Động (Tự động gõ mõ + đọc kinh + Cộng +2 Điểm Công Đức mỗi câu!)
+    // Chế độ Đồng Tụng Kinh Tự Động (Đọc hết trọn vẹn từng câu kinh + Gõ mõ theo nhịp + Cộng +2 Điểm Công Đức mỗi câu!)
     const autoBtn = document.getElementById("btn-auto-chant");
-    autoBtn?.addEventListener("click", () => {
+    autoBtn?.addEventListener("click", async () => {
       if (isSyncChanting) {
         isSyncChanting = false;
-        clearInterval(chantTimer);
-        chantTimer = null;
-        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-        autoBtn.textContent = "▶️ Bắt Đầu Đồng Tụng Kinh & Nghe Kinh (+2 Điểm/câu)";
+        stopCurrentSpeechAndRhythm();
+        autoBtn.textContent = "▶️ Bắt Đầu Tụng Kinh & Gõ Mõ (+2đ/câu)";
         sendPresenceHeartbeat();
-      } else {
-        isSyncChanting = true;
-        autoBtn.textContent = "⏸️ Đang Đồng Tụng Kinh Cùng Đạo Tràng (Bấm Để Dừng)";
-        playTempleBellSound();
-        const syncedIdx = getSyncedLineIndex(currentRoom);
-        highlightChantLine(syncedIdx, true);
-        sendPresenceHeartbeat();
+        return;
+      }
 
-        // Nhịp mõ đều đặn + đọc câu kinh đồng bộ
-        chantTimer = setInterval(() => {
-          playRealisticWoodenFishSound();
-          setTimeout(() => playRealisticWoodenFishSound(), 650);
-          const nextIdx = (currentLineIdx + 1) % (currentRoom.chantLines?.length || 1);
-          highlightChantLine(nextIdx, true);
-          updateMeritDisplay(2);
-          showToast("✨ +2 Điểm Công Đức (Thành tâm tụng & nghe kinh)");
-        }, 5500);
+      isSyncChanting = true;
+      stopCurrentSpeechAndRhythm();
+      const mySession = activeChantSessionId;
+      autoBtn.textContent = "⏸️ Đang Tụng Kinh Cùng Đạo Tràng (Bấm Để Dừng)";
+
+      playTempleBellSound();
+      startSteadyWoodenFishRhythm();
+      sendPresenceHeartbeat();
+
+      let idx = getSyncedLineIndex(currentRoom);
+
+      while (isSyncChanting && mySession === activeChantSessionId) {
+        const lines = currentRoom.chantLines || [];
+        if (!lines.length) break;
+
+        idx = ((idx % lines.length) + lines.length) % lines.length;
+        highlightChantLine(idx, false);
+
+        // Chờ giọng đọc tụng XONG HOÀN TOÀN câu kinh hiện tại (kể cả câu dài) mới chuyển sang câu kế tiếp
+        await chantFullLineAndWait(lines[idx], mySession);
+
+        if (!isSyncChanting || mySession !== activeChantSessionId) break;
+
+        updateMeritDisplay(2);
+        showToast("✨ +2 Điểm Công Đức (Hoàn thành 1 câu kinh)");
+        idx = (idx + 1) % lines.length;
       }
     });
 

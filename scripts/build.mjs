@@ -20,6 +20,8 @@ const cssHash = crypto
 const jsHash = crypto
   .createHash("sha256")
   .update(await fs.readFile(path.join(rootDir, "public/assets/app.js")))
+  .update(await fs.readFile(path.join(rootDir, "public/assets/sanctuary-page.js")))
+  .update(await fs.readFile(path.join(rootDir, "public/assets/admin-page.js")))
   .digest("hex")
   .slice(0, 10);
 
