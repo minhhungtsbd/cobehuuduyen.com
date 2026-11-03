@@ -178,29 +178,41 @@
   }
 
   // ---------- Giọng Đọc Tụng Kinh Tự Nhiên (Cloud Neural TTS + Nhịp Phách Tụng Kinh) ----------
-  let vietnameseVoice = null;
+  let viFemaleVoice = null;
+  let viMaleVoice = null;
   let activeChantSessionId = 0;
   let currentTtsAudio = null;
   let woodenFishInterval = null;
 
   function initSpeechVoices() {
     if (!("speechSynthesis" in window)) return;
-    const pickVoice = () => {
+    const pickVoices = () => {
       const voices = window.speechSynthesis.getVoices() || [];
+      if (!voices.length) return;
+
       const viVoices = voices.filter(
         (v) =>
-          (v.lang && v.lang.toLowerCase().startsWith("vi")) ||
-          (v.name && v.name.toLowerCase().includes("vietnam"))
+          (v.lang && v.lang.toLowerCase().replace(/_/g, "-").startsWith("vi")) ||
+          (v.name && /vietnam|tiếng việt/i.test(v.name))
       );
-      // Ưu tiên giọng Neural / Natural (HoaiMy, NamMinh, Google Tiếng Việt, Linh)
-      vietnameseVoice =
-        viVoices.find((v) => /natural|online|hoaimy|namminh/i.test(v.name)) ||
-        viVoices.find((v) => /google|linh/i.test(v.name)) ||
+
+      // Giọng Nữ: Hoài My (Edge/Windows), Linh (macOS/iOS), Google tiếng Việt
+      viFemaleVoice =
+        viVoices.find((v) => /hoaimy|female|nữ/i.test(v.name)) ||
+        viVoices.find((v) => /linh/i.test(v.name)) ||
+        viVoices.find((v) => /google/i.test(v.name)) ||
         viVoices[0] ||
         null;
+
+      // Giọng Nam: Nam Minh (Edge/Windows), An, Male
+      viMaleVoice =
+        viVoices.find((v) => /namminh|male|nam/i.test(v.name)) ||
+        viVoices.find((v) => v !== viFemaleVoice) ||
+        viFemaleVoice;
     };
-    pickVoice();
-    window.speechSynthesis.onvoiceschanged = pickVoice;
+
+    pickVoices();
+    window.speechSynthesis.onvoiceschanged = pickVoices;
   }
 
   function stopCurrentSpeechAndRhythm() {
@@ -278,24 +290,88 @@
         return;
       }
 
-      // Phát Giọng Đọc Microsoft Neural TTS (Hoài My / Nam Minh) qua /api/tts
-      const audioUrl = `/api/tts?text=${encodeURIComponent(clauseText)}&voice=${encodeURIComponent(currentVoiceModel)}`;
+      const isMale = currentVoiceModel === "vi-VN-NamMinhNeural";
+
+      // 1. ƯU TIÊN SỐ 1: Dùng Web Speech Synthesis của trình duyệt (Hoài My / Nam Minh trên Edge/Windows, Google tiếng Việt, Linh)
+      // Cho chất lượng tự nhiên cao nhất, phản hồi tức thì và đổi Nam/Nữ nghe khác biệt ngay lập tức!
+      if (
+        "speechSynthesis" in window &&
+        (viFemaleVoice || viMaleVoice || window.speechSynthesis.getVoices().length > 0)
+      ) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(clauseText);
+          utter.lang = "vi-VN";
+
+          if (isMale) {
+            // Giọng Nam (Nam Minh): Trầm ấm, âm vực dày dặn, trang nghiêm như thầy tụng
+            if (viMaleVoice) utter.voice = viMaleVoice;
+            utter.pitch = 0.74; // Hạ cao độ trầm rõ rệt
+            utter.rate = 0.84;  // Đọc từ tốn, khoan thai
+            utter.volume = 1.0;
+          } else {
+            // Giọng Nữ (Hoài My): Thanh thoát, dịu dàng, trong sáng
+            if (viFemaleVoice) utter.voice = viFemaleVoice;
+            utter.pitch = 1.06; // Cao độ nữ thanh tịnh
+            utter.rate = 0.88;  // Đọc nhịp nhàng
+            utter.volume = 1.0;
+          }
+
+          let settled = false;
+          const finish = () => {
+            if (settled) return;
+            settled = true;
+            resolve();
+          };
+
+          const safetyTimer = setTimeout(finish, Math.max(16000, wordsCount * 1200));
+
+          utter.onend = () => {
+            clearTimeout(safetyTimer);
+            finish();
+          };
+
+          utter.onerror = () => {
+            clearTimeout(safetyTimer);
+            speakViaAudioApi(clauseText, isMale, sessionId).then(finish);
+          };
+
+          window.speechSynthesis.speak(utter);
+          return;
+        } catch {
+          // Bỏ qua lỗi và gọi fallback API bên dưới
+        }
+      }
+
+      // 2. DỰ PHÒNG: Nếu trình duyệt không hỗ trợ Web Speech
+      speakViaAudioApi(clauseText, isMale, sessionId).then(resolve);
+    });
+  }
+
+  function speakViaAudioApi(clauseText, isMale, sessionId) {
+    return new Promise((resolve) => {
+      if (sessionId !== activeChantSessionId) {
+        resolve();
+        return;
+      }
+
+      const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
+      const targetVoice = isMale ? "vi-VN-NamMinhNeural" : "vi-VN-HoaiMyNeural";
+      const audioUrl = `/api/tts?text=${encodeURIComponent(clauseText)}&voice=${encodeURIComponent(targetVoice)}`;
       const audio = new Audio(audioUrl);
       currentTtsAudio = audio;
-      let settled = false;
 
+      let settled = false;
       const finish = () => {
         if (settled) return;
         settled = true;
         resolve();
       };
 
-      // Safety timeout hào phóng (16s - 35s tuỳ độ dài) đảm bảo không bao giờ bị cắt ngang câu khi mạng chậm
       const maxWaitTimer = setTimeout(finish, Math.max(16000, wordsCount * 1200));
 
       audio.onloadedmetadata = () => {
-        // Giọng tụng kinh an tĩnh, khoan thai
-        audio.playbackRate = 0.94;
+        audio.playbackRate = isMale ? 0.82 : 0.95;
       };
 
       audio.onended = () => {
@@ -305,49 +381,15 @@
 
       audio.onerror = () => {
         clearTimeout(maxWaitTimer);
-        // Fallback sang Web Speech API nếu thiết bị offline
-        speakClauseFallbackWebSpeech(clauseText, sessionId).then(finish);
+        finish();
       };
 
       const playPromise = audio.play();
       if (playPromise && typeof playPromise.catch === "function") {
         playPromise.catch(() => {
           clearTimeout(maxWaitTimer);
-          speakClauseFallbackWebSpeech(clauseText, sessionId).then(finish);
+          finish();
         });
-      }
-    });
-  }
-
-  function speakClauseFallbackWebSpeech(clauseText, sessionId) {
-    return new Promise((resolve) => {
-      if (sessionId !== activeChantSessionId || !("speechSynthesis" in window)) {
-        const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
-        setTimeout(resolve, Math.max(2000, wordsCount * 400));
-        return;
-      }
-      try {
-        const utter = new SpeechSynthesisUtterance(clauseText);
-        utter.lang = "vi-VN";
-        if (vietnameseVoice) utter.voice = vietnameseVoice;
-        utter.rate = 0.88;
-        utter.pitch = 0.95;
-        utter.volume = 0.95;
-
-        const wordsCount = clauseText.split(/\s+/).filter(Boolean).length;
-        const safetyTimer = setTimeout(resolve, Math.max(6000, wordsCount * 750));
-
-        utter.onend = () => {
-          clearTimeout(safetyTimer);
-          resolve();
-        };
-        utter.onerror = () => {
-          clearTimeout(safetyTimer);
-          resolve();
-        };
-        window.speechSynthesis.speak(utter);
-      } catch {
-        resolve();
       }
     });
   }
@@ -765,6 +807,8 @@
     // Đổi Giọng Đọc Microsoft Neural TTS (Hoài My - Nữ / Nam Minh - Nam)
     const switchVoiceBtn = document.getElementById("btn-switch-voice");
     switchVoiceBtn?.addEventListener("click", () => {
+      stopCurrentSpeechAndRhythm(); // Dừng ngay âm thanh cũ
+
       if (currentVoiceModel === "vi-VN-HoaiMyNeural") {
         currentVoiceModel = "vi-VN-NamMinhNeural";
         switchVoiceBtn.textContent = "🎙️ Giọng: Nam Minh (Nam)";
@@ -774,9 +818,12 @@
         switchVoiceBtn.textContent = "🎙️ Giọng: Hoài My (Nữ)";
         showToast("🎙️ Đã chuyển sang Giọng Nữ (Hoài My) thanh tịnh, từ tốn");
       }
-      if (isVoiceEnabled && !isSyncChanting) {
+
+      if (isVoiceEnabled) {
         const lines = currentRoom.chantLines || [];
-        if (lines[currentLineIdx]) speakChantLine(lines[currentLineIdx]);
+        if (lines[currentLineIdx]) {
+          speakChantLine(lines[currentLineIdx]);
+        }
       }
     });
 

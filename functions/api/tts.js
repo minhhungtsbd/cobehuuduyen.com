@@ -1,20 +1,18 @@
 /**
  * CLOUDFLARE PAGES FUNCTION: /api/tts
- * Microsoft Neural TTS (vi-VN-HoaiMyNeural & vi-VN-NamMinhNeural)
- * Cho giọng đọc tụng kinh tự nhiên, truyền cảm, trầm ấm, đúng ngữ điệu tiếng Việt.
- * Có cơ chế tự động Fallback sang Google Translate TTS nếu upstream Microsoft bận.
- * Edge Cache 7 ngày trên Cloudflare CDN giúp phát tức thì không độ trễ.
+ * Hỗ trợ Microsoft Neural TTS (Hoài My - Nữ & Nam Minh - Nam)
+ * Tự động chuyển đổi theo tham số voice=vi-VN-HoaiMyNeural hoặc voice=vi-VN-NamMinhNeural
+ * Fallback thông minh có phân biệt tốc độ & ngữ điệu cho Nam và Nữ
  */
 
-const WIN_EPOCH = 11644473600;
-const S_TO_NS = 1e9;
+const WIN_EPOCH = 11644473600n;
 const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
 
 async function generateSecMSGec() {
-  const ts = Date.now() / 1000 + WIN_EPOCH;
-  const roundedTicks = Math.floor(ts / 300) * 300;
-  const fileTime = Math.round(roundedTicks * S_TO_NS);
-  const strToHash = `${fileTime}${TRUSTED_CLIENT_TOKEN}`;
+  const ts = BigInt(Math.floor(Date.now() / 1000)) + WIN_EPOCH;
+  const roundedTicks = (ts / 300n) * 300n;
+  const fileTime = roundedTicks * 1000000000n;
+  const strToHash = `${fileTime.toString()}${TRUSTED_CLIENT_TOKEN}`;
 
   const encoder = new TextEncoder();
   const data = encoder.encode(strToHash);
@@ -28,7 +26,7 @@ async function generateSecMSGec() {
 async function synthesizeMicrosoftNeuralTTS(text, voice = "vi-VN-HoaiMyNeural") {
   const connectionId = crypto.randomUUID().replace(/-/g, "");
   const token = await generateSecMSGec();
-  const wssUrl = `https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${token}&Sec-MS-GEC-Version=1-134.0.3124.51&ConnectionId=${connectionId}`;
+  const wssUrl = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${token}&Sec-MS-GEC-Version=1-134.0.3124.51&ConnectionId=${connectionId}`;
 
   const resp = await fetch(wssUrl, {
     headers: {
@@ -41,7 +39,7 @@ async function synthesizeMicrosoftNeuralTTS(text, voice = "vi-VN-HoaiMyNeural") 
 
   const ws = resp.webSocket;
   if (!ws) {
-    throw new Error("Cloudflare failed to upgrade to Microsoft WebSocket");
+    throw new Error(`Cloudflare failed to upgrade to Microsoft WebSocket (Status: ${resp.status})`);
   }
   ws.accept();
 
@@ -53,8 +51,8 @@ async function synthesizeMicrosoftNeuralTTS(text, voice = "vi-VN-HoaiMyNeural") 
       } catch {
         // ignore
       }
-      reject(new Error("Microsoft Neural TTS synthesis timeout"));
-    }, 6000);
+      reject(new Error("Microsoft Neural TTS timeout"));
+    }, 5500);
 
     ws.addEventListener("message", (event) => {
       if (typeof event.data === "string") {
@@ -66,7 +64,7 @@ async function synthesizeMicrosoftNeuralTTS(text, voice = "vi-VN-HoaiMyNeural") 
             // ignore
           }
           if (chunks.length === 0) {
-            reject(new Error("No audio chunks received from Microsoft"));
+            reject(new Error("No audio chunks received"));
             return;
           }
           const totalLen = chunks.reduce((acc, c) => acc + c.byteLength, 0);
@@ -110,7 +108,7 @@ async function synthesizeMicrosoftNeuralTTS(text, voice = "vi-VN-HoaiMyNeural") 
         }
         resolve(merged);
       } else {
-        reject(new Error("WebSocket connection closed prematurely"));
+        reject(new Error("WebSocket closed without audio"));
       }
     });
 
@@ -127,15 +125,19 @@ async function synthesizeMicrosoftNeuralTTS(text, voice = "vi-VN-HoaiMyNeural") 
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
     const targetVoice = voice === "vi-VN-NamMinhNeural" ? "vi-VN-NamMinhNeural" : "vi-VN-HoaiMyNeural";
-    const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='vi-VN'><voice name='${targetVoice}'><prosody rate='-5%' pitch='-1%'>${escapedText}</prosody></voice></speak>`;
+    const prosodyRate = voice === "vi-VN-NamMinhNeural" ? "-8%" : "-4%";
+    const prosodyPitch = voice === "vi-VN-NamMinhNeural" ? "-4%" : "0%";
+    const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='vi-VN'><voice name='${targetVoice}'><prosody rate='${prosodyRate}' pitch='${prosodyPitch}'>${escapedText}</prosody></voice></speak>`;
     ws.send(
       `X-RequestId:${requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n${ssml}`
     );
   });
 }
 
-async function fallbackGoogleTTS(text) {
-  const ttsUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&ttsspeed=0.82&q=${encodeURIComponent(text.slice(0, 220))}`;
+async function fallbackGoogleTTS(text, voice) {
+  const isMale = voice === "vi-VN-NamMinhNeural";
+  const speed = isMale ? "0.76" : "0.86";
+  const ttsUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&ttsspeed=${speed}&q=${encodeURIComponent(text.slice(0, 220))}`;
   const upstream = await fetch(ttsUrl, {
     headers: {
       "User-Agent":
@@ -169,7 +171,7 @@ export async function onRequestGet(context) {
     audioBytes = await synthesizeMicrosoftNeuralTTS(rawText, voice);
   } catch {
     try {
-      audioBytes = await fallbackGoogleTTS(rawText);
+      audioBytes = await fallbackGoogleTTS(rawText, voice);
       engine = "google-tts-fallback";
     } catch (fallbackErr) {
       return new Response(`TTS Error: ${fallbackErr.message}`, { status: 502 });
@@ -180,7 +182,7 @@ export async function onRequestGet(context) {
     status: 200,
     headers: {
       "Content-Type": "audio/mpeg",
-      "Cache-Control": "public, max-age=604800, immutable",
+      "Cache-Control": "public, max-age=86400",
       "Access-Control-Allow-Origin": "*",
       "X-TTS-Engine": engine,
       "X-TTS-Voice": voice
