@@ -1,6 +1,9 @@
 /* ==========================================================================
    CÔ BÉ HỮU DUYÊN — TÂM LINH, PHONG THUỶ & THIỆN NGUYỆN (https://cobehuuduyen.com)
-   Interactive Client Application (Zero-Dependency ES Module)
+   Interactive Client Application:
+   - Điện Thờ & Phòng Tụng Kinh Online (3 Phòng + Web Audio Chuông/Mõ + Chuỗi 108 Hạt)
+   - Tự động gửi thông báo Telegram + Lưu Cloudflare D1 Database qua /api/events
+   - Xem Bói (Xin Xăm, Kinh Dịch, Tarot, Tra Cứu Mệnh) & Giỏ Hàng VietQR
    ========================================================================== */
 
 (function () {
@@ -11,9 +14,12 @@
   const PRODUCTS = (DATA.products && DATA.products.products) || [];
   const FORTUNES = DATA.fortunes || {};
   const CHARITY = DATA.charity || {};
+  const SANCTUARY = DATA.sanctuary || { rooms: [] };
 
   const STORAGE_CART_KEY = "cbhd_cart_v1";
   const STORAGE_THEME_KEY = "cbhd_theme_v1";
+  const STORAGE_NICKNAME_KEY = "cbhd_nickname_v1";
+  const STORAGE_MERIT_KEY = "cbhd_merit_count_v1";
 
   let cart = loadCart();
   let activeCategory = "all";
@@ -67,6 +73,82 @@
     }
   }
 
+  // ---------- Cloud Sync: Telegram Group + Cloudflare D1 (/api/events) ----------
+  async function syncEventToCloud(eventData) {
+    try {
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventData)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback silently when offline or local preview
+    }
+    return { ok: false };
+  }
+
+  // ---------- Web Audio API: Tiếng Chuông Bát Nhã & Tiếng Mõ Tụng Kinh ----------
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) audioCtx = new AudioContextClass();
+    }
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playTempleBellSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Harmonic frequencies for a resonant bronze meditation bowl / bell
+    const freqs = [264, 528, 792, 1056];
+    freqs.forEach((f, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(f, now);
+
+      const initialGain = 0.28 / (idx + 1);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(initialGain, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4 - idx * 0.4);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 3.5);
+    });
+  }
+
+  function playWoodenFishSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(620, now);
+    osc.frequency.exponentialRampToValueAtTime(360, now + 0.09);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.exponentialRampToValueAtTime(0.42, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
   // ---------- 1. Dual-Theme System (Dark / Light) ----------
   function initTheme() {
     const saved = localStorage.getItem(STORAGE_THEME_KEY) || "dark";
@@ -92,12 +174,8 @@
     document.documentElement.setAttribute("data-theme", theme);
     const labelEl = document.getElementById("theme-toggle-label");
     const iconEl = document.getElementById("theme-toggle-icon");
-    if (labelEl) {
-      labelEl.textContent = theme === "dark" ? "Sáng" : "Tối";
-    }
-    if (iconEl) {
-      iconEl.textContent = theme === "dark" ? "☀️" : "🌙";
-    }
+    if (labelEl) labelEl.textContent = theme === "dark" ? "Sáng" : "Tối";
+    if (iconEl) iconEl.textContent = theme === "dark" ? "☀️" : "🌙";
   }
 
   // ---------- 2. Mobile Navigation ----------
@@ -115,7 +193,7 @@
     });
   }
 
-  // ---------- 3. Vietnamese Lunar Calendar & Can Chi Calculator ----------
+  // ---------- 3. Vietnamese Lunar Calendar ----------
   function initLunarCalendar() {
     const now = new Date();
     const solarStr = now.toLocaleDateString("vi-VN", {
@@ -125,7 +203,6 @@
       year: "numeric"
     });
 
-    // Calculate Julian Day Number for accurate Sexagenary Day (Can Chi Ngày)
     const y = now.getFullYear();
     const m = now.getMonth() + 1;
     const d = now.getDate();
@@ -149,14 +226,12 @@
     const yearCan = CAN[(y + 6) % 10];
     const yearChi = CHI[(y + 8) % 12];
 
-    // Approximate Lunar Date via Intl Chinese/Lunar calendar when supported by browser
     let lunarDayMonth = "";
     try {
-      const intlLunar = new Intl.DateTimeFormat("vi-VN-u-ca-chinese", {
+      lunarDayMonth = new Intl.DateTimeFormat("vi-VN-u-ca-chinese", {
         day: "numeric",
         month: "numeric"
       }).format(now);
-      lunarDayMonth = intlLunar;
     } catch {
       lunarDayMonth = `${((d + 18) % 30) + 1}/${((m + 10) % 12) + 1}`;
     }
@@ -190,11 +265,299 @@
     if (solarEl) solarEl.textContent = `${d}/${m}/${y}`;
     if (lunarEl) lunarEl.textContent = `${lunarDayMonth} ÂL • Ngày ${dayCan} ${dayChi}`;
     if (hoursEl) {
-      hoursEl.innerHTML = `<strong>Giờ Hoàng Đạo:</strong> ${auspiciousHours}.<br><strong>Việc tốt:</strong> Cầu an, dâng hương, gieo quẻ, phóng sinh, làm việc thiện.`;
+      hoursEl.innerHTML = `<strong>Giờ Hoàng Đạo:</strong> ${auspiciousHours}.<br><strong>Việc tốt:</strong> Vào phòng tụng kinh, dâng hương, gieo quẻ, phóng sinh.`;
     }
   }
 
-  // ---------- 4. Interactive Divination Sanctuary ----------
+  // ---------- 4. ĐIỆN THỜ & PHÒNG TỤNG KINH ONLINE (3 PHÒNG) ----------
+  function initOnlineChantSanctuary() {
+    const rooms = SANCTUARY.rooms || [];
+    if (!rooms.length) return;
+
+    let currentRoom = rooms[0];
+    let currentLineIdx = 0;
+    let autoChantTimer = null;
+    let meritCount = parseInt(localStorage.getItem(STORAGE_MERIT_KEY) || "18", 10);
+
+    const nicknameInput = document.getElementById("sanctuary-nickname-input");
+    const savedNick = localStorage.getItem(STORAGE_NICKNAME_KEY) || "";
+    if (nicknameInput && savedNick) {
+      nicknameInput.value = savedNick;
+    }
+    nicknameInput?.addEventListener("change", () => {
+      const val = nicknameInput.value.trim();
+      if (val) {
+        localStorage.setItem(STORAGE_NICKNAME_KEY, val);
+        showToast(`🪷 Đã lưu Pháp danh / Tên tín chủ: ${val}`);
+      }
+    });
+
+    function getNickname() {
+      return (nicknameInput?.value || "").trim() || "Phật tử Hữu Duyên";
+    }
+
+    function getDeitySvg(roomId) {
+      if (roomId === "quan-am") {
+        return `<svg width="110" height="110" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="52" stroke="#5CE1E6" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <path d="M60 20C70 34 76 48 72 64C68 74 52 74 48 64C44 48 50 34 60 20Z" fill="#FBE59B"/>
+          <path d="M36 74C46 66 74 66 84 74L92 92H28L36 74Z" fill="#D4AF37"/>
+          <circle cx="60" cy="44" r="10" fill="#FFFDF9"/>
+        </svg>`;
+      }
+      if (roomId === "thanh-mau") {
+        return `<svg width="110" height="110" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="52" stroke="#FF5E5E" stroke-width="2" stroke-dasharray="5 3"/>
+          <polygon points="60,16 74,42 102,46 80,66 86,94 60,80 34,94 40,66 18,46 46,42" fill="#D4AF37"/>
+          <circle cx="60" cy="56" r="16" fill="#B82525" stroke="#FBE59B" stroke-width="2"/>
+        </svg>`;
+      }
+      return `<svg width="110" height="110" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="52" stroke="#FBE59B" stroke-width="2" stroke-dasharray="4 4"/>
+        <path d="M60 18C68 34 78 46 78 60C78 72 70 80 60 84C50 80 42 72 42 60C42 46 52 34 60 18Z" fill="#FBE59B"/>
+        <path d="M32 82C46 90 74 90 88 82" stroke="#D4AF37" stroke-width="4" stroke-linecap="round"/>
+      </svg>`;
+    }
+
+    function renderRoom(room) {
+      currentRoom = room;
+      currentLineIdx = 0;
+      if (autoChantTimer) {
+        clearInterval(autoChantTimer);
+        autoChantTimer = null;
+        const autoBtn = document.getElementById("btn-auto-chant");
+        if (autoBtn) autoBtn.textContent = "▶️ Tự Động Chạy Kinh Theo Nhịp Mõ";
+      }
+
+      document.querySelectorAll(".room-select-card").forEach((card) => {
+        card.classList.toggle("active", card.getAttribute("data-room-id") === room.id);
+      });
+
+      const titleEl = document.getElementById("sanctuary-room-title");
+      const deityEl = document.getElementById("sanctuary-deity-title");
+      const mantraEl = document.getElementById("sanctuary-mantra-short");
+      const haloEl = document.getElementById("sanctuary-deity-halo");
+      const chantTitleEl = document.getElementById("sanctuary-chant-title");
+      const chantListEl = document.getElementById("sanctuary-chant-lines");
+
+      if (titleEl) titleEl.textContent = room.name;
+      if (deityEl) deityEl.textContent = room.deityTitle;
+      if (mantraEl) mantraEl.textContent = `🙏 ${room.mantraShort}`;
+      if (haloEl) haloEl.innerHTML = getDeitySvg(room.id);
+      if (chantTitleEl) chantTitleEl.textContent = `📖 ${room.chantTitle}`;
+
+      if (chantListEl) {
+        chantListEl.innerHTML = (room.chantLines || [])
+          .map(
+            (line, idx) =>
+              `<div class="chant-line ${idx === 0 ? "current" : ""}" data-line-idx="${idx}">${line}</div>`
+          )
+          .join("");
+      }
+
+      renderParticipantsFeed(room);
+      loadCloudRoomFeed(room.id);
+    }
+
+    function renderParticipantsFeed(room, extraItems = []) {
+      const feedEl = document.getElementById("sanctuary-prayer-feed");
+      if (!feedEl) return;
+
+      const combined = [
+        ...extraItems.map((it) => ({
+          nickname: it.nickname,
+          action: "Vừa gửi lời nguyện cầu & tụng kinh",
+          wish: it.message
+        })),
+        ...(room.defaultParticipants || [])
+      ];
+
+      feedEl.innerHTML = combined
+        .map(
+          (p) => `
+        <div class="prayer-feed-item">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
+            <strong style="color:var(--gold-light);">🪷 ${p.nickname}</strong>
+            <span style="font-size:0.72rem;color:var(--jade-green);">● Trực tuyến</span>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.25rem;">${p.action}</div>
+          <div style="font-style:italic;color:var(--text-primary);">“${p.wish}”</div>
+        </div>`
+        )
+        .join("");
+    }
+
+    async function loadCloudRoomFeed(roomId) {
+      try {
+        const res = await fetch(`/api/events?type=chant_room&room=${encodeURIComponent(roomId)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && Array.isArray(data.items) && data.items.length > 0) {
+          renderParticipantsFeed(currentRoom, data.items);
+        }
+      } catch {
+        // Use default local feed if offline
+      }
+    }
+
+    function addMerit(points) {
+      meritCount += points;
+      localStorage.setItem(STORAGE_MERIT_KEY, String(meritCount));
+      const meritEl = document.getElementById("sanctuary-merit-count");
+      if (meritEl) meritEl.textContent = String(meritCount);
+    }
+
+    function advanceChantLine() {
+      const lines = document.querySelectorAll("#sanctuary-chant-lines .chant-line");
+      if (!lines.length) return;
+      lines.forEach((l) => l.classList.remove("current"));
+      currentLineIdx = (currentLineIdx + 1) % lines.length;
+      const target = lines[currentLineIdx];
+      if (target) {
+        target.classList.add("current");
+        target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function spawnFloatingLantern(text) {
+      const stage = document.getElementById("altar-stage-visual");
+      if (!stage) return;
+      const lantern = document.createElement("div");
+      lantern.className = "floating-lantern";
+      lantern.style.left = `${Math.floor(15 + Math.random() * 60)}%`;
+      lantern.textContent = `🏮 ${getNickname()}: ${text.slice(0, 38)}`;
+      stage.appendChild(lantern);
+      setTimeout(() => lantern.remove(), 6500);
+    }
+
+    // Bind Room Selector Cards
+    document.querySelectorAll(".room-select-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const id = card.getAttribute("data-room-id");
+        const found = rooms.find((r) => r.id === id);
+        if (found) {
+          renderRoom(found);
+          playTempleBellSound();
+          showToast(`🙏 Đã bước vào ${found.name}`);
+        }
+      });
+    });
+
+    // Bind Ritual Buttons (Thắp Hương, Dâng Hoa, Thắp Đèn, Thỉnh Chuông, Gõ Mõ, Lần Chuỗi 108 Hạt)
+    document.getElementById("ritual-incense-btn")?.addEventListener("click", (e) => {
+      e.currentTarget.classList.add("active");
+      document.getElementById("slot-incense")?.classList.add("active");
+      playTempleBellSound();
+      addMerit(3);
+      showToast(`🔥 ${getNickname()} đã thành tâm dâng 3 nén nhang trầm thơm ngát!`);
+    });
+
+    document.getElementById("ritual-flower-btn")?.addEventListener("click", (e) => {
+      e.currentTarget.classList.add("active");
+      document.getElementById("slot-flower")?.classList.add("active");
+      addMerit(2);
+      showToast(`🪷 ${getNickname()} đã dâng Hoa Sen Vàng & Mâm Ngũ Quả lên bàn thờ!`);
+    });
+
+    document.getElementById("ritual-lamp-btn")?.addEventListener("click", (e) => {
+      e.currentTarget.classList.add("active");
+      document.getElementById("slot-lamp")?.classList.add("active");
+      addMerit(2);
+      showToast(`🕯️ ${getNickname()} đã thắp sáng Đèn Liên Hoa khai mở trí tuệ!`);
+    });
+
+    document.getElementById("ritual-bell-btn")?.addEventListener("click", () => {
+      playTempleBellSound();
+      addMerit(1);
+      showToast("🔔 Tiếng chuông Bát Nhã ngân vang, phiền não tan biến...");
+    });
+
+    document.getElementById("ritual-mo-btn")?.addEventListener("click", () => {
+      playWoodenFishSound();
+      advanceChantLine();
+      addMerit(1);
+    });
+
+    document.getElementById("ritual-mala-btn")?.addEventListener("click", () => {
+      playWoodenFishSound();
+      addMerit(1);
+      spawnFloatingLantern(currentRoom.mantraShort);
+    });
+
+    // Auto Chant Teleprompter
+    const autoBtn = document.getElementById("btn-auto-chant");
+    if (autoBtn) {
+      autoBtn.addEventListener("click", () => {
+        if (autoChantTimer) {
+          clearInterval(autoChantTimer);
+          autoChantTimer = null;
+          autoBtn.textContent = "▶️ Tự Động Chạy Kinh Theo Nhịp Mõ";
+        } else {
+          playWoodenFishSound();
+          autoBtn.textContent = "⏸️ Đang Tụng Kinh Cùng Đạo Tràng (Bấm Để Dừng)";
+          autoChantTimer = setInterval(() => {
+            playWoodenFishSound();
+            advanceChantLine();
+            addMerit(1);
+          }, 2600);
+        }
+      });
+    }
+
+    // Submit Prayer / Lantern to Room & Telegram / D1
+    const prayerForm = document.getElementById("sanctuary-prayer-form");
+    if (prayerForm) {
+      prayerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const wishInput = document.getElementById("sanctuary-wish-input");
+        const wish = (wishInput?.value || "").trim();
+        if (!wish) {
+          showToast("⚠️ Vui lòng nhập lời nguyện cầu hoặc hồi hướng công đức!");
+          return;
+        }
+
+        const nick = getNickname();
+        localStorage.setItem(STORAGE_NICKNAME_KEY, nick);
+        playTempleBellSound();
+        spawnFloatingLantern(wish);
+        addMerit(5);
+
+        const feedEl = document.getElementById("sanctuary-prayer-feed");
+        if (feedEl) {
+          const item = document.createElement("div");
+          item.className = "prayer-feed-item";
+          item.style.borderColor = "var(--gold-primary)";
+          item.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
+              <strong style="color:var(--gold-light);">🪷 ${nick}</strong>
+              <span style="font-size:0.72rem;color:var(--jade-green);">● Vừa thả Hoa Đăng</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.25rem;">Tại ${currentRoom.name}</div>
+            <div style="font-style:italic;color:var(--text-primary);">“${wish}”</div>
+          `;
+          feedEl.prepend(item);
+        }
+
+        if (wishInput) wishInput.value = "";
+        showToast(`🏮 Đã thả Đèn Hoa Đăng cầu nguyện của ${nick} lên ${currentRoom.name}!`);
+
+        await syncEventToCloud({
+          eventType: "chant_room",
+          roomId: currentRoom.id,
+          nickname: nick,
+          message: `[${currentRoom.name}] ${wish}`,
+          payload: { roomName: currentRoom.name, meritCount }
+        });
+      });
+    }
+
+    // Initialize initial merit display and first room
+    const meritEl = document.getElementById("sanctuary-merit-count");
+    if (meritEl) meritEl.textContent = String(meritCount);
+    renderRoom(rooms[0]);
+  }
+
+  // ---------- 5. Interactive Divination Sanctuary ----------
   function initDivinationTabs() {
     const tabBtns = document.querySelectorAll(".divination-tabs .tab-btn");
     const panels = document.querySelectorAll(".divination-panel");
@@ -210,7 +573,7 @@
       });
     });
 
-    // 4.1 Xin Xăm Quán Âm
+    // 5.1 Xin Xăm Quán Âm
     const shakeBtn = document.getElementById("btn-shake-xam");
     const cylinder = document.getElementById("xam-cylinder");
     const xamResult = document.getElementById("xam-result-box");
@@ -243,8 +606,8 @@
           xamResult.innerHTML = `
             <div>
               <span class="result-rank-badge">${picked.number} • ${picked.rank}</span>
-              <h3 style="font-size:1.5rem;color:var(--gold-light);margin-bottom:0.35rem;">${picked.title}</h3>
-              <p style="font-size:0.86rem;color:var(--text-muted);">Tín chủ: <strong>${userName}</strong> • Sở cầu: <strong>${topic}</strong></p>
+              <h3 style="font-size:1.45rem;color:var(--gold-light);margin-bottom:0.35rem;">${picked.title}</h3>
+              <p style="font-size:0.85rem;color:var(--text-muted);">Tín chủ: <strong>${userName}</strong> • Sở cầu: <strong>${topic}</strong></p>
               <div class="poem-scroll">${picked.poem}</div>
               <p style="margin-bottom:0.75rem;"><strong>Ý nghĩa quẻ xăm:</strong> ${picked.meaning}</p>
               <ul class="advice-list">
@@ -260,12 +623,13 @@
               </div>
             </div>
           `;
+          playTempleBellSound();
           showToast(`✨ Bạn đã rút được ${picked.number}: ${picked.rank}`);
-        }, 1100);
+        }, 1000);
       });
     }
 
-    // 4.2 Gieo Quẻ Kinh Dịch (3 Đồng Xu Cổ)
+    // 5.2 Gieo Quẻ Kinh Dịch
     const castBtn = document.getElementById("btn-cast-iching");
     const ichingResult = document.getElementById("iching-result-box");
     const coins = document.querySelectorAll(".ancient-coin");
@@ -293,9 +657,9 @@
             <div>
               <span class="result-rank-badge">${hex.rating}</span>
               <div style="display:flex;align-items:center;gap:0.85rem;margin:0.4rem 0 0.75rem;">
-                <span style="font-size:2.8rem;line-height:1;color:var(--gold-light);">${hex.symbol}</span>
+                <span style="font-size:2.6rem;line-height:1;color:var(--gold-light);">${hex.symbol}</span>
                 <div>
-                  <h3 style="font-size:1.55rem;color:var(--gold-light);">${hex.name}</h3>
+                  <h3 style="font-size:1.45rem;color:var(--gold-light);">${hex.name}</h3>
                   <small style="color:var(--text-muted);">Ngũ hành quẻ: <strong>${hex.element}</strong> • Việc hỏi: ${question}</small>
                 </div>
               </div>
@@ -307,12 +671,13 @@
               </div>
             </div>
           `;
+          playTempleBellSound();
           showToast(`☯️ Đã ứng ${hex.name}`);
-        }, 1000);
+        }, 950);
       });
     }
 
-    // 4.3 Bói Bài Tarot Tâm Linh (3 Lá)
+    // 5.3 Bói Bài Tarot
     const drawTarotBtn = document.getElementById("btn-draw-tarot");
     const tarotResult = document.getElementById("tarot-result-box");
     const tarotSlots = document.querySelectorAll(".tarot-card-slot");
@@ -321,7 +686,6 @@
       const cards = [...(FORTUNES.tarotCards || [])];
       if (cards.length < 3 || !tarotResult) return;
 
-      // Shuffle
       for (let i = cards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [cards[i], cards[j]] = [cards[j], cards[i]];
@@ -333,16 +697,16 @@
         const card = picked[idx];
         slot.innerHTML = `
           <span class="tarot-slot-label">${positions[idx]}</span>
-          <div style="font-size:1.8rem;margin:0.35rem 0;">✨</div>
-          <strong style="color:var(--gold-light);font-size:0.95rem;">${card.name}</strong>
-          <small style="color:var(--text-secondary);margin-top:0.35rem;">${card.keywords.join(" • ")}</small>
+          <div style="font-size:1.7rem;margin:0.3rem 0;">✨</div>
+          <strong style="color:var(--gold-light);font-size:0.9rem;">${card.name}</strong>
+          <small style="color:var(--text-secondary);margin-top:0.3rem;">${card.keywords.join(" • ")}</small>
         `;
       });
 
       tarotResult.innerHTML = `
         <div>
           <span class="result-rank-badge">Thông Điệp Trải Bài 3 Lá</span>
-          <h3 style="font-size:1.45rem;color:var(--gold-light);margin-bottom:0.85rem;">Giải Mã Tín Hiệu Tâm Linh Của Bạn</h3>
+          <h3 style="font-size:1.4rem;color:var(--gold-light);margin-bottom:0.8rem;">Giải Mã Tín Hiệu Tâm Linh Của Bạn</h3>
           <ul class="advice-list">
             ${picked
               .map(
@@ -364,17 +728,14 @@
           </div>
         </div>
       `;
+      playTempleBellSound();
       showToast("🔮 Đã lật 3 lá bài Tarot hữu duyên!");
     }
 
-    if (drawTarotBtn) {
-      drawTarotBtn.addEventListener("click", triggerTarotReading);
-    }
-    tarotSlots.forEach((slot) => {
-      slot.addEventListener("click", triggerTarotReading);
-    });
+    drawTarotBtn?.addEventListener("click", triggerTarotReading);
+    tarotSlots.forEach((slot) => slot.addEventListener("click", triggerTarotReading));
 
-    // 4.4 Tra Cứu Bản Mệnh Ngũ Hành & Gợi Ý Vật Phẩm Hợp Tuổi
+    // 5.4 Tra Cứu Mệnh Ngũ Hành
     const calcElementBtn = document.getElementById("btn-calc-element");
     const elementResult = document.getElementById("element-result-box");
 
@@ -395,16 +756,13 @@
         const CHI = ["Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi"];
         const canChiYear = `${CAN[birthYear % 10]} ${CHI[birthYear % 12]}`;
 
-        // Ngu Hanh Nap Am formula
         const canValues = { Giáp: 1, Ất: 1, Bính: 2, Đinh: 2, Mậu: 3, Kỷ: 3, Canh: 4, Tân: 4, Nhâm: 5, Quý: 5 };
         const chiValues = {
           Tý: 0, Sửu: 0, Ngọ: 0, Mùi: 0,
           Dần: 1, Mão: 1, Thân: 1, Dậu: 1,
           Thìn: 2, Tỵ: 2, Tuất: 2, Hợi: 2
         };
-        const cName = CAN[birthYear % 10];
-        const zName = CHI[birthYear % 12];
-        let sum = (canValues[cName] || 1) + (chiValues[zName] || 0);
+        let sum = (canValues[CAN[birthYear % 10]] || 1) + (chiValues[CHI[birthYear % 12]] || 0);
         if (sum > 5) sum -= 5;
 
         const ELEMENT_MAP = {
@@ -413,35 +771,35 @@
             Compatible: "Thổ (Tương sinh), Kim (Tương hợp)",
             Colors: "Vàng kim, Trắng, Nâu đất",
             Numbers: "6, 7, 2, 5, 8",
-            Desc: "Người mệnh Kim có tư duy sắc bén, trọng chữ tín và có tố chất lãnh đạo. Đeo vật phẩm hành Thổ hoặc Kim giúp vượng tài lộc, công danh vững chắc."
+            Desc: "Người mệnh Kim sắc bén, trọng chữ tín. Đeo vật phẩm hành Thổ hoặc Kim giúp vượng tài lộc, công danh vững chắc."
           },
           2: {
             element: "Thuỷ",
             Compatible: "Kim (Tương sinh), Thuỷ (Tương hợp)",
             Colors: "Xanh biển, Đen, Trắng, Ánh kim",
             Numbers: "1, 6, 7",
-            Desc: "Người mệnh Thuỷ thông tuệ, khéo léo trong giao tiếp và giàu lòng trắc ẩn. Hợp sử dụng đá Mắt Hổ Xanh Đen, Hồ Lô Đồng hoặc Khánh Ngọc Bình An."
+            Desc: "Người mệnh Thuỷ thông tuệ, khéo léo. Hợp sử dụng đá Mắt Hổ Xanh Đen, Hồ Lô Đồng hoặc Khánh Ngọc Bình An."
           },
           3: {
             element: "Hoả",
             Compatible: "Mộc (Tương sinh), Hoả (Tương hợp)",
             Colors: "Đỏ chu sa, Hồng, Tím, Xanh lục",
             Numbers: "9, 3, 4",
-            Desc: "Người mệnh Hoả nhiệt huyết, sáng tạo và tràn đầy năng lượng dương. Đặc biệt đại cát khi đeo Vòng Đá Chu Sa Đỏ hoặc Xông Trầm Hương tự nhiên."
+            Desc: "Người mệnh Hoả nhiệt huyết, giàu năng lượng dương. Đại cát khi đeo Vòng Đá Chu Sa Đỏ hoặc Xông Trầm Hương tự nhiên."
           },
           4: {
             element: "Thổ",
             Compatible: "Hoả (Tương sinh), Thổ (Tương hợp)",
             Colors: "Vàng hoàng thổ, Nâu, Đỏ, Cam",
             Numbers: "2, 5, 8, 9",
-            Desc: "Người mệnh Thổ bao dung, điềm đạm, là điểm tựa vững chắc cho gia đình. Hợp với Thạch Anh Tóc Vàng, Vòng Chu Sa và Lư Xông Trầm Gốm Tử Sa."
+            Desc: "Người mệnh Thổ bao dung, điềm đạm. Hợp với Thạch Anh Tóc Vàng, Vòng Chu Sa và Lư Xông Trầm Gốm Tử Sa."
           },
           5: {
             element: "Mộc",
             Compatible: "Thuỷ (Tương sinh), Mộc (Tương hợp)",
             Colors: "Xanh ngọc, Xanh lá, Đen, Xanh dương",
             Numbers: "3, 4, 1",
-            Desc: "Người mệnh Mộc nhân hậu, vươn lên mạnh mẽ như cây đại thụ. Hợp thỉnh Trầm Hương tự nhiên, Vòng Mắt Hổ Xanh Đen và Dây Treo Khánh Ngọc."
+            Desc: "Người mệnh Mộc nhân hậu, vươn lên mạnh mẽ. Hợp thỉnh Trầm Hương tự nhiên, Vòng Mắt Hổ Xanh Đen và Dây Treo Khánh Ngọc."
           }
         };
 
@@ -453,28 +811,28 @@
         elementResult.innerHTML = `
           <div>
             <span class="result-rank-badge">Tuổi ${canChiYear} (${birthYear}) • ${gender} mạng</span>
-            <h3 style="font-size:1.5rem;color:var(--gold-light);margin-bottom:0.5rem;">
+            <h3 style="font-size:1.45rem;color:var(--gold-light);margin-bottom:0.45rem;">
               Bản Mệnh Ngũ Hành: Hành ${info.element}
             </h3>
-            <p style="margin-bottom:0.8rem;">${info.Desc}</p>
+            <p style="margin-bottom:0.75rem;">${info.Desc}</p>
             <ul class="advice-list">
               <li><strong>🌟 Hành tương sinh & trợ mệnh:</strong> ${info.Compatible}</li>
               <li><strong>🎨 Màu sắc đại cát:</strong> ${info.Colors}</li>
               <li><strong>🔢 Con số may mắn:</strong> ${info.Numbers}</li>
             </ul>
-            <h4 style="color:var(--gold-light);margin:1rem 0 0.6rem;font-size:1.1rem;">
+            <h4 style="color:var(--gold-light);margin:0.9rem 0 0.55rem;font-size:1.02rem;">
               🪷 Vật Phẩm Hợp Mệnh ${info.element} Tại Cửa Hàng:
             </h4>
-            <div style="display:grid;gap:0.55rem;margin-bottom:1rem;">
+            <div style="display:grid;gap:0.5rem;margin-bottom:0.95rem;">
               ${matchingProducts
                 .map(
                   (mp) => `
-                <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-card);padding:0.6rem 0.85rem;border-radius:10px;border:1px solid var(--border-subtle);">
+                <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-card);padding:0.55rem 0.8rem;border-radius:10px;border:1px solid var(--border-subtle);">
                   <div>
-                    <strong style="font-size:0.9rem;">${mp.name}</strong>
-                    <div style="font-size:0.8rem;color:var(--gold-primary);">${formatVND(mp.price)}</div>
+                    <strong style="font-size:0.88rem;">${mp.name}</strong>
+                    <div style="font-size:0.78rem;color:var(--gold-primary);">${formatVND(mp.price)}</div>
                   </div>
-                  <button type="button" class="btn btn-gold" style="padding:0.4rem 0.85rem;font-size:0.8rem;" data-quick-add="${mp.id}">
+                  <button type="button" class="btn btn-gold" style="padding:0.38rem 0.8rem;font-size:0.78rem;" data-quick-add="${mp.id}">
                     + Thỉnh Ngay
                   </button>
                 </div>`
@@ -482,35 +840,30 @@
                 .join("")}
             </div>
             <button type="button" class="btn btn-outline" id="btn-filter-by-element" data-element="${info.element}">
-              🔍 Lọc Toàn Bộ Vật Phẩm Hợp Mệnh ${info.element} Dưới Cửa Hàng
+              🔍 Lọc Toàn Bộ Vật Phẩm Hợp Mệnh ${info.element}
             </button>
           </div>
         `;
 
         elementResult.querySelectorAll("[data-quick-add]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            addToCart(btn.getAttribute("data-quick-add"));
-          });
+          btn.addEventListener("click", () => addToCart(btn.getAttribute("data-quick-add")));
         });
 
-        const filterBtn = document.getElementById("btn-filter-by-element");
-        if (filterBtn) {
-          filterBtn.addEventListener("click", () => {
-            const el = filterBtn.getAttribute("data-element");
-            const selectEl = document.getElementById("shop-element-filter");
-            if (selectEl) {
-              selectEl.value = el;
-              activeElementFilter = el;
-              renderProducts();
-            }
-            document.getElementById("vat-pham")?.scrollIntoView({ behavior: "smooth" });
-          });
-        }
+        document.getElementById("btn-filter-by-element")?.addEventListener("click", (e) => {
+          const el = e.currentTarget.getAttribute("data-element");
+          const selectEl = document.getElementById("shop-element-filter");
+          if (selectEl && el) {
+            selectEl.value = el;
+            activeElementFilter = el;
+            renderProducts();
+          }
+          document.getElementById("vat-pham")?.scrollIntoView({ behavior: "smooth" });
+        });
       });
     }
   }
 
-  // ---------- 5. Product Shop & Filtering ----------
+  // ---------- 6. Product Shop & Filtering ----------
   function getProductArtworkSvg(type) {
     const svgMap = {
       "shrine-gold": `<svg width="96" height="96" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="#D4AF37" stroke-width="2" stroke-dasharray="4 3"/><path d="M22 65C22 52 35 45 50 45C65 45 78 52 78 65L70 76H30L22 65Z" fill="#D4AF37"/><ellipse cx="50" cy="46" rx="16" ry="9" fill="#FBE59B"/><path d="M35 30L50 18L65 30" stroke="#FBE59B" stroke-width="3" stroke-linecap="round"/></svg>`,
@@ -551,8 +904,8 @@
 
     if (filtered.length === 0) {
       grid.innerHTML = `
-        <div style="grid-column:1/-1;text-align:center;padding:3rem;background:var(--bg-card);border-radius:18px;border:1px solid var(--border-subtle);">
-          <p style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:1rem;">Không tìm thấy vật phẩm phù hợp với bộ lọc hiện tại.</p>
+        <div style="grid-column:1/-1;text-align:center;padding:2.5rem;background:var(--bg-card);border-radius:18px;border:1px solid var(--border-subtle);">
+          <p style="font-size:1.05rem;color:var(--text-secondary);margin-bottom:1rem;">Không tìm thấy vật phẩm phù hợp với bộ lọc hiện tại.</p>
           <button type="button" class="btn btn-gold" id="btn-reset-shop-filter">Xem Tất Cả Vật Phẩm</button>
         </div>
       `;
@@ -590,10 +943,10 @@
             ${p.originalPrice ? `<span class="price-old">${formatVND(p.originalPrice)}</span>` : ""}
           </div>
           <div class="product-actions">
-            <button type="button" class="btn btn-gold" style="padding:0.65rem 1rem;font-size:0.88rem;" data-add-cart="${p.id}">
+            <button type="button" class="btn btn-gold" style="padding:0.62rem 0.95rem;font-size:0.86rem;" data-add-cart="${p.id}">
               🛒 Thỉnh Vật Phẩm
             </button>
-            <button type="button" class="btn btn-outline" style="padding:0.65rem 0.9rem;font-size:0.86rem;" data-detail-product="${p.id}" title="Xem ý nghĩa chi tiết">
+            <button type="button" class="btn btn-outline" style="padding:0.62rem 0.85rem;font-size:0.84rem;" data-detail-product="${p.id}">
               Chi tiết
             </button>
           </div>
@@ -640,7 +993,6 @@
       });
     }
 
-    // Bind initial static product buttons before dynamic re-render
     document.querySelectorAll("[data-add-cart]").forEach((btn) => {
       btn.addEventListener("click", () => addToCart(btn.getAttribute("data-add-cart")));
     });
@@ -661,7 +1013,7 @@
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem;">
         <div>
           <span class="result-rank-badge">${product.categoryName} • ${product.badge}</span>
-          <h3 style="font-size:1.6rem;color:var(--gold-light);">${product.name}</h3>
+          <h3 style="font-size:1.5rem;color:var(--gold-light);">${product.name}</h3>
         </div>
         <button type="button" class="icon-btn" id="close-product-modal">✕ Đóng</button>
       </div>
@@ -669,14 +1021,14 @@
       <div style="background:var(--bg-secondary);padding:1rem;border-radius:12px;border:1px solid var(--border-subtle);margin-bottom:1rem;">
         <p style="margin-bottom:0.5rem;"><strong>☯️ Bản mệnh phù hợp:</strong> ${product.elementText}</p>
         <strong style="color:var(--gold-light);display:block;margin-bottom:0.4rem;">✨ Đặc điểm & Ý nghĩa tâm linh:</strong>
-        <ul style="padding-left:1.2rem;display:grid;gap:0.35rem;font-size:0.92rem;">
+        <ul style="padding-left:1.2rem;display:grid;gap:0.35rem;font-size:0.9rem;">
           ${(product.benefits || []).map((b) => `<li>${b}</li>`).join("")}
         </ul>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:0.5rem;">
         <div>
           <small style="color:var(--text-muted);display:block;">Phí thỉnh vật phẩm:</small>
-          <span class="price-current" style="font-size:1.5rem;">${formatVND(product.price)}</span>
+          <span class="price-current" style="font-size:1.45rem;">${formatVND(product.price)}</span>
         </div>
         <div style="display:flex;gap:0.65rem;flex-wrap:wrap;">
           <button type="button" class="btn btn-gold" id="modal-add-to-cart">🛒 Thêm Vào Giỏ & Đặt Thỉnh</button>
@@ -696,7 +1048,7 @@
     });
   }
 
-  // ---------- 6. Smart Cart & VietQR / Zalo Checkout ----------
+  // ---------- 7. Smart Cart + Checkout (Zalo / FB + Auto Telegram & D1) ----------
   function loadCart() {
     try {
       const raw = localStorage.getItem(STORAGE_CART_KEY);
@@ -710,7 +1062,7 @@
     try {
       localStorage.setItem(STORAGE_CART_KEY, JSON.stringify(cart));
     } catch {
-      // ignore storage errors
+      // ignore
     }
     updateCartBadge();
   }
@@ -760,9 +1112,9 @@
 
     if (cart.length === 0) {
       listEl.innerHTML = `
-        <div style="text-align:center;padding:2.5rem 1rem;color:var(--text-muted);">
-          <p style="font-size:1rem;margin-bottom:0.8rem;">Giỏ thỉnh vật phẩm của bạn đang trống.</p>
-          <p style="font-size:0.86rem;">Hãy chọn các bộ lễ Hàng Mã, Vòng Phong Thuỷ hoặc Trầm Hương hợp mệnh nhé!</p>
+        <div style="text-align:center;padding:2.2rem 1rem;color:var(--text-muted);">
+          <p style="font-size:0.98rem;margin-bottom:0.65rem;">Giỏ thỉnh vật phẩm của bạn đang trống.</p>
+          <p style="font-size:0.84rem;">Hãy chọn các bộ lễ Hàng Mã, Vòng Phong Thuỷ hoặc Trầm Hương hợp mệnh nhé!</p>
         </div>
       `;
       summaryEl.style.display = "none";
@@ -777,12 +1129,12 @@
         (item) => `
       <div class="cart-item">
         <div style="flex:1;">
-          <strong style="font-size:0.92rem;display:block;">${item.name}</strong>
-          <span style="font-size:0.84rem;color:var(--gold-primary);">${formatVND(item.price)} x ${item.qty}</span>
+          <strong style="font-size:0.9rem;display:block;">${item.name}</strong>
+          <span style="font-size:0.82rem;color:var(--gold-primary);">${formatVND(item.price)} x ${item.qty}</span>
         </div>
         <div class="qty-control">
           <button type="button" class="qty-btn" data-cart-dec="${item.id}">-</button>
-          <span style="padding:0 0.6rem;font-size:0.88rem;font-weight:600;">${item.qty}</span>
+          <span style="padding:0 0.55rem;font-size:0.86rem;font-weight:600;">${item.qty}</span>
           <button type="button" class="qty-btn" data-cart-inc="${item.id}">+</button>
         </div>
       </div>
@@ -826,85 +1178,100 @@
     });
   }
 
+  async function handleOrderSubmit(targetChannel) {
+    const name = (document.getElementById("cart-customer-name")?.value || "").trim();
+    const phone = (document.getElementById("cart-customer-phone")?.value || "").trim();
+    const address = (document.getElementById("cart-customer-address")?.value || "").trim();
+    const note = (document.getElementById("cart-customer-note")?.value || "").trim();
+    const blessCheck = document.getElementById("cart-bless-checkbox")?.checked;
+
+    if (!name || !phone || !address) {
+      showToast("⚠️ Vui lòng điền Họ tên, Số điện thoại và Địa chỉ nhận vật phẩm!");
+      return;
+    }
+
+    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const itemsText = cart
+      .map((i, idx) => `${idx + 1}. ${i.name} (SL: ${i.qty}) - ${formatVND(i.price * i.qty)}`)
+      .join("\n");
+
+    const orderSummary = [
+      "🪷 ĐƠN THỈNH VẬT PHẨM - CÔ BÉ HỮU DUYÊN",
+      `• Tín chủ: ${name}`,
+      `• SĐT: ${phone}`,
+      `• Địa chỉ nhận: ${address}`,
+      `• Trì chú/Ghi sớ: ${blessCheck ? "Nhờ Cô trì chú khai quang theo tuổi" : "Không"}`,
+      note ? `• Ghi chú năm sinh: ${note}` : "",
+      "--- Danh sách vật phẩm ---",
+      itemsText,
+      `👉 TỔNG CỘNG: ${formatVND(total)}`,
+      "• Thanh toán: Vietcombank 0051000567270 (Nguyễn Thị Thu Hồng)"
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    copyToClipboard(
+      orderSummary,
+      "✅ Đã sao chép đơn hàng & đồng bộ lên hệ thống Telegram / D1!"
+    );
+
+    // 1. Tự động đẩy về Telegram Group & Cloudflare D1 Database
+    syncEventToCloud({
+      eventType: "order",
+      nickname: name,
+      phone,
+      amount: total,
+      message: orderSummary,
+      payload: { address, note, blessCheck, items: cart, channel: targetChannel }
+    });
+
+    // 2. Mở Zalo hoặc Facebook theo lựa chọn của khách
+    setTimeout(() => {
+      if (targetChannel === "facebook") {
+        window.open("https://www.facebook.com/nhu.lam.545518", "_blank", "noopener");
+      } else {
+        window.open(
+          `https://zalo.me/0702311558?text=${encodeURIComponent(orderSummary)}`,
+          "_blank",
+          "noopener"
+        );
+      }
+    }, 450);
+  }
+
   function initCartEvents() {
     updateCartBadge();
     document.getElementById("open-cart-btn")?.addEventListener("click", openCartDrawer);
     document.getElementById("close-cart-btn")?.addEventListener("click", closeCartDrawer);
 
     const backdrop = document.getElementById("cart-drawer-backdrop");
-    if (backdrop) {
-      backdrop.addEventListener("click", (e) => {
-        if (e.target === backdrop) closeCartDrawer();
-      });
-    }
+    backdrop?.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeCartDrawer();
+    });
 
     const phoneInput = document.getElementById("cart-customer-phone");
-    if (phoneInput) {
-      phoneInput.addEventListener("input", () => {
-        const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-        const qrImg = document.getElementById("cart-vietqr-img");
-        if (qrImg && total > 0) {
-          qrImg.src = buildVietQrUrl(total, `THINH VAT PHAM ${phoneInput.value.trim()}`);
-        }
-      });
-    }
+    phoneInput?.addEventListener("input", () => {
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const qrImg = document.getElementById("cart-vietqr-img");
+      if (qrImg && total > 0) {
+        qrImg.src = buildVietQrUrl(total, `THINH VAT PHAM ${phoneInput.value.trim()}`);
+      }
+    });
 
-    const submitZaloBtn = document.getElementById("btn-checkout-zalo");
-    if (submitZaloBtn) {
-      submitZaloBtn.addEventListener("click", () => {
-        const name = (document.getElementById("cart-customer-name")?.value || "").trim();
-        const phone = (document.getElementById("cart-customer-phone")?.value || "").trim();
-        const address = (document.getElementById("cart-customer-address")?.value || "").trim();
-        const note = (document.getElementById("cart-customer-note")?.value || "").trim();
-        const blessCheck = document.getElementById("cart-bless-checkbox")?.checked;
-
-        if (!name || !phone || !address) {
-          showToast("⚠️ Vui lòng điền Họ tên, Số điện thoại và Địa chỉ nhận vật phẩm!");
-          return;
-        }
-
-        const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-        const itemsText = cart
-          .map((i, idx) => `${idx + 1}. ${i.name} (SL: ${i.qty}) - ${formatVND(i.price * i.qty)}`)
-          .join("\n");
-
-        const orderSummary = [
-          "🪷 ĐƠN THỈNH VẬT PHẨM - CÔ BÉ HỮU DUYÊN",
-          `• Tín chủ: ${name}`,
-          `• SĐT: ${phone}`,
-          `• Địa chỉ nhận: ${address}`,
-          `• Yêu cầu trì chú/ghi sớ: ${blessCheck ? "Có nhờ Cô trì chú khai quang theo tuổi" : "Không"}`,
-          note ? `• Ghi chú năm sinh/lời nhắn: ${note}` : "",
-          "--- Danh sách vật phẩm ---",
-          itemsText,
-          `👉 TỔNG CỘNG: ${formatVND(total)}`,
-          "• Thanh toán: Chuyển khoản Vietcombank 0051000567270 (Nguyễn Thị Thu Hồng) / Hoặc xác nhận qua Zalo."
-        ]
-          .filter(Boolean)
-          .join("\n");
-
-        copyToClipboard(
-          orderSummary,
-          "✅ Đã sao chép nội dung đơn hàng! Đang mở Zalo Cô Bé Hữu Duyên (0702311558)..."
-        );
-
-        setTimeout(() => {
-          window.open(
-            `https://zalo.me/0702311558?text=${encodeURIComponent(orderSummary)}`,
-            "_blank",
-            "noopener"
-          );
-        }, 500);
-      });
-    }
+    document
+      .getElementById("btn-checkout-zalo")
+      ?.addEventListener("click", () => handleOrderSubmit("zalo"));
+    document
+      .getElementById("btn-checkout-fb")
+      ?.addEventListener("click", () => handleOrderSubmit("facebook"));
   }
 
-  // ---------- 7. 1-1 Master Booking Form ----------
+  // ---------- 8. 1-1 Master Booking Form (Auto Telegram & D1) ----------
   function initBookingForm() {
     const form = document.getElementById("master-booking-form");
     if (!form) return;
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = (document.getElementById("book-name")?.value || "").trim();
       const phone = (document.getElementById("book-phone")?.value || "").trim();
@@ -932,26 +1299,31 @@
 
       copyToClipboard(
         bookingMsg,
-        "✨ Đã sao chép phiếu đặt lịch! Đang kết nối tới Cô Bé Hữu Duyên..."
+        "✨ Đã sao chép phiếu đặt lịch & gửi thông báo về Telegram của Thầy!"
       );
+
+      syncEventToCloud({
+        eventType: "booking",
+        nickname: name,
+        phone,
+        message: bookingMsg,
+        payload: { dob, service, channel, note }
+      });
 
       const previewBox = document.getElementById("booking-confirmation-preview");
       if (previewBox) {
         previewBox.style.display = "block";
         previewBox.innerHTML = `
-          <strong style="color:var(--gold-light);display:block;margin-bottom:0.4rem;">✅ Phiếu Đặt Lịch Đã Sẵn Sàng!</strong>
-          <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:0.75rem;">
-            Hệ thống đã tự động sao chép thông tin của <strong>${name}</strong>. Bạn bấm chọn kênh bên dưới để gửi trực tiếp cho Cô Bé Hữu Duyên nhé:
+          <strong style="color:var(--gold-light);display:block;margin-bottom:0.35rem;">✅ Đã Ghi Nhận & Đồng Bộ Lịch Hẹn!</strong>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;">
+            Thông tin của <strong>${name}</strong> đã được lưu và gửi thông báo tới hệ thống của Cô Bé Hữu Duyên. Bạn bấm chọn kênh bên dưới để trò chuyện ngay:
           </p>
           <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-            <a href="https://zalo.me/0702311558?text=${encodeURIComponent(bookingMsg)}" target="_blank" rel="noopener" class="btn btn-gold" style="padding:0.55rem 1rem;font-size:0.85rem;">
-              💬 Gửi Qua Zalo (0702.311.558)
+            <a href="https://zalo.me/0702311558?text=${encodeURIComponent(bookingMsg)}" target="_blank" rel="noopener" class="btn btn-gold" style="padding:0.55rem 1rem;font-size:0.84rem;">
+              💬 Mở Zalo Gửi Ngay (0702.311.558)
             </a>
-            <a href="https://www.facebook.com/nhu.lam.545518" target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.55rem 1rem;font-size:0.85rem;">
+            <a href="https://www.facebook.com/nhu.lam.545518" target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.55rem 1rem;font-size:0.84rem;">
               📘 Nhắn Qua Facebook
-            </a>
-            <a href="https://www.tiktok.com/@cobehuuduyen" target="_blank" rel="noopener" class="btn btn-outline" style="padding:0.55rem 1rem;font-size:0.85rem;">
-              🎵 TikTok @cobehuuduyen
             </a>
           </div>
         `;
@@ -959,29 +1331,27 @@
     });
   }
 
-  // ---------- 8. Charity & Merit Donation Modal ----------
+  // ---------- 9. Charity & Merit Donation Modal (Auto Telegram & D1) ----------
   function initCharityActions() {
     const modal = document.getElementById("charity-donate-modal");
     const closeBtn = document.getElementById("close-charity-modal");
     const amountBtns = document.querySelectorAll("[data-donate-amount]");
     const customAmountInput = document.getElementById("charity-custom-amount");
     const donorNameInput = document.getElementById("charity-donor-name");
+    const donorWishInput = document.getElementById("charity-donor-wish");
     const campaignTitleEl = document.getElementById("charity-modal-campaign-title");
     const qrImg = document.getElementById("charity-vietqr-img");
     const syntaxTextEl = document.getElementById("charity-transfer-syntax");
 
     let currentSyntax = "GIEODUYEN";
+    let currentCampaignName = "Quỹ Từ Thiện & Phóng Sinh Cô Bé Hữu Duyên";
 
     function updateCharityQr() {
       const amt = parseInt(customAmountInput?.value || "200000", 10) || 200000;
       const donor = (donorNameInput?.value || "").trim() || "PHAT TU";
       const content = `${currentSyntax} ${donor}`.toUpperCase();
-      if (qrImg) {
-        qrImg.src = buildVietQrUrl(amt, content);
-      }
-      if (syntaxTextEl) {
-        syntaxTextEl.textContent = content;
-      }
+      if (qrImg) qrImg.src = buildVietQrUrl(amt, content);
+      if (syntaxTextEl) syntaxTextEl.textContent = content;
     }
 
     document.querySelectorAll("[data-open-charity]").forEach((btn) => {
@@ -990,13 +1360,12 @@
         const found = (CHARITY.campaigns || []).find((c) => c.id === campaignId);
         if (found) {
           currentSyntax = found.transferSyntax || "GIEODUYEN";
-          if (campaignTitleEl) campaignTitleEl.textContent = found.title;
+          currentCampaignName = found.title;
         } else {
           currentSyntax = "GIEODUYEN";
-          if (campaignTitleEl) {
-            campaignTitleEl.textContent = "Quỹ Từ Thiện & Phóng Sinh Cô Bé Hữu Duyên";
-          }
+          currentCampaignName = "Quỹ Từ Thiện & Phóng Sinh Cô Bé Hữu Duyên";
         }
+        if (campaignTitleEl) campaignTitleEl.textContent = currentCampaignName;
         updateCharityQr();
         modal?.classList.add("open");
       });
@@ -1020,6 +1389,56 @@
     customAmountInput?.addEventListener("input", updateCharityQr);
     donorNameInput?.addEventListener("input", updateCharityQr);
 
+    // Confirm Merit Donation -> Add to Golden Ledger + Send to Telegram & D1 + Open Zalo
+    document.getElementById("btn-confirm-charity-zalo")?.addEventListener("click", async () => {
+      const donor = (donorNameInput?.value || "").trim() || "Phật tử Hữu Duyên";
+      const amt = parseInt(customAmountInput?.value || "200000", 10) || 200000;
+      const wish =
+        (donorWishInput?.value || "").trim() ||
+        "Cầu gia đạo bình an, hồi hướng công đức cho khắp pháp giới chúng sinh";
+
+      const msg = [
+        "💛 BÁO CÔNG ĐỨC THIỆN NGUYỆN — CÔ BÉ HỮU DUYÊN",
+        `• Tín chủ phát tâm: ${donor}`,
+        `• Số tiền gieo duyên: ${formatVND(amt)}`,
+        `• Chiến dịch: ${currentCampaignName}`,
+        `• Lời cầu nguyện / Hồi hướng: ${wish}`,
+        "• Đã chuyển khoản vào Vietcombank 0051000567270 (Nguyễn Thị Thu Hồng)"
+      ].join("\n");
+
+      // Prepend to Golden Ledger table on page immediately
+      const tbody = document.getElementById("charity-ledger-tbody");
+      if (tbody) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${donor}</strong></td>
+          <td style="color:var(--gold-light);font-weight:700;">${formatVND(amt)}</td>
+          <td>${currentCampaignName}</td>
+          <td style="color:var(--text-secondary);font-style:italic;">“${wish}”</td>
+          <td style="color:var(--jade-green);">Vừa xong</td>
+        `;
+        tbody.prepend(tr);
+      }
+
+      copyToClipboard(msg, "🙏 Nam Mô Công Đức Lâm Bồ Tát! Đã ghi nhận vào Sổ Vàng & gửi Telegram!");
+
+      syncEventToCloud({
+        eventType: "charity",
+        nickname: donor,
+        amount: amt,
+        message: `${currentCampaignName} — Lời nguyện: ${wish}`,
+        payload: { campaign: currentCampaignName, wish }
+      });
+
+      setTimeout(() => {
+        window.open(
+          `https://zalo.me/0702311558?text=${encodeURIComponent(msg)}`,
+          "_blank",
+          "noopener"
+        );
+      }, 450);
+    });
+
     document.getElementById("btn-copy-bank-no")?.addEventListener("click", () => {
       copyToClipboard("0051000567270", "✅ Đã sao chép STK Vietcombank: 0051000567270");
     });
@@ -1030,6 +1449,7 @@
     initTheme();
     initMobileMenu();
     initLunarCalendar();
+    initOnlineChantSanctuary();
     initDivinationTabs();
     initShopControls();
     initCartEvents();

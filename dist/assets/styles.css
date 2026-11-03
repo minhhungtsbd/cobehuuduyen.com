@@ -1,8 +1,8 @@
 /* ==========================================================================
    CÔ BÉ HỮU DUYÊN — TÂM LINH, PHONG THUỶ & THIỆN NGUYỆN (https://cobehuuduyen.com)
-   Hệ thống giao diện kép:
-   - Chế độ Tối (Mặc định): Huyền Bí Á Đông (Đen Huyền Vũ, Đỏ Chu Sa, Vàng Kim)
-   - Chế độ Sáng (Thanh Tịnh): Thiền & Trầm Hương (Trắng Giấy Dó, Nâu Trầm, Vàng Đồng)
+   - Typography: Noto Serif (Tiêu đề trang nghiêm) & Plus Jakarta Sans (Nội dung rõ nét)
+   - Chuẩn hoá Header & Topbar Mobile (Không tràn chữ, nút gọn đẹp)
+   - Điện Thờ & Phòng Tụng Kinh Online (3 Phòng: Tam Bảo, Quán Âm, Thánh Mẫu)
    ========================================================================== */
 
 :root,
@@ -12,13 +12,13 @@
   --bg-card: #1c1411;
   --bg-card-hover: #251a16;
   --bg-elevated: #281c17;
-  --bg-glass: rgba(20, 14, 12, 0.88);
-  --bg-accent-subtle: rgba(212, 175, 55, 0.09);
-  --bg-crimson-subtle: rgba(168, 32, 32, 0.18);
+  --bg-glass: rgba(18, 12, 10, 0.92);
+  --bg-accent-subtle: rgba(212, 175, 55, 0.1);
+  --bg-crimson-subtle: rgba(168, 32, 32, 0.2);
 
-  --text-primary: #f7efe4;
-  --text-secondary: #d4c3b0;
-  --text-muted: #9e8a78;
+  --text-primary: #f9f3eb;
+  --text-secondary: #d7c7b5;
+  --text-muted: #a18d7b;
   --text-inverse: #120d0a;
 
   --gold-light: #fbe59b;
@@ -29,7 +29,7 @@
   --crimson-dark: #6b1111;
   --jade-green: #2ea87e;
 
-  --border-subtle: rgba(212, 175, 55, 0.22);
+  --border-subtle: rgba(212, 175, 55, 0.24);
   --border-strong: rgba(212, 175, 55, 0.55);
   --shadow-card: 0 14px 36px rgba(0, 0, 0, 0.55);
   --shadow-gold: 0 0 28px rgba(212, 175, 55, 0.22);
@@ -44,7 +44,7 @@
   --bg-card: #ffffff;
   --bg-card-hover: #fdfaf5;
   --bg-elevated: #efe3d2;
-  --bg-glass: rgba(250, 245, 237, 0.92);
+  --bg-glass: rgba(250, 245, 237, 0.94);
   --bg-accent-subtle: rgba(166, 124, 30, 0.1);
   --bg-crimson-subtle: rgba(158, 27, 27, 0.09);
 
@@ -84,7 +84,7 @@ html {
 }
 
 body {
-  font-family: "Be Vietnam Pro", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.65;
@@ -93,8 +93,8 @@ body {
 }
 
 h1, h2, h3, h4, .font-serif {
-  font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
-  line-height: 1.25;
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif;
+  line-height: 1.3;
   letter-spacing: 0.01em;
 }
 
@@ -123,9 +123,9 @@ img, svg {
 
 .container {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1260px;
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 1.15rem;
 }
 
 /* Skip link */
@@ -144,52 +144,64 @@ img, svg {
   top: 1rem;
 }
 
-/* Top Lunar & Contact Bar */
+/* ==========================================================================
+   TOP AUSPICIOUS BAR & STICKY HEADER (FIXED NO-WRAP & MOBILE CLEAN)
+   ========================================================================== */
 .top-auspicious-bar {
-  background: linear-gradient(90deg, #420b0b 0%, #6b1414 50%, #420b0b 100%);
+  background: linear-gradient(90deg, #3e0a0a 0%, #661212 50%, #3e0a0a 100%);
   color: #fbe59b;
-  font-size: 0.84rem;
-  border-bottom: 1px solid rgba(251, 229, 155, 0.25);
-  padding: 0.45rem 0;
+  font-size: 0.81rem;
+  border-bottom: 1px solid rgba(251, 229, 155, 0.24);
+  padding: 0.42rem 0;
 }
 
 .top-bar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .lunar-ticker {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .lunar-badge {
   background: rgba(251, 229, 155, 0.18);
   border: 1px solid rgba(251, 229, 155, 0.4);
-  padding: 0.12rem 0.55rem;
+  padding: 0.1rem 0.55rem;
   border-radius: 99px;
-  font-weight: 600;
-  font-size: 0.76rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.73rem;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+#top-lunar-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .top-bar-links {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   font-weight: 500;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .top-bar-links a {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   color: #fff5d6;
 }
 .top-bar-links a:hover {
@@ -206,26 +218,28 @@ img, svg {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-subtle);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 76px;
-  gap: 1rem;
+  min-height: 70px;
+  gap: 0.65rem;
+  flex-wrap: nowrap;
 }
 
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .brand-emblem {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   flex-shrink: 0;
   box-shadow: var(--shadow-gold);
@@ -234,40 +248,48 @@ img, svg {
 .brand-text {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .brand-name {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 1.55rem;
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 1.28rem;
   font-weight: 700;
   color: var(--gold-light);
-  line-height: 1.1;
-  letter-spacing: 0.02em;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 [data-theme="light"] .brand-name {
   color: var(--crimson-primary);
 }
 
 .brand-sub {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.15rem;
+  flex-shrink: 0;
 }
 
 .nav-link {
-  padding: 0.5rem 0.85rem;
+  padding: 0.48rem 0.68rem;
   border-radius: 8px;
-  font-size: 0.94rem;
-  font-weight: 500;
+  font-size: 0.87rem;
+  font-weight: 600;
   color: var(--text-secondary);
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
@@ -277,58 +299,71 @@ img, svg {
   background: var(--bg-accent-subtle);
 }
 
+.nav-link-highlight {
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  background: rgba(212, 175, 55, 0.08);
+  color: var(--gold-light);
+}
+
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  height: 42px;
-  padding: 0 0.85rem;
+  gap: 0.38rem;
+  height: 40px;
+  padding: 0 0.78rem;
   border-radius: 99px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-card);
   color: var(--text-primary);
-  font-size: 0.86rem;
+  font-size: 0.83rem;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
 .icon-btn:hover {
   border-color: var(--gold-primary);
-  transform: translateY(-1px);
   box-shadow: var(--shadow-gold);
 }
 
 .cart-badge {
   background: var(--crimson-primary);
   color: #ffffff;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  min-width: 22px;
-  height: 22px;
+  min-width: 20px;
+  height: 20px;
   border-radius: 99px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
+  padding: 0 5px;
+  flex-shrink: 0;
 }
 
 .mobile-menu-btn {
   display: none;
-  width: 42px;
+  width: 40px;
+  height: 40px;
   padding: 0;
+  font-size: 1.15rem;
 }
 
-/* Hero Section */
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
 .hero-section {
   position: relative;
-  padding: 4.5rem 0 3.5rem;
+  padding: 3.8rem 0 3.2rem;
   background: var(--gradient-hero);
   overflow: hidden;
   border-bottom: 1px solid var(--border-subtle);
@@ -338,10 +373,10 @@ img, svg {
   position: absolute;
   top: 50%;
   right: -8%;
-  width: 620px;
-  height: 620px;
+  width: 580px;
+  height: 580px;
   transform: translateY(-50%);
-  opacity: 0.12;
+  opacity: 0.11;
   pointer-events: none;
   animation: rotateSlow 90s linear infinite;
 }
@@ -355,40 +390,41 @@ img, svg {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 2.75rem;
+  grid-template-columns: 1.18fr 0.82fr;
+  gap: 2.5rem;
   align-items: center;
 }
 
 .auspicious-seal {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.4rem 1rem;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 99px;
   background: var(--bg-crimson-subtle);
   border: 1px solid var(--border-strong);
   color: var(--gold-light);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.1rem;
+  flex-wrap: wrap;
 }
 
 .seal-stamp {
   background: var(--crimson-primary);
   color: #fff;
-  font-family: "Cormorant Garamond", serif;
+  font-family: "Noto Serif", serif;
   font-weight: 700;
   padding: 0.1rem 0.5rem;
   border-radius: 4px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .hero-title {
-  font-size: clamp(2.25rem, 4.3vw, 3.65rem);
+  font-size: clamp(2rem, 3.8vw, 3.15rem);
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 1.15rem;
+  margin-bottom: 1.1rem;
 }
 
 .hero-title .gold-highlight {
@@ -400,30 +436,31 @@ img, svg {
 }
 
 .hero-subtitle {
-  font-size: 1.08rem;
+  font-size: 1.02rem;
   color: var(--text-secondary);
   max-width: 620px;
-  margin-bottom: 1.85rem;
+  margin-bottom: 1.65rem;
 }
 
 .hero-cta-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.9rem;
-  margin-bottom: 2.2rem;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  padding: 0.85rem 1.55rem;
+  gap: 0.5rem;
+  padding: 0.8rem 1.4rem;
   border-radius: 99px;
   font-weight: 600;
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   transition: all 0.25s ease;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-gold {
@@ -461,19 +498,19 @@ img, svg {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  padding-top: 1.5rem;
+  padding-top: 1.35rem;
   border-top: 1px solid var(--border-subtle);
 }
 
 .stat-item strong {
   display: block;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.65rem;
+  font-family: "Noto Serif", serif;
+  font-size: 1.5rem;
   color: var(--gold-light);
 }
 
 .stat-item span {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
@@ -482,7 +519,7 @@ img, svg {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: 22px;
-  padding: 1.75rem;
+  padding: 1.6rem;
   box-shadow: var(--shadow-card), var(--shadow-gold);
   position: relative;
   overflow: hidden;
@@ -501,13 +538,13 @@ img, svg {
 .altar-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
+  gap: 0.9rem;
+  margin-bottom: 1.15rem;
 }
 
 .altar-avatar {
-  width: 68px;
-  height: 68px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   border: 2px solid var(--gold-primary);
   background: radial-gradient(circle, #5e1111, #1a0909);
@@ -518,7 +555,7 @@ img, svg {
 }
 
 .altar-title h2 {
-  font-size: 1.45rem;
+  font-size: 1.35rem;
   color: var(--gold-light);
 }
 
@@ -526,7 +563,7 @@ img, svg {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--jade-green);
   font-weight: 600;
 }
@@ -535,14 +572,14 @@ img, svg {
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: 14px;
-  padding: 1.1rem;
-  margin-bottom: 1.2rem;
+  padding: 1rem;
+  margin-bottom: 1.1rem;
 }
 
 .lunar-daily-title {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--gold-primary);
   font-weight: 700;
   margin-bottom: 0.45rem;
@@ -554,39 +591,39 @@ img, svg {
 .lunar-date-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.65rem;
+  margin-bottom: 0.65rem;
 }
 
 .lunar-cell {
   background: var(--bg-card);
-  padding: 0.65rem 0.8rem;
+  padding: 0.6rem 0.75rem;
   border-radius: 10px;
   border: 1px solid var(--border-subtle);
 }
 
 .lunar-cell small {
   display: block;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
 }
 
 .lunar-cell strong {
-  font-size: 1.02rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
 }
 
 .lunar-hours {
-  font-size: 0.83rem;
+  font-size: 0.81rem;
   color: var(--text-secondary);
   border-top: 1px dashed var(--border-subtle);
-  padding-top: 0.6rem;
+  padding-top: 0.55rem;
 }
 
 .master-channels {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.6rem;
+  gap: 0.55rem;
 }
 
 .channel-pill {
@@ -594,11 +631,11 @@ img, svg {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.65rem 0.4rem;
+  padding: 0.6rem 0.35rem;
   border-radius: 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
   text-align: center;
   transition: all 0.2s ease;
@@ -611,15 +648,17 @@ img, svg {
 }
 
 .channel-pill span {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   font-weight: 400;
   margin-top: 2px;
 }
 
-/* Section Headers */
+/* ==========================================================================
+   SECTIONS & HEADINGS
+   ========================================================================== */
 .section {
-  padding: 4.5rem 0;
+  padding: 4.2rem 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -630,54 +669,386 @@ img, svg {
 .section-header {
   text-align: center;
   max-width: 760px;
-  margin: 0 auto 2.8rem;
+  margin: 0 auto 2.5rem;
 }
 
 .section-eyebrow {
   display: inline-block;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--gold-primary);
   background: var(--bg-accent-subtle);
   border: 1px solid var(--border-subtle);
-  padding: 0.28rem 0.9rem;
+  padding: 0.26rem 0.85rem;
   border-radius: 99px;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.7rem;
 }
 
 .section-title {
-  font-size: clamp(1.9rem, 3.2vw, 2.75rem);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
   color: var(--text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .section-desc {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: 0.98rem;
 }
 
-/* Divination Sanctuary Tabs */
+/* ==========================================================================
+   NEW FEATURE: ĐIỆN THỜ & PHÒNG TỤNG KINH ONLINE (3 PHÒNG LINH THIÊNG)
+   ========================================================================== */
+.sanctuary-room-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.room-select-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 1.15rem 1.25rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.room-select-card:hover {
+  border-color: var(--gold-primary);
+  transform: translateY(-2px);
+}
+
+.room-select-card.active {
+  background: linear-gradient(135deg, rgba(158, 27, 27, 0.28), rgba(212, 175, 55, 0.14));
+  border: 2px solid var(--gold-primary);
+  box-shadow: var(--shadow-gold);
+}
+
+.room-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+  margin-bottom: 0.45rem;
+}
+
+.sanctuary-main-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.altar-chamber {
+  background: radial-gradient(circle at 50% 28%, rgba(212, 175, 55, 0.22) 0%, rgba(107, 17, 17, 0.25) 45%, #110b09 92%);
+  border: 2px solid var(--border-strong);
+  border-radius: 22px;
+  padding: 1.75rem;
+  color: #f9f3eb;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card), var(--shadow-gold);
+}
+
+.altar-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.nickname-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 0.35rem 0.75rem;
+  border-radius: 99px;
+}
+
+.nickname-box input {
+  background: transparent;
+  border: none;
+  color: #fbe59b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  width: 155px;
+}
+.nickname-box input:focus {
+  outline: none;
+}
+
+/* Sacred Shrine Visual Stage */
+.altar-stage-visual {
+  position: relative;
+  min-height: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 42%, rgba(251, 229, 155, 0.26) 0%, rgba(20, 12, 10, 0.75) 75%);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.deity-halo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 229, 155, 0.45) 0%, rgba(212, 175, 55, 0.12) 60%, transparent 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 45px rgba(251, 229, 155, 0.35);
+  animation: pulseHalo 4s ease-in-out infinite;
+}
+
+@keyframes pulseHalo {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(251, 229, 155, 0.32); }
+  50% { transform: scale(1.04); box-shadow: 0 0 65px rgba(251, 229, 155, 0.55); }
+}
+
+/* Offerings Table on Altar */
+.altar-offerings-table {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 14px;
+  background: rgba(28, 16, 12, 0.85);
+  border-top: 3px solid #d4af37;
+  border-bottom: 2px solid #785407;
+  position: relative;
+}
+
+.offering-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #d7c7b5;
+  opacity: 0.45;
+  transition: all 0.35s ease;
+}
+
+.offering-slot.active {
+  opacity: 1;
+  color: #fbe59b;
+  transform: translateY(-3px);
+}
+
+/* Rising Incense Smoke Animation */
+.incense-smoke-container {
+  position: relative;
+  height: 36px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.smoke-wisp {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(3px);
+  opacity: 0;
+}
+
+.offering-slot.active .smoke-wisp {
+  animation: smokeRise 2.8s ease-in-out infinite;
+}
+.offering-slot.active .smoke-wisp:nth-child(2) {
+  animation-delay: 1.2s;
+}
+
+@keyframes smokeRise {
+  0% { transform: translateY(0) scaleX(1); opacity: 0.7; }
+  50% { transform: translateY(-16px) translateX(4px) scaleX(1.5); opacity: 0.45; }
+  100% { transform: translateY(-32px) translateX(-4px) scaleX(2); opacity: 0; }
+}
+
+/* Floating Sky Lanterns inside Altar */
+.floating-lantern {
+  position: absolute;
+  bottom: 10px;
+  padding: 0.3rem 0.65rem;
+  border-radius: 99px;
+  background: rgba(184, 37, 37, 0.88);
+  border: 1px solid #fbe59b;
+  color: #fbe59b;
+  font-size: 0.74rem;
+  pointer-events: none;
+  animation: floatUpLantern 6.5s ease-out forwards;
+  z-index: 10;
+}
+
+@keyframes floatUpLantern {
+  0% { transform: translateY(0) scale(0.9); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 0.95; }
+  100% { transform: translateY(-230px) scale(1.05); opacity: 0; }
+}
+
+/* Interactive Ritual Controls */
+.ritual-actions-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.ritual-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.68rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #fbe59b;
+  font-size: 0.83rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.ritual-btn:hover,
+.ritual-btn.active {
+  background: var(--gradient-gold);
+  color: #160f0a;
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+/* Scripture Teleprompter Box */
+.scripture-scroll-box {
+  background: rgba(12, 8, 7, 0.78);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+}
+
+.scripture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(212, 175, 55, 0.25);
+}
+
+.chant-lines-list {
+  max-height: 175px;
+  overflow-y: auto;
+  display: grid;
+  gap: 0.55rem;
+  padding-right: 0.35rem;
+}
+
+.chant-line {
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 0.98rem;
+  color: #bda894;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.chant-line.current {
+  background: rgba(212, 175, 55, 0.18);
+  color: #fbe59b;
+  border-left: 3px solid #d4af37;
+  font-weight: 700;
+}
+
+/* Right Column: Community Prayer Wall & Merit Counter */
+.sanctuary-sidebar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 22px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.merit-counter-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prayer-feed-list {
+  display: grid;
+  gap: 0.65rem;
+  max-height: 310px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.prayer-feed-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   DIVINATION SANCTUARY TABS
+   ========================================================================== */
 .divination-tabs {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-bottom: 2.2rem;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
 }
 
 .tab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.35rem;
+  gap: 0.45rem;
+  padding: 0.7rem 1.25rem;
   border-radius: 99px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   font-weight: 600;
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
@@ -698,7 +1069,7 @@ img, svg {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: 22px;
-  padding: 2.25rem;
+  padding: 2rem;
   box-shadow: var(--shadow-card);
 }
 
@@ -715,7 +1086,7 @@ img, svg {
 .oracle-layout {
   display: grid;
   grid-template-columns: 0.95fr 1.05fr;
-  gap: 2.25rem;
+  gap: 2rem;
   align-items: start;
 }
 
@@ -723,14 +1094,14 @@ img, svg {
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  padding: 1.75rem;
+  padding: 1.6rem;
   text-align: center;
 }
 
 .xam-cylinder-wrap {
-  width: 150px;
-  height: 180px;
-  margin: 0 auto 1.25rem;
+  width: 145px;
+  height: 175px;
+  margin: 0 auto 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -751,7 +1122,7 @@ img, svg {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.85rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
   text-align: left;
 }
 
@@ -759,19 +1130,19 @@ img, svg {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.85rem;
   text-align: left;
 }
 
 .form-group label {
-  font-size: 0.84rem;
+  font-size: 0.83rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .form-control {
   width: 100%;
-  padding: 0.72rem 0.95rem;
+  padding: 0.68rem 0.9rem;
   border-radius: 10px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-primary);
@@ -788,8 +1159,8 @@ img, svg {
   background: var(--bg-secondary);
   border: 1px solid var(--border-strong);
   border-radius: 18px;
-  padding: 1.75rem;
-  min-height: 340px;
+  padding: 1.65rem;
+  min-height: 330px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -799,22 +1170,22 @@ img, svg {
   display: inline-block;
   background: var(--gradient-crimson);
   color: #fbe59b;
-  padding: 0.3rem 0.85rem;
+  padding: 0.28rem 0.8rem;
   border-radius: 99px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.55rem;
 }
 
 .poem-scroll {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 1.22rem;
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 1.12rem;
   font-style: italic;
   background: var(--bg-card);
   border-left: 3px solid var(--gold-primary);
-  padding: 1rem 1.25rem;
+  padding: 0.95rem 1.15rem;
   border-radius: 0 12px 12px 0;
-  margin: 1rem 0;
+  margin: 0.9rem 0;
   white-space: pre-line;
   color: var(--gold-light);
 }
@@ -822,14 +1193,14 @@ img, svg {
 .advice-list {
   list-style: none;
   display: grid;
-  gap: 0.6rem;
-  margin: 1rem 0 1.25rem;
-  font-size: 0.92rem;
+  gap: 0.55rem;
+  margin: 0.9rem 0 1.15rem;
+  font-size: 0.9rem;
 }
 
 .advice-list li {
   background: var(--bg-card);
-  padding: 0.65rem 0.9rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 10px;
   border: 1px solid var(--border-subtle);
 }
@@ -838,13 +1209,13 @@ img, svg {
 .coins-row {
   display: flex;
   justify-content: center;
-  gap: 1.2rem;
-  margin: 1.2rem 0;
+  gap: 1.1rem;
+  margin: 1.1rem 0;
 }
 
 .ancient-coin {
-  width: 68px;
-  height: 68px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: radial-gradient(circle, #fbe59b 0%, #c99722 70%, #785407 100%);
   border: 3px solid #f7e08b;
@@ -852,13 +1223,12 @@ img, svg {
   align-items: center;
   justify-content: center;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-  position: relative;
 }
 
 .ancient-coin::after {
   content: "";
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 2px solid #593b02;
   background: var(--bg-secondary);
 }
@@ -875,16 +1245,16 @@ img, svg {
 .tarot-spread {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin: 1.25rem 0;
+  gap: 0.85rem;
+  margin: 1.15rem 0;
 }
 
 .tarot-card-slot {
   background: linear-gradient(145deg, #2d1614, #140b0a);
   border: 2px solid var(--gold-primary);
   border-radius: 14px;
-  padding: 1.2rem 0.85rem;
-  min-height: 210px;
+  padding: 1.1rem 0.75rem;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -900,36 +1270,38 @@ img, svg {
 }
 
 .tarot-slot-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--gold-primary);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
 }
 
-/* Products Catalog */
+/* ==========================================================================
+   PRODUCTS CATALOG
+   ========================================================================== */
 .shop-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.85rem;
 }
 
 .category-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .cat-pill {
-  padding: 0.58rem 1.15rem;
+  padding: 0.55rem 1.05rem;
   border-radius: 99px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-card);
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.2s ease;
 }
@@ -943,14 +1315,14 @@ img, svg {
 
 .shop-filter-right {
   display: flex;
-  gap: 0.65rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.4rem;
 }
 
 .product-card {
@@ -971,12 +1343,12 @@ img, svg {
 
 .product-visual {
   position: relative;
-  height: 205px;
+  height: 195px;
   background: radial-gradient(circle at 50% 40%, rgba(212, 175, 55, 0.2), rgba(24, 14, 12, 0.92));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  padding: 1.2rem;
   border-bottom: 1px solid var(--border-subtle);
 }
 [data-theme="light"] .product-visual {
@@ -985,38 +1357,38 @@ img, svg {
 
 .product-badge {
   position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
+  top: 0.7rem;
+  left: 0.7rem;
   background: var(--gradient-crimson);
   color: #fbe59b;
-  font-size: 0.73rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.25rem 0.65rem;
+  padding: 0.22rem 0.62rem;
   border-radius: 99px;
   border: 1px solid rgba(251, 229, 155, 0.35);
 }
 
 .product-element-tag {
   position: absolute;
-  bottom: 0.65rem;
-  right: 0.75rem;
-  background: rgba(15, 11, 9, 0.8);
+  bottom: 0.6rem;
+  right: 0.7rem;
+  background: rgba(15, 11, 9, 0.84);
   color: #fbe59b;
-  font-size: 0.72rem;
-  padding: 0.2rem 0.6rem;
+  font-size: 0.71rem;
+  padding: 0.18rem 0.55rem;
   border-radius: 6px;
   border: 1px solid rgba(212, 175, 55, 0.35);
 }
 
 .product-body {
-  padding: 1.25rem;
+  padding: 1.2rem;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .product-cat-label {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--gold-primary);
@@ -1025,28 +1397,28 @@ img, svg {
 }
 
 .product-title {
-  font-size: 1.2rem;
+  font-size: 1.12rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
 }
 
 .product-desc {
-  font-size: 0.88rem;
+  font-size: 0.87rem;
   color: var(--text-secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.95rem;
   flex: 1;
 }
 
 .product-price-row {
   display: flex;
   align-items: baseline;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
+  gap: 0.55rem;
+  margin-bottom: 0.95rem;
 }
 
 .price-current {
-  font-size: 1.25rem;
+  font-size: 1.22rem;
   font-weight: 800;
   color: var(--gold-light);
 }
@@ -1055,7 +1427,7 @@ img, svg {
 }
 
 .price-old {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
   text-decoration: line-through;
 }
@@ -1066,11 +1438,13 @@ img, svg {
   gap: 0.5rem;
 }
 
-/* Booking 1-1 Master Section */
+/* ==========================================================================
+   BOOKING & CHARITY SECTIONS
+   ========================================================================== */
 .booking-grid {
   display: grid;
   grid-template-columns: 1fr 1.05fr;
-  gap: 2.25rem;
+  gap: 2rem;
   align-items: start;
 }
 
@@ -1078,15 +1452,15 @@ img, svg {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 1.85rem;
   box-shadow: var(--shadow-card);
 }
 
 .service-check-list {
   list-style: none;
   display: grid;
-  gap: 0.85rem;
-  margin: 1.4rem 0;
+  gap: 0.8rem;
+  margin: 1.25rem 0;
 }
 
 .service-check-list li {
@@ -1094,23 +1468,24 @@ img, svg {
   align-items: flex-start;
   gap: 0.7rem;
   background: var(--bg-secondary);
-  padding: 0.85rem 1rem;
+  padding: 0.8rem 0.95rem;
   border-radius: 12px;
   border: 1px solid var(--border-subtle);
-  font-size: 0.93rem;
+  font-size: 0.9rem;
 }
 
 .social-connect-cards {
   display: grid;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
+  gap: 0.7rem;
+  margin-top: 1.15rem;
 }
 
 .social-card-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 1.15rem;
+  gap: 0.75rem;
+  padding: 0.85rem 1.05rem;
   border-radius: 14px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
@@ -1123,13 +1498,12 @@ img, svg {
   transform: translateX(4px);
 }
 
-/* Charity Section */
 .charity-banner {
   background: linear-gradient(135deg, rgba(158, 27, 27, 0.22), rgba(212, 175, 55, 0.12));
   border: 1px solid var(--border-strong);
   border-radius: 20px;
-  padding: 1.75rem 2rem;
-  margin-bottom: 2.25rem;
+  padding: 1.65rem 1.85rem;
+  margin-bottom: 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1139,16 +1513,16 @@ img, svg {
 
 .charity-campaigns-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 1.4rem;
+  margin-bottom: 2.25rem;
 }
 
 .campaign-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  padding: 1.6rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-card);
@@ -1160,7 +1534,7 @@ img, svg {
   background: var(--bg-secondary);
   border-radius: 99px;
   overflow: hidden;
-  margin: 0.75rem 0 0.5rem;
+  margin: 0.7rem 0 0.5rem;
   border: 1px solid var(--border-subtle);
 }
 
@@ -1173,43 +1547,45 @@ img, svg {
 .campaign-stats-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   color: var(--text-secondary);
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
 }
 
 .donors-ledger {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: 18px;
-  padding: 1.65rem;
+  padding: 1.5rem;
 }
 
 .ledger-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
-  margin-top: 1rem;
+  font-size: 0.88rem;
+  margin-top: 0.9rem;
 }
 
 .ledger-table th,
 .ledger-table td {
   text-align: left;
-  padding: 0.75rem 0.65rem;
+  padding: 0.7rem 0.6rem;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .ledger-table th {
   color: var(--gold-primary);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
 }
 
-/* Slide-over Cart & Modals */
+/* ==========================================================================
+   MODALS, DRAWER, FLOATING CONTACTS & FOOTER
+   ========================================================================== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.76);
   backdrop-filter: blur(5px);
   z-index: 2000;
   display: none;
@@ -1226,19 +1602,18 @@ img, svg {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: 20px;
-  max-width: 680px;
+  max-width: 660px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 1.75rem;
+  padding: 1.6rem;
   box-shadow: var(--shadow-card);
-  position: relative;
 }
 
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(0, 0, 0, 0.74);
   backdrop-filter: blur(4px);
   z-index: 2100;
   display: none;
@@ -1251,13 +1626,13 @@ img, svg {
 
 .cart-drawer {
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
   background: var(--bg-card);
   border-left: 1px solid var(--border-strong);
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 1.4rem;
   overflow-y: auto;
 }
 
@@ -1266,7 +1641,7 @@ img, svg {
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.85rem 0;
+  padding: 0.8rem 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -1290,36 +1665,36 @@ img, svg {
   background: #ffffff;
   color: #120d0a;
   border-radius: 16px;
-  padding: 1.15rem;
+  padding: 1.1rem;
   text-align: center;
-  margin: 1rem 0;
+  margin: 0.95rem 0;
   border: 2px solid var(--gold-primary);
 }
 
 .vietqr-box img {
-  max-width: 230px;
-  margin: 0.5rem auto;
+  max-width: 220px;
+  margin: 0.45rem auto;
   border-radius: 8px;
 }
 
-/* Floating Quick Contact Bar */
+/* Floating Contact Bar */
 .floating-contact {
   position: fixed;
-  right: 1.15rem;
-  bottom: 1.25rem;
+  right: 1rem;
+  bottom: 1.1rem;
   z-index: 1500;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.55rem;
 }
 
 .float-btn {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.65rem 1rem;
+  gap: 0.5rem;
+  padding: 0.6rem 0.95rem;
   border-radius: 99px;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #ffffff;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
@@ -1348,32 +1723,31 @@ img, svg {
 /* Footer */
 .site-footer {
   background: var(--bg-secondary);
-  padding: 3.5rem 0 2rem;
+  padding: 3.2rem 0 2rem;
   border-top: 2px solid var(--border-strong);
 }
 
 .footer-grid {
   display: grid;
   grid-template-columns: 1.3fr 0.9fr 1fr;
-  gap: 2.25rem;
-  margin-bottom: 2.25rem;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .footer-bottom {
-  padding-top: 1.5rem;
+  padding-top: 1.35rem;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   color: var(--text-muted);
 }
 
-/* Toast notification */
 .toast-container {
   position: fixed;
-  bottom: 1.5rem;
+  bottom: 1.25rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3000;
@@ -1381,44 +1755,48 @@ img, svg {
   flex-direction: column;
   gap: 0.5rem;
   pointer-events: none;
+  width: max-content;
+  max-width: 92vw;
 }
 
 .toast-msg {
   background: var(--gradient-crimson);
   color: #fbe59b;
   border: 1px solid var(--gold-primary);
-  padding: 0.75rem 1.35rem;
+  padding: 0.7rem 1.2rem;
   border-radius: 99px;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 600;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  animation: fadeIn 0.25s ease;
+  text-align: center;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .hero-grid,
-  .oracle-layout,
-  .booking-grid,
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-
+/* ==========================================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE OPTIMIZATION)
+   ========================================================================== */
+@media (max-width: 1120px) {
   .main-nav {
     display: none;
     position: absolute;
-    top: 76px;
+    top: 100%;
     left: 0;
     right: 0;
     background: var(--bg-card);
     flex-direction: column;
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-strong);
+    align-items: stretch;
+    padding: 0.85rem 1.15rem;
+    border-bottom: 2px solid var(--border-strong);
     box-shadow: var(--shadow-card);
+    gap: 0.35rem;
   }
 
   .main-nav.open {
     display: flex;
+  }
+
+  .nav-link {
+    padding: 0.72rem 0.9rem;
+    font-size: 0.95rem;
   }
 
   .mobile-menu-btn {
@@ -1426,15 +1804,84 @@ img, svg {
   }
 }
 
+@media (max-width: 992px) {
+  .hero-grid,
+  .sanctuary-main-grid,
+  .oracle-layout,
+  .booking-grid,
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sanctuary-room-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 640px) {
+  .top-bar-links {
+    display: none;
+  }
+
+  .top-auspicious-bar {
+    padding: 0.35rem 0;
+    font-size: 0.75rem;
+  }
+
+  .header-inner {
+    min-height: 62px;
+    gap: 0.4rem;
+  }
+
+  .brand-emblem {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-name {
+    font-size: 1.08rem;
+  }
+
+  .brand-sub {
+    display: none;
+  }
+
+  .icon-btn {
+    height: 36px;
+    padding: 0 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  #theme-toggle-label,
+  .cart-btn-text-extra {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero-section {
+    padding: 2.2rem 0 2rem;
+  }
+
   .oracle-form-row,
   .tarot-spread,
   .hero-stats {
     grid-template-columns: 1fr;
   }
 
-  .top-bar-links {
-    display: none;
+  .divination-panel,
+  .altar-chamber,
+  .sanctuary-sidebar,
+  .master-profile-card {
+    padding: 1.25rem;
+  }
+
+  .altar-offerings-table {
+    gap: 0.85rem;
+    padding: 0.65rem 0.8rem;
   }
 
   .float-btn span {
@@ -1442,8 +1889,8 @@ img, svg {
   }
 
   .float-btn {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     justify-content: center;
   }

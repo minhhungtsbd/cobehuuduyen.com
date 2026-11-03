@@ -9,6 +9,7 @@ const config = JSON.parse(await fs.readFile(path.join(rootDir, "src/data/site.co
 const productsData = JSON.parse(await fs.readFile(path.join(rootDir, "src/data/products.json"), "utf8"));
 const fortunesData = JSON.parse(await fs.readFile(path.join(rootDir, "src/data/fortunes.json"), "utf8"));
 const charityData = JSON.parse(await fs.readFile(path.join(rootDir, "src/data/charity.json"), "utf8"));
+const sanctuaryData = JSON.parse(await fs.readFile(path.join(rootDir, "src/data/sanctuary.json"), "utf8"));
 
 const cssHash = crypto
   .createHash("sha256")
@@ -80,6 +81,8 @@ const schemaJsonLd = {
   ]
 };
 
+const defaultRoom = sanctuaryData.rooms[0];
+
 const indexHtml = `<!DOCTYPE html>
 <html lang="vi" data-theme="dark">
 <head>
@@ -87,7 +90,7 @@ const indexHtml = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${config.fullTitle}</title>
   <meta name="description" content="${config.description}" />
-  <meta name="keywords" content="Cô Bé Hữu Duyên, xem bói, gieo quẻ kinh dịch, xin xăm quán âm, bói bài tarot, vật phẩm phong thuỷ, đồ hàng mã cúng lễ, từ thiện phóng sinh, cobehuuduyen" />
+  <meta name="keywords" content="Cô Bé Hữu Duyên, tụng kinh online, đi chùa online, xem bói, gieo quẻ kinh dịch, xin xăm quán âm, vật phẩm phong thuỷ, đồ hàng mã cúng lễ, từ thiện phóng sinh, cobehuuduyen" />
   <link rel="canonical" href="${config.domain}/" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -100,10 +103,10 @@ const indexHtml = `<!DOCTYPE html>
   <meta property="og:url" content="${config.domain}/" />
   <meta property="og:image" content="${config.domain}/og-banner.svg" />
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Noto Serif (Chuẩn mực Tâm linh Á Đông) + Plus Jakarta Sans (Hiện đại, rõ nét) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/assets/styles.css?v=${cssHash}" />
   <script type="application/ld+json">${JSON.stringify(schemaJsonLd)}</script>
@@ -128,11 +131,11 @@ const indexHtml = `<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- Sticky Main Header -->
+  <!-- Sticky Main Header (Mobile & Desktop Optimized, No Wrapping) -->
   <header class="site-header">
     <div class="container header-inner">
       <a href="/" class="brand-logo" aria-label="${config.brandName}">
-        <img src="/favicon.svg" alt="Logo ${config.brandName}" class="brand-emblem" width="46" height="46" />
+        <img src="/favicon.svg" alt="Logo ${config.brandName}" class="brand-emblem" width="42" height="42" />
         <div class="brand-text">
           <span class="brand-name">${config.brandName}</span>
           <span class="brand-sub">Tâm Linh • Phong Thuỷ • Thiện Nguyện</span>
@@ -140,11 +143,11 @@ const indexHtml = `<!DOCTYPE html>
       </a>
 
       <nav class="main-nav" id="main-nav" aria-label="Điều hướng chính">
-        <a href="#xem-boi" class="nav-link">☯️ Xem Bói & Gieo Quẻ</a>
+        <a href="#tung-kinh" class="nav-link nav-link-highlight">🙏 Phòng Tụng Kinh Online</a>
+        <a href="#xem-boi" class="nav-link">☯️ Xem Bói</a>
         <a href="#vat-pham" class="nav-link">🪷 Hàng Mã & Phong Thuỷ</a>
-        <a href="#dat-lich" class="nav-link">📿 Đặt Lịch Thầy 1-1</a>
-        <a href="#tu-thien" class="nav-link">💛 Quỹ Từ Thiện</a>
-        <a href="#lien-he" class="nav-link">Liên Hệ</a>
+        <a href="#dat-lich" class="nav-link">📿 Đặt Lịch 1-1</a>
+        <a href="#tu-thien" class="nav-link">💛 Từ Thiện</a>
       </nav>
 
       <div class="header-actions">
@@ -154,7 +157,7 @@ const indexHtml = `<!DOCTYPE html>
         </button>
 
         <button type="button" class="icon-btn" id="open-cart-btn" aria-label="Mở giỏ vật phẩm">
-          <span>🛒 Giỏ Thỉnh</span>
+          <span>🛒 Giỏ<span class="cart-btn-text-extra"> Thỉnh</span></span>
           <span class="cart-badge" id="cart-count-badge">0</span>
         </button>
 
@@ -168,7 +171,6 @@ const indexHtml = `<!DOCTYPE html>
   <main id="main-content">
     <!-- HERO SECTION -->
     <section class="hero-section">
-      <!-- Rotating Bagua Mandala SVG Background -->
       <svg class="hero-bg-mandala" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <circle cx="200" cy="200" r="190" stroke="#D4AF37" stroke-width="2" stroke-dasharray="8 8"/>
         <circle cx="200" cy="200" r="155" stroke="#D4AF37" stroke-width="1.5"/>
@@ -189,12 +191,12 @@ const indexHtml = `<!DOCTYPE html>
           </h1>
 
           <p class="hero-subtitle">
-            Nơi hội tụ tinh hoa <strong>Xem Bói Kinh Dịch, Xin Xăm, Tarot</strong>, tư vấn 1-1 trực tiếp cùng thầy qua Zalo/TikTok/Facebook; cung cấp <strong>Đồ Hàng Mã chuẩn lễ, Vật Phẩm Phong Thuỷ trì chú</strong> và lan toả <strong>Quỹ Từ Thiện Gieo Duyên Lành</strong>.
+            Không gian tâm linh trực tuyến: <strong>Toạ Phòng Tụng Kinh & Dâng Lễ Online</strong> cùng đạo tràng Phật tử, <strong>Xin Xăm – Kinh Dịch – Tarot</strong>, Đặt lịch xem 1-1 cùng thầy qua Zalo/TikTok/Facebook, thỉnh <strong>Đồ Hàng Mã – Vật Phẩm Phong Thuỷ trì chú</strong> và <strong>Quỹ Từ Thiện Minh Bạch</strong>.
           </p>
 
           <div class="hero-cta-group">
-            <a href="#xem-boi" class="btn btn-gold">🙏 Gieo Quẻ & Xin Xăm Ngay</a>
-            <a href="#dat-lich" class="btn btn-crimson">📿 Đặt Lịch Xem Trực Tiếp 1-1</a>
+            <a href="#tung-kinh" class="btn btn-gold">🙏 Vào Phòng Tụng Kinh Online</a>
+            <a href="#xem-boi" class="btn btn-crimson">☯️ Gieo Quẻ & Xin Xăm</a>
             <a href="#vat-pham" class="btn btn-outline">🪷 Thỉnh Hàng Mã & Phong Thuỷ</a>
           </div>
 
@@ -215,7 +217,7 @@ const indexHtml = `<!DOCTYPE html>
         <aside class="hero-altar-card" aria-label="Thông tin Cô Bé Hữu Duyên & Lịch Vạn Niên">
           <div class="altar-header">
             <div class="altar-avatar">
-              <img src="/favicon.svg" alt="Ấn triện Cô Bé Hữu Duyên" width="48" height="48" />
+              <img src="/favicon.svg" alt="Ấn triện Cô Bé Hữu Duyên" width="46" height="46" />
             </div>
             <div class="altar-title">
               <h2>${config.contact.masterName}</h2>
@@ -240,11 +242,11 @@ const indexHtml = `<!DOCTYPE html>
             </div>
             <div class="lunar-hours" id="hero-auspicious-hours">
               <strong>Giờ Hoàng Đạo:</strong> Tý, Sửu, Mão, Ngọ, Thân, Dậu.<br />
-              <strong>Việc tốt:</strong> Cầu an, dâng lễ, thỉnh vật phẩm, phóng sinh.
+              <strong>Việc tốt:</strong> Vào phòng tụng kinh, dâng hương, gieo quẻ, phóng sinh.
             </div>
           </div>
 
-          <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:0.85rem;">
+          <p style="font-size:0.84rem;color:var(--text-secondary);margin-bottom:0.75rem;">
             Kết nối trực tiếp với <strong>Cô Bé Hữu Duyên</strong> qua 3 kênh chính thức:
           </p>
 
@@ -263,6 +265,149 @@ const indexHtml = `<!DOCTYPE html>
             </a>
           </div>
         </aside>
+      </div>
+    </section>
+
+    <!-- NEW SECTION: ĐIỆN THỜ & PHÒNG TỤNG KINH ONLINE (3 PHÒNG LINH THIÊNG) -->
+    <section class="section section-alt" id="tung-kinh">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Đạo Tràng Trực Tuyến • Đồng Thanh Tụng Niệm • Cảm Ứng Đạo Giao</span>
+          <h2 class="section-title">Điện Thờ & Phòng Tụng Kinh Online Cùng Phật Tử</h2>
+          <p class="section-desc">
+            Chọn 1 trong 3 Điện Thờ linh thiêng bên dưới, đặt <strong>Pháp danh / Tên tín chủ</strong> của bạn để cùng các Phật tử thắp hương, dâng hoa sen, gõ mõ tụng kinh, thỉnh chuông Bát Nhã và thả Đèn Hoa Đăng nguyện cầu.
+          </p>
+        </div>
+
+        <!-- 3 Room Cards -->
+        <div class="sanctuary-room-selector" role="tablist" aria-label="Chọn phòng tụng kinh online">
+          ${sanctuaryData.rooms
+            .map(
+              (room, idx) => `
+            <button type="button" class="room-select-card ${idx === 0 ? "active" : ""}" data-room-id="${room.id}">
+              <span class="room-live-pill">● Đang mở cửa đạo tràng • ${room.badge}</span>
+              <h3 style="font-size:1.22rem;color:var(--gold-light);margin-bottom:0.25rem;">${room.name}</h3>
+              <p style="font-size:0.82rem;color:var(--text-secondary);">${room.deityTitle}</p>
+            </button>`
+            )
+            .join("")}
+        </div>
+
+        <div class="sanctuary-main-grid">
+          <!-- Left: Sacred Altar & Interactive Rituals -->
+          <div class="altar-chamber">
+            <div class="altar-top-bar">
+              <div>
+                <h3 id="sanctuary-room-title" style="font-size:1.4rem;color:#fbe59b;">${defaultRoom.name}</h3>
+                <small id="sanctuary-deity-title" style="color:#d7c7b5;">${defaultRoom.deityTitle}</small>
+              </div>
+              <div class="nickname-box" title="Đặt Pháp danh hoặc Tên tín chủ của bạn trong phòng">
+                <span style="font-size:0.8rem;color:#d7c7b5;">🪷 Pháp danh/Tên:</span>
+                <input type="text" id="sanctuary-nickname-input" placeholder="Nhập tên của bạn..." value="Phật tử Hữu Duyên" />
+              </div>
+            </div>
+
+            <!-- Visual Altar Stage -->
+            <div class="altar-stage-visual" id="altar-stage-visual">
+              <div class="deity-halo" id="sanctuary-deity-halo">
+                <svg width="110" height="110" viewBox="0 0 120 120" fill="none">
+                  <circle cx="60" cy="60" r="52" stroke="#FBE59B" stroke-width="2" stroke-dasharray="4 4"/>
+                  <path d="M60 18C68 34 78 46 78 60C78 72 70 80 60 84C50 80 42 72 42 60C42 46 52 34 60 18Z" fill="#FBE59B"/>
+                  <path d="M32 82C46 90 74 90 88 82" stroke="#D4AF37" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <p id="sanctuary-mantra-short" style="margin-top:0.75rem;font-family:'Noto Serif',serif;font-weight:700;color:#fbe59b;text-align:center;">
+                🙏 ${defaultRoom.mantraShort}
+              </p>
+
+              <!-- Offerings Table -->
+              <div class="altar-offerings-table">
+                <div class="offering-slot active" id="slot-lamp">
+                  <span style="font-size:1.45rem;">🕯️</span>
+                  <span>Đèn Liên Hoa</span>
+                </div>
+                <div class="offering-slot active" id="slot-incense">
+                  <div class="incense-smoke-container">
+                    <span class="smoke-wisp"></span>
+                    <span class="smoke-wisp"></span>
+                    <span style="font-size:1.55rem;">🏺</span>
+                  </div>
+                  <span>Lư Hương Trầm</span>
+                </div>
+                <div class="offering-slot active" id="slot-flower">
+                  <span style="font-size:1.45rem;">🪷</span>
+                  <span>Hoa Sen & Quả</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Ritual Buttons -->
+            <div class="ritual-actions-bar">
+              <button type="button" class="ritual-btn" id="ritual-incense-btn">🔥 Dâng Hương Trầm</button>
+              <button type="button" class="ritual-btn" id="ritual-flower-btn">🪷 Dâng Hoa Quả</button>
+              <button type="button" class="ritual-btn" id="ritual-lamp-btn">🕯️ Thắp Đèn Trí Tuệ</button>
+              <button type="button" class="ritual-btn" id="ritual-bell-btn">🔔 Thỉnh Chuông</button>
+              <button type="button" class="ritual-btn" id="ritual-mo-btn">🥁 Gõ Mõ Tụng Kinh</button>
+              <button type="button" class="ritual-btn" id="ritual-mala-btn">📿 Lần Chuỗi 108 Hạt</button>
+            </div>
+
+            <!-- Scripture Teleprompter -->
+            <div class="scripture-scroll-box">
+              <div class="scripture-header">
+                <strong id="sanctuary-chant-title" style="color:#fbe59b;font-size:0.92rem;">📖 ${defaultRoom.chantTitle}</strong>
+                <button type="button" class="btn btn-gold" id="btn-auto-chant" style="padding:0.38rem 0.85rem;font-size:0.78rem;">
+                  ▶️ Tự Động Chạy Kinh Theo Nhịp Mõ
+                </button>
+              </div>
+              <div class="chant-lines-list" id="sanctuary-chant-lines">
+                ${defaultRoom.chantLines
+                  .map(
+                    (line, idx) =>
+                      `<div class="chant-line ${idx === 0 ? "current" : ""}" data-line-idx="${idx}">${line}</div>`
+                  )
+                  .join("")}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Community Prayer Wall & Merit Counter -->
+          <aside class="sanctuary-sidebar">
+            <div class="merit-counter-card">
+              <div>
+                <small style="color:var(--text-muted);display:block;">Công đức tụng niệm của bạn:</small>
+                <strong style="font-size:1.25rem;color:var(--gold-light);"><span id="sanctuary-merit-count">18</span> Hạt Công Đức</strong>
+              </div>
+              <span style="font-size:2rem;">📿</span>
+            </div>
+
+            <div>
+              <h3 style="font-size:1.2rem;color:var(--gold-light);margin-bottom:0.3rem;">🏮 Thả Đèn Hoa Đăng Cầu Nguyện</h3>
+              <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem;">
+                Lời nguyện cầu của bạn sẽ bay lên điện thờ, hiển thị cùng đạo tràng và lưu vào sổ cầu an của Cô Bé Hữu Duyên.
+              </p>
+              <form id="sanctuary-prayer-form">
+                <div class="form-group">
+                  <textarea
+                    id="sanctuary-wish-input"
+                    rows="2"
+                    class="form-control"
+                    placeholder="Nhập lời cầu bình an, sức khoẻ, tài lộc cho bản thân & gia đình..."
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-gold" style="width:100%;padding:0.65rem 1rem;font-size:0.88rem;">
+                  🏮 Thả Đèn Hoa Đăng & Hồi Hướng Công Đức
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h4 style="font-size:0.95rem;color:var(--gold-light);margin-bottom:0.6rem;">
+                👥 Phật Tử & Tín Chủ Đang Cùng Tụng Kinh Trong Phòng:
+              </h4>
+              <div class="prayer-feed-list" id="sanctuary-prayer-feed"></div>
+            </div>
+          </aside>
+        </div>
       </div>
     </section>
 
@@ -301,7 +446,7 @@ const indexHtml = `<!DOCTYPE html>
                   <text x="65" y="114" text-anchor="middle" fill="#FBE59B" font-family="serif" font-size="16" font-weight="bold">LINH XĂM</text>
                 </svg>
               </div>
-              <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.6rem;">Thành Tâm Khấn Nguyện Xin Xăm</h3>
+              <h3 style="font-size:1.3rem;color:var(--gold-light);margin-bottom:0.6rem;">Thành Tâm Khấn Nguyện Xin Xăm</h3>
               <div class="oracle-form-row">
                 <div class="form-group">
                   <label for="xam-user-name">Họ tên tín chủ (tuỳ chọn)</label>
@@ -324,9 +469,9 @@ const indexHtml = `<!DOCTYPE html>
 
             <div class="oracle-result-card" id="xam-result-box">
               <div style="text-align:center;color:var(--text-secondary);">
-                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🪷</div>
-                <h3 style="font-size:1.4rem;color:var(--gold-light);margin-bottom:0.5rem;">Lời Khuyên Trước Khi Xin Xăm</h3>
-                <p style="font-size:0.94rem;max-width:460px;margin:0 auto 1rem;">
+                <div style="font-size:2.4rem;margin-bottom:0.5rem;">🪷</div>
+                <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.5rem;">Lời Khuyên Trước Khi Xin Xăm</h3>
+                <p style="font-size:0.92rem;max-width:460px;margin:0 auto 1rem;">
                   “Tâm thành tắc linh”. Hãy tập trung suy nghĩ về một vấn đề duy nhất mà bạn đang trăn trở, sau đó nhấn nút <strong>Lắc Ống Xăm</strong> để nhận thẻ xăm ứng nghiệm.
                 </p>
                 <small style="color:var(--text-muted);">Mỗi sự việc chỉ nên xin xăm 1 lần trong ngày để quẻ giữ độ linh ứng cao nhất.</small>
@@ -339,8 +484,8 @@ const indexHtml = `<!DOCTYPE html>
         <div class="divination-panel" id="panel-iching">
           <div class="oracle-layout">
             <div class="oracle-stage">
-              <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.4rem;">Gieo 3 Đồng Xu Cổ Kinh Dịch</h3>
-              <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1rem;">
+              <h3 style="font-size:1.3rem;color:var(--gold-light);margin-bottom:0.4rem;">Gieo 3 Đồng Xu Cổ Kinh Dịch</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:1rem;">
                 Phương pháp Chu Dịch Lục Hào cổ truyền giúp soi sáng cát hung, thời vận và hướng đi đúng đắn.
               </p>
               <div class="coins-row">
@@ -359,9 +504,9 @@ const indexHtml = `<!DOCTYPE html>
 
             <div class="oracle-result-card" id="iching-result-box">
               <div style="text-align:center;color:var(--text-secondary);">
-                <div style="font-size:2.5rem;margin-bottom:0.5rem;">☯️</div>
-                <h3 style="font-size:1.4rem;color:var(--gold-light);margin-bottom:0.5rem;">Sẵn Sàng Luận Quẻ Kinh Dịch</h3>
-                <p style="font-size:0.94rem;">
+                <div style="font-size:2.4rem;margin-bottom:0.5rem;">☯️</div>
+                <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.5rem;">Sẵn Sàng Luận Quẻ Kinh Dịch</h3>
+                <p style="font-size:0.92rem;">
                   Nhấn nút <strong>Gieo Quẻ Âm Dương</strong> để nhận 1 trong các quẻ Kinh Dịch kèm Thoán Từ và lời bàn ứng dụng thực tế từ Cô Bé Hữu Duyên.
                 </p>
               </div>
@@ -373,24 +518,24 @@ const indexHtml = `<!DOCTYPE html>
         <div class="divination-panel" id="panel-tarot">
           <div class="oracle-layout">
             <div class="oracle-stage">
-              <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.4rem;">Trải Bài Tarot Tâm Linh (3 Lá)</h3>
-              <p style="font-size:0.88rem;color:var(--text-secondary);">
+              <h3 style="font-size:1.3rem;color:var(--gold-light);margin-bottom:0.4rem;">Trải Bài Tarot Tâm Linh (3 Lá)</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">
                 Chạm vào lá bài bất kỳ hoặc bấm nút bên dưới để lật mở thông điệp <strong>Quá Khứ – Hiện Tại – Tương Lai</strong>.
               </p>
               <div class="tarot-spread">
                 <div class="tarot-card-slot">
                   <span class="tarot-slot-label">Lá số I</span>
-                  <div style="font-size:2rem;margin:0.5rem 0;">🌙</div>
+                  <div style="font-size:1.9rem;margin:0.45rem 0;">🌙</div>
                   <small style="color:var(--text-muted);">Chạm để lật</small>
                 </div>
                 <div class="tarot-card-slot">
                   <span class="tarot-slot-label">Lá số II</span>
-                  <div style="font-size:2rem;margin:0.5rem 0;">☀️</div>
+                  <div style="font-size:1.9rem;margin:0.45rem 0;">☀️</div>
                   <small style="color:var(--text-muted);">Chạm để lật</small>
                 </div>
                 <div class="tarot-card-slot">
                   <span class="tarot-slot-label">Lá số III</span>
-                  <div style="font-size:2rem;margin:0.5rem 0;">⭐</div>
+                  <div style="font-size:1.9rem;margin:0.45rem 0;">⭐</div>
                   <small style="color:var(--text-muted);">Chạm để lật</small>
                 </div>
               </div>
@@ -401,9 +546,9 @@ const indexHtml = `<!DOCTYPE html>
 
             <div class="oracle-result-card" id="tarot-result-box">
               <div style="text-align:center;color:var(--text-secondary);">
-                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🔮</div>
-                <h3 style="font-size:1.4rem;color:var(--gold-light);margin-bottom:0.5rem;">Kết Nối Năng Lượng Trực Giác</h3>
-                <p style="font-size:0.94rem;">
+                <div style="font-size:2.4rem;margin-bottom:0.5rem;">🔮</div>
+                <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.5rem;">Kết Nối Năng Lượng Trực Giác</h3>
+                <p style="font-size:0.92rem;">
                   Trải bài 3 lá giúp bạn nhìn thấu nguyên nhân gốc rễ từ quá khứ, năng lượng hiện tại và lời khuyên hành động cho tương lai gần.
                 </p>
               </div>
@@ -415,8 +560,8 @@ const indexHtml = `<!DOCTYPE html>
         <div class="divination-panel" id="panel-element">
           <div class="oracle-layout">
             <div class="oracle-stage">
-              <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.5rem;">Tra Cứu Bản Mệnh Theo Năm Sinh</h3>
-              <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1.1rem;">
+              <h3 style="font-size:1.3rem;color:var(--gold-light);margin-bottom:0.5rem;">Tra Cứu Bản Mệnh Theo Năm Sinh</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:1.1rem;">
                 Nhập năm sinh Âm/Dương lịch để biết chính xác tuổi Can Chi, Mệnh Ngũ Hành, Màu sắc hợp mệnh và gợi ý Vật Phẩm Phong Thuỷ hộ thân.
               </p>
               <div class="oracle-form-row">
@@ -439,9 +584,9 @@ const indexHtml = `<!DOCTYPE html>
 
             <div class="oracle-result-box oracle-result-card" id="element-result-box">
               <div style="text-align:center;color:var(--text-secondary);">
-                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🧭</div>
-                <h3 style="font-size:1.4rem;color:var(--gold-light);margin-bottom:0.5rem;">Chọn Đúng Vật Phẩm Hợp Bản Mệnh</h3>
-                <p style="font-size:0.94rem;">
+                <div style="font-size:2.4rem;margin-bottom:0.5rem;">🧭</div>
+                <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.5rem;">Chọn Đúng Vật Phẩm Hợp Bản Mệnh</h3>
+                <p style="font-size:0.92rem;">
                   Trong Phong Thuỷ Chính Tông, sử dụng vật phẩm tương sinh hoặc tương hợp với Ngũ Hành bản mệnh sẽ giúp kích hoạt tối đa vượng khí và bình an.
                 </p>
               </div>
@@ -475,7 +620,7 @@ const indexHtml = `<!DOCTYPE html>
           </div>
 
           <div class="shop-filter-right">
-            <select id="shop-element-filter" class="form-control" style="width:auto;min-width:175px;" aria-label="Lọc theo mệnh ngũ hành">
+            <select id="shop-element-filter" class="form-control" style="width:auto;min-width:170px;" aria-label="Lọc theo mệnh ngũ hành">
               <option value="all">☯️ Tất cả bản mệnh</option>
               <option value="Kim">Hợp mệnh Kim</option>
               <option value="Mộc">Hợp mệnh Mộc</option>
@@ -488,7 +633,7 @@ const indexHtml = `<!DOCTYPE html>
               type="search"
               id="shop-search-input"
               class="form-control"
-              style="width:auto;min-width:220px;"
+              style="width:auto;min-width:210px;"
               placeholder="🔍 Tìm hàng mã, chu sa, trầm..."
               aria-label="Tìm kiếm vật phẩm"
             />
@@ -514,10 +659,10 @@ const indexHtml = `<!DOCTYPE html>
                   ${p.originalPrice ? `<span class="price-old">${formatVND(p.originalPrice)}</span>` : ""}
                 </div>
                 <div class="product-actions">
-                  <button type="button" class="btn btn-gold" style="padding:0.65rem 1rem;font-size:0.88rem;" data-add-cart="${p.id}">
+                  <button type="button" class="btn btn-gold" style="padding:0.62rem 0.95rem;font-size:0.86rem;" data-add-cart="${p.id}">
                     🛒 Thỉnh Vật Phẩm
                   </button>
-                  <button type="button" class="btn btn-outline" style="padding:0.65rem 0.9rem;font-size:0.86rem;" data-detail-product="${p.id}">
+                  <button type="button" class="btn btn-outline" style="padding:0.62rem 0.85rem;font-size:0.84rem;" data-detail-product="${p.id}">
                     Chi tiết
                   </button>
                 </div>
@@ -543,10 +688,10 @@ const indexHtml = `<!DOCTYPE html>
         <div class="booking-grid">
           <div class="master-profile-card">
             <span class="result-rank-badge">Chuyên Gia Tâm Linh & Phong Thuỷ Thực Chiến</span>
-            <h3 style="font-size:1.7rem;color:var(--gold-light);margin-bottom:0.5rem;">
+            <h3 style="font-size:1.55rem;color:var(--gold-light);margin-bottom:0.5rem;">
               Các Lĩnh Vực Cô Bé Hữu Duyên Trực Tiếp Luận Giải
             </h3>
-            <p style="color:var(--text-secondary);font-size:0.95rem;">
+            <p style="color:var(--text-secondary);font-size:0.92rem;">
               Tư vấn tận tâm, đi thẳng vào trọng tâm vấn đề, hướng dẫn cách hoá giải đúng chánh pháp, không mê tín dị đoan hay vẽ vời tốn kém.
             </p>
 
@@ -580,7 +725,7 @@ const indexHtml = `<!DOCTYPE html>
                   <strong style="color:var(--gold-light);display:block;">💬 Zalo Xem Riêng 1-1: ${config.contact.phoneDisplay}</strong>
                   <small style="color:var(--text-secondary);">Phản hồi nhanh nhất • Gửi ảnh chỉ tay / ngày sinh trực tiếp</small>
                 </div>
-                <span class="btn btn-gold" style="padding:0.45rem 0.95rem;font-size:0.82rem;">Mở Zalo</span>
+                <span class="btn btn-gold" style="padding:0.42rem 0.9rem;font-size:0.8rem;">Mở Zalo</span>
               </a>
 
               <a href="${config.contact.tiktokUrl}" target="_blank" rel="noopener" class="social-card-link">
@@ -588,7 +733,7 @@ const indexHtml = `<!DOCTYPE html>
                   <strong style="color:var(--gold-light);display:block;">🎵 Kênh TikTok: ${config.contact.tiktokHandle}</strong>
                   <small style="color:var(--text-secondary);">Follow để xem video chia sẻ tâm linh & các buổi Livestream hữu duyên</small>
                 </div>
-                <span class="btn btn-outline" style="padding:0.45rem 0.95rem;font-size:0.82rem;">Xem TikTok</span>
+                <span class="btn btn-outline" style="padding:0.42rem 0.9rem;font-size:0.8rem;">Xem TikTok</span>
               </a>
 
               <a href="${config.contact.facebookUrl}" target="_blank" rel="noopener" class="social-card-link">
@@ -596,16 +741,16 @@ const indexHtml = `<!DOCTYPE html>
                   <strong style="color:var(--gold-light);display:block;">📘 Facebook Cá Nhân Chính Chủ</strong>
                   <small style="color:var(--text-secondary);">Cập nhật hoạt động thiện nguyện, phản hồi khách hàng & nhắn tin Messenger</small>
                 </div>
-                <span class="btn btn-outline" style="padding:0.45rem 0.95rem;font-size:0.82rem;">Mở Facebook</span>
+                <span class="btn btn-outline" style="padding:0.42rem 0.9rem;font-size:0.8rem;">Mở Facebook</span>
               </a>
             </div>
           </div>
 
           <!-- Booking Form -->
           <div class="master-profile-card">
-            <h3 style="font-size:1.55rem;color:var(--gold-light);margin-bottom:0.4rem;">Phiếu Đăng Ký Đặt Lịch Hữu Duyên</h3>
-            <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:1.25rem;">
-              Điền thông tin bên dưới để hệ thống tạo sẵn phiếu hẹn chuẩn và kết nối trực tiếp tới Zalo/Facebook của Cô Bé Hữu Duyên.
+            <h3 style="font-size:1.45rem;color:var(--gold-light);margin-bottom:0.4rem;">Phiếu Đăng Ký Đặt Lịch Hữu Duyên</h3>
+            <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:1.15rem;">
+              Khi gửi phiếu hẹn, hệ thống vừa mở Zalo/Facebook vừa tự động lưu dữ liệu lên hệ thống D1 & báo về nhóm Telegram của Cô Bé Hữu Duyên.
             </p>
 
             <form id="master-booking-form">
@@ -652,12 +797,12 @@ const indexHtml = `<!DOCTYPE html>
                 <textarea id="book-note" rows="3" class="form-control" placeholder="Chia sẻ ngắn gọn điều bạn đang băn khoăn để Cô nắm trước thông tin..."></textarea>
               </div>
 
-              <button type="submit" class="btn btn-gold" style="width:100%;margin-top:0.4rem;">
+              <button type="submit" class="btn btn-gold" style="width:100%;margin-top:0.35rem;">
                 📿 Tạo Phiếu Hẹn & Kết Nối Với Cô Bé Hữu Duyên
               </button>
             </form>
 
-            <div id="booking-confirmation-preview" style="display:none;margin-top:1.15rem;padding:1rem;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--gold-primary);"></div>
+            <div id="booking-confirmation-preview" style="display:none;margin-top:1.1rem;padding:1rem;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--gold-primary);"></div>
           </div>
         </div>
       </div>
@@ -677,17 +822,17 @@ const indexHtml = `<!DOCTYPE html>
         <div class="charity-banner">
           <div style="max-width:680px;">
             <span class="result-rank-badge">Minh Bạch 100% • Công Khai Sao Kê & Hình Ảnh</span>
-            <h3 style="font-size:1.55rem;color:var(--gold-light);margin-bottom:0.35rem;">
+            <h3 style="font-size:1.45rem;color:var(--gold-light);margin-bottom:0.35rem;">
               Cùng Cô Bé Hữu Duyên Lan Toả Tình Thương & Tích Tạo Phước Báo
             </h3>
-            <p style="font-size:0.92rem;color:var(--text-secondary);">
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
               Mỗi sự phát tâm dù nhỏ đều mang năng lượng từ bi to lớn, hồi hướng công đức bình an, sức khoẻ và may mắn đến bản thân cùng gia quyến.
             </p>
           </div>
-          <div style="display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;">
+          <div style="display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;">
             <div style="text-align:right;">
               <small style="color:var(--text-muted);display:block;">Tổng quỹ đã gieo duyên:</small>
-              <strong style="font-size:1.7rem;color:var(--gold-light);font-family:serif;">${formatVND(charityData.summary.totalRaised)}</strong>
+              <strong style="font-size:1.6rem;color:var(--gold-light);font-family:'Noto Serif',serif;">${formatVND(charityData.summary.totalRaised)}</strong>
             </div>
             <button type="button" class="btn btn-gold" data-open-charity="all">
               💛 Phát Tâm Gieo Duyên Ngay
@@ -703,15 +848,15 @@ const indexHtml = `<!DOCTYPE html>
               <article class="campaign-card">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
                   <span class="product-cat-label">${camp.category}</span>
-                  <span style="font-size:0.75rem;color:var(--jade-green);font-weight:700;">● ${camp.status}</span>
+                  <span style="font-size:0.74rem;color:var(--jade-green);font-weight:700;">● ${camp.status}</span>
                 </div>
-                <h3 style="font-size:1.35rem;color:var(--gold-light);margin-bottom:0.5rem;">${camp.title}</h3>
-                <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:0.9rem;flex:1;">${camp.description}</p>
-                <ul style="padding-left:1.1rem;font-size:0.84rem;color:var(--text-secondary);margin-bottom:1rem;display:grid;gap:0.3rem;">
+                <h3 style="font-size:1.25rem;color:var(--gold-light);margin-bottom:0.5rem;">${camp.title}</h3>
+                <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:0.85rem;flex:1;">${camp.description}</p>
+                <ul style="padding-left:1.1rem;font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.95rem;display:grid;gap:0.3rem;">
                   ${camp.highlights.map((h) => `<li>${h}</li>`).join("")}
                 </ul>
                 <div>
-                  <div style="display:flex;justify-content:space-between;font-size:0.84rem;font-weight:600;">
+                  <div style="display:flex;justify-content:space-between;font-size:0.83rem;font-weight:600;">
                     <span>Đã tiếp nhận: <strong style="color:var(--gold-light);">${formatVND(camp.raised)}</strong></span>
                     <span>${pct}%</span>
                   </div>
@@ -735,12 +880,12 @@ const indexHtml = `<!DOCTYPE html>
         <div class="donors-ledger">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
             <div>
-              <h3 style="font-size:1.45rem;color:var(--gold-light);">📜 Sổ Vàng Ghi Danh Công Đức Gần Đây</h3>
-              <p style="font-size:0.86rem;color:var(--text-secondary);">
+              <h3 style="font-size:1.35rem;color:var(--gold-light);">📜 Sổ Vàng Ghi Danh Công Đức Gần Đây</h3>
+              <p style="font-size:0.85rem;color:var(--text-secondary);">
                 Thành tâm tri ân công đức của các tín chủ và mạnh thường quân gần xa.
               </p>
             </div>
-            <button type="button" class="btn btn-outline" id="btn-copy-bank-no" style="padding:0.55rem 1rem;font-size:0.84rem;">
+            <button type="button" class="btn btn-outline" id="btn-copy-bank-no" style="padding:0.5rem 0.95rem;font-size:0.82rem;">
               📋 Sao chép STK Vietcombank: ${config.bank.accountNo}
             </button>
           </div>
@@ -756,7 +901,7 @@ const indexHtml = `<!DOCTYPE html>
                   <th>Thời gian</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="charity-ledger-tbody">
                 ${charityData.recentDonors
                   .map(
                     (d) => `
@@ -783,41 +928,41 @@ const indexHtml = `<!DOCTYPE html>
       <div class="footer-grid">
         <div>
           <div class="brand-logo" style="margin-bottom:0.85rem;">
-            <img src="/favicon.svg" alt="Logo ${config.brandName}" class="brand-emblem" width="44" height="44" />
+            <img src="/favicon.svg" alt="Logo ${config.brandName}" class="brand-emblem" width="42" height="42" />
             <div class="brand-text">
               <span class="brand-name">${config.brandName}</span>
               <span class="brand-sub">Tâm Linh • Phong Thuỷ • Thiện Nguyện</span>
             </div>
           </div>
-          <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:1rem;">
+          <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:0.9rem;">
             ${config.description}
           </p>
-          <p style="font-size:0.84rem;color:var(--text-muted);">
+          <p style="font-size:0.82rem;color:var(--text-muted);">
             🌐 Website chính thức: <a href="${config.domain}" style="color:var(--gold-light);">${config.domain}</a><br />
             ⏰ Giờ làm việc: ${config.contact.workingHours}
           </p>
         </div>
 
         <div>
-          <h3 style="font-size:1.25rem;color:var(--gold-light);margin-bottom:0.85rem;">Kết Nối Trực Tiếp</h3>
-          <ul style="list-style:none;display:grid;gap:0.6rem;font-size:0.9rem;">
+          <h3 style="font-size:1.18rem;color:var(--gold-light);margin-bottom:0.8rem;">Kết Nối Trực Tiếp</h3>
+          <ul style="list-style:none;display:grid;gap:0.55rem;font-size:0.88rem;">
             <li>💬 <strong>Zalo / SĐT:</strong> <a href="${config.contact.zaloUrl}" target="_blank" rel="noopener" style="color:var(--gold-light);">${config.contact.phoneDisplay}</a></li>
             <li>🎵 <strong>TikTok:</strong> <a href="${config.contact.tiktokUrl}" target="_blank" rel="noopener" style="color:var(--gold-light);">${config.contact.tiktokHandle}</a></li>
             <li>📘 <strong>Facebook:</strong> <a href="${config.contact.facebookUrl}" target="_blank" rel="noopener" style="color:var(--gold-light);">${config.contact.facebookDisplay}</a></li>
+            <li><a href="#tung-kinh">🙏 Phòng Tụng Kinh & Dâng Lễ Online</a></li>
             <li><a href="#xem-boi">☯️ Xin Xăm & Gieo Quẻ Kinh Dịch</a></li>
             <li><a href="#vat-pham">🪷 Cửa Hàng Hàng Mã & Phong Thuỷ</a></li>
-            <li><a href="#tu-thien">💛 Quỹ Từ Thiện Gieo Duyên Lành</a></li>
           </ul>
         </div>
 
         <div>
-          <h3 style="font-size:1.25rem;color:var(--gold-light);margin-bottom:0.85rem;">Tài Khoản Thanh Toán & Công Đức</h3>
-          <div style="background:var(--bg-card);padding:1rem;border-radius:14px;border:1px solid var(--border-subtle);font-size:0.88rem;">
-            <p style="margin-bottom:0.35rem;">🏦 <strong>Ngân hàng:</strong> ${config.bank.shortName} (VCB)</p>
-            <p style="margin-bottom:0.35rem;">🔢 <strong>Số tài khoản:</strong> <span style="color:var(--gold-light);font-weight:700;font-size:1.05rem;">${config.bank.accountNo}</span></p>
-            <p style="margin-bottom:0.65rem;">👤 <strong>Chủ tài khoản:</strong> <strong>${config.bank.accountNameDisplay}</strong></p>
+          <h3 style="font-size:1.18rem;color:var(--gold-light);margin-bottom:0.8rem;">Tài Khoản Thanh Toán & Công Đức</h3>
+          <div style="background:var(--bg-card);padding:0.95rem;border-radius:14px;border:1px solid var(--border-subtle);font-size:0.86rem;">
+            <p style="margin-bottom:0.3rem;">🏦 <strong>Ngân hàng:</strong> ${config.bank.shortName} (VCB)</p>
+            <p style="margin-bottom:0.3rem;">🔢 <strong>Số tài khoản:</strong> <span style="color:var(--gold-light);font-weight:700;font-size:1rem;">${config.bank.accountNo}</span></p>
+            <p style="margin-bottom:0.55rem;">👤 <strong>Chủ tài khoản:</strong> <strong>${config.bank.accountNameDisplay}</strong></p>
             <small style="color:var(--text-muted);display:block;">
-              Hỗ trợ quét mã <strong>VietQR</strong> tự động điền số tiền khi thỉnh vật phẩm hoặc phát tâm từ thiện.
+              Hỗ trợ quét mã <strong>VietQR</strong> tự động điền số tiền & đồng bộ thông báo về Telegram / D1 Database.
             </small>
           </div>
         </div>
@@ -825,7 +970,7 @@ const indexHtml = `<!DOCTYPE html>
 
       <div class="footer-bottom">
         <span>© ${new Date().getFullYear()} <strong>${config.fullTitle}</strong> (${config.domain}). Bảo lưu mọi quyền.</span>
-        <span>Thiết kế chuẩn SEO • Triển khai tốc độ cao trên GitHub & Cloudflare Pages</span>
+        <span>Thiết kế chuẩn SEO • Kết nối Telegram Bot & Cloudflare D1</span>
       </div>
     </div>
   </footer>
@@ -838,10 +983,10 @@ const indexHtml = `<!DOCTYPE html>
   <!-- CHARITY VIETQR DONATION MODAL -->
   <div class="modal-backdrop" id="charity-donate-modal" role="dialog" aria-modal="true" aria-label="Gieo duyên công đức từ thiện">
     <div class="modal-dialog">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;">
         <div>
           <span class="result-rank-badge">Quỹ Thiện Nguyện Minh Bạch</span>
-          <h3 id="charity-modal-campaign-title" style="font-size:1.45rem;color:var(--gold-light);">
+          <h3 id="charity-modal-campaign-title" style="font-size:1.35rem;color:var(--gold-light);">
             Quỹ Từ Thiện & Phóng Sinh Cô Bé Hữu Duyên
           </h3>
         </div>
@@ -850,8 +995,8 @@ const indexHtml = `<!DOCTYPE html>
 
       <div class="oracle-form-row">
         <div class="form-group">
-          <label for="charity-donor-name">Tên tín chủ / Gia đình phát tâm</label>
-          <input type="text" id="charity-donor-name" class="form-control" placeholder="VD: Gia dinh Minh Tam" />
+          <label for="charity-donor-name">Tên tín chủ / Pháp danh phát tâm</label>
+          <input type="text" id="charity-donor-name" class="form-control" placeholder="VD: Phật tử Minh Tâm" />
         </div>
         <div class="form-group">
           <label for="charity-custom-amount">Số tiền phát tâm (VNĐ)</label>
@@ -859,7 +1004,12 @@ const indexHtml = `<!DOCTYPE html>
         </div>
       </div>
 
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <div class="form-group">
+        <label for="charity-donor-wish">Lời cầu nguyện / Hồi hướng công đức (hiển thị lên Sổ Vàng)</label>
+        <input type="text" id="charity-donor-wish" class="form-control" placeholder="VD: Cầu gia đạo bình an, mẹ sớm khoẻ mạnh..." />
+      </div>
+
+      <div style="display:flex;gap:0.45rem;flex-wrap:wrap;margin-bottom:0.85rem;">
         <button type="button" class="cat-pill" data-donate-amount="50000">50.000đ</button>
         <button type="button" class="cat-pill" data-donate-amount="100000">100.000đ</button>
         <button type="button" class="cat-pill" data-donate-amount="200000">200.000đ</button>
@@ -868,43 +1018,40 @@ const indexHtml = `<!DOCTYPE html>
       </div>
 
       <div class="vietqr-box">
-        <strong style="display:block;font-size:0.95rem;color:#6b1111;">QUÉT MÃ VIETQR ĐỂ GIEO DUYÊN CÔNG ĐỨC</strong>
+        <strong style="display:block;font-size:0.9rem;color:#6b1111;">QUÉT MÃ VIETQR ĐỂ GIEO DUYÊN CÔNG ĐỨC</strong>
         <img
           id="charity-vietqr-img"
           src="https://img.vietqr.io/image/VCB-0051000567270-compact2.png?amount=200000&addInfo=GIEODUYEN&accountName=NGUYEN%20THI%20THU%20HONG"
           alt="Mã VietQR Vietcombank 0051000567270 Nguyễn Thị Thu Hồng"
           loading="lazy"
         />
-        <div style="font-size:0.86rem;line-height:1.5;">
+        <div style="font-size:0.84rem;line-height:1.5;">
           Ngân hàng: <strong>Vietcombank</strong> • STK: <strong>0051000567270</strong><br />
           Chủ TK: <strong>Nguyễn Thị Thu Hồng</strong><br />
           Nội dung CK: <strong id="charity-transfer-syntax" style="color:#b82525;">GIEODUYEN PHAT TU</strong>
         </div>
       </div>
 
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
-        <small style="color:var(--text-secondary);">Sau khi chuyển khoản, bạn có thể gửi ảnh biên lai qua Zalo để Cô ghi sớ cầu an.</small>
-        <a href="${config.contact.zaloUrl}" target="_blank" rel="noopener" class="btn btn-gold" style="padding:0.6rem 1.15rem;font-size:0.86rem;">
-          💬 Báo Công Đức Qua Zalo
-        </a>
-      </div>
+      <button type="button" class="btn btn-gold" id="btn-confirm-charity-zalo" style="width:100%;">
+        💛 Xác Nhận Đã Chuyển Khoản (Ghi Sổ Vàng & Báo Qua Zalo + Telegram)
+      </button>
     </div>
   </div>
 
   <!-- SLIDE-OVER SMART CART DRAWER -->
   <div class="drawer-backdrop" id="cart-drawer-backdrop" role="dialog" aria-modal="true" aria-label="Giỏ thỉnh vật phẩm">
     <div class="cart-drawer">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:1rem;border-bottom:1px solid var(--border-subtle);">
-        <h3 style="font-size:1.45rem;color:var(--gold-light);">🛒 Giỏ Thỉnh Vật Phẩm</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:0.9rem;border-bottom:1px solid var(--border-subtle);">
+        <h3 style="font-size:1.35rem;color:var(--gold-light);">🛒 Giỏ Thỉnh Vật Phẩm</h3>
         <button type="button" class="icon-btn" id="close-cart-btn">✕ Đóng</button>
       </div>
 
       <div id="cart-items-list" style="flex:1;overflow-y:auto;"></div>
 
-      <div id="cart-checkout-area" style="display:none;padding-top:1rem;border-top:1px solid var(--border-strong);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+      <div id="cart-checkout-area" style="display:none;padding-top:0.95rem;border-top:1px solid var(--border-strong);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
           <span style="font-weight:600;">Tổng phí thỉnh:</span>
-          <strong id="cart-total-amount" style="font-size:1.4rem;color:var(--gold-light);">0đ</strong>
+          <strong id="cart-total-amount" style="font-size:1.35rem;color:var(--gold-light);">0đ</strong>
         </div>
 
         <div class="form-group">
@@ -924,33 +1071,33 @@ const indexHtml = `<!DOCTYPE html>
 
         <div class="form-group">
           <label for="cart-customer-note">Năm sinh gia chủ & Ghi chú viết sớ / trì chú</label>
-          <input type="text" id="cart-customer-note" class="form-control" placeholder="VD: Nam sinh 1992, nhờ Cô ghi sớ cúng Thần Tài" />
+          <input type="text" id="cart-customer-note" class="form-control" placeholder="VD: Sinh năm 1992, nhờ Cô ghi sớ cúng Thần Tài" />
         </div>
 
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--gold-light);margin-bottom:0.85rem;cursor:pointer;">
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--gold-light);margin-bottom:0.75rem;cursor:pointer;">
           <input type="checkbox" id="cart-bless-checkbox" checked />
           <span>Nhờ Cô Bé Hữu Duyên trì chú / khai quang miễn phí trước khi gửi</span>
         </label>
 
         <div class="vietqr-box">
-          <strong style="display:block;font-size:0.86rem;color:#6b1111;">QUÉT MÃ VIETQR THANH TOÁN NHANH</strong>
+          <strong style="display:block;font-size:0.84rem;color:#6b1111;">QUÉT MÃ VIETQR THANH TOÁN NHANH</strong>
           <img
             id="cart-vietqr-img"
             src="https://img.vietqr.io/image/VCB-0051000567270-compact2.png?amount=0&addInfo=THINH%20VAT%20PHAM&accountName=NGUYEN%20THI%20THU%20HONG"
             alt="VietQR Thanh Toán Đơn Hàng"
             loading="lazy"
           />
-          <small style="display:block;font-size:0.78rem;">
+          <small style="display:block;font-size:0.76rem;">
             Vietcombank: <strong>0051000567270</strong> — <strong>Nguyễn Thị Thu Hồng</strong>
           </small>
         </div>
 
         <button type="button" class="btn btn-gold" id="btn-checkout-zalo" style="width:100%;margin-bottom:0.5rem;">
-          💬 Xác Nhận & Gửi Đơn Qua Zalo (${config.contact.phoneDisplay})
+          💬 Gửi Đơn Qua Zalo & Đồng Bộ Telegram (${config.contact.phoneDisplay})
         </button>
-        <a href="${config.contact.facebookUrl}" target="_blank" rel="noopener" class="btn btn-outline" style="width:100%;font-size:0.86rem;">
-          📘 Hoặc Gửi Đơn Qua Facebook Messenger
-        </a>
+        <button type="button" class="btn btn-outline" id="btn-checkout-fb" style="width:100%;font-size:0.85rem;">
+          📘 Gửi Đơn Qua Facebook & Đồng Bộ Telegram
+        </button>
       </div>
     </div>
   </div>
@@ -970,13 +1117,14 @@ const indexHtml = `<!DOCTYPE html>
 
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
-  <!-- Embedded Structured Data for Instant Offline-Capable Interactivity -->
+  <!-- Embedded Structured Data -->
   <script>
     window.__COBEHUUDUYEN_DATA__ = ${JSON.stringify({
       config,
       products: productsData,
       fortunes: fortunesData,
-      charity: charityData
+      charity: charityData,
+      sanctuary: sanctuaryData
     })};
   </script>
   <script src="/assets/app.js?v=${jsHash}" defer></script>
@@ -996,7 +1144,7 @@ const notFoundHtml = `<!DOCTYPE html>
 <body style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;">
   <main style="max-width:540px;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:22px;padding:2.5rem;">
     <img src="/favicon.svg" alt="${config.brandName}" width="72" height="72" style="margin:0 auto 1rem;" />
-    <h1 style="font-size:2.2rem;color:var(--gold-light);margin-bottom:0.75rem;">Hữu Duyên Quay Về Trang Chủ</h1>
+    <h1 style="font-size:2rem;color:var(--gold-light);margin-bottom:0.75rem;">Hữu Duyên Quay Về Trang Chủ</h1>
     <p style="color:var(--text-secondary);margin-bottom:1.5rem;">
       Đường dẫn bạn vừa truy cập không tồn tại hoặc đã được chuyển về trang chính thức của <strong>${config.brandName}</strong>.
     </p>
@@ -1027,7 +1175,7 @@ const ogBannerSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 6
   <circle cx="600" cy="180" r="76" fill="none" stroke="url(#gold)" stroke-width="3"/>
   <text x="600" y="195" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="44" font-weight="bold">HỮU DUYÊN</text>
   <text x="600" y="335" text-anchor="middle" fill="#FBE59B" font-family="Georgia, serif" font-size="64" font-weight="bold">CÔ BÉ HỮU DUYÊN</text>
-  <text x="600" y="405" text-anchor="middle" fill="#F7EFE4" font-family="sans-serif" font-size="30">Xem Bói Kinh Dịch • Hàng Mã Chuẩn Lễ • Vật Phẩm Phong Thuỷ • Từ Thiện</text>
+  <text x="600" y="405" text-anchor="middle" fill="#F7EFE4" font-family="sans-serif" font-size="30">Phòng Tụng Kinh Online • Xem Bói • Hàng Mã & Phong Thuỷ • Từ Thiện</text>
   <text x="600" y="490" text-anchor="middle" fill="#D4AF37" font-family="sans-serif" font-size="26" font-weight="bold">Zalo: 0702.311.558  |  TikTok: @cobehuuduyen  |  cobehuuduyen.com</text>
 </svg>`;
 
