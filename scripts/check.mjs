@@ -35,7 +35,9 @@ const requiredSnippets = [
   "https://www.facebook.com/nhu.lam.545518",
   "@cobehuuduyen",
   "0051000567270",
-  "Nguyễn Thị Thu Hồng"
+  "NGUYỄN THỊ THU HỒNG",
+  "0x4AAAAAAFxsWkkTeXBYGsul",
+  "challenges.cloudflare.com/turnstile/v0/api.js"
 ];
 
 for (const snippet of requiredSnippets) {

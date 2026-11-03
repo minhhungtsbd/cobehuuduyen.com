@@ -24,6 +24,9 @@
     "accountNameDisplay": "Nguyễn Thị Thu Hồng",
     "template": "compact"
   },
+  "turnstile": {
+    "siteKey": "0x4AAAAAAFxsWkkTeXBYGsul"
+  },
   "stats": [
     { "value": "15.000+", "label": "Hữu duyên luận giải & trợ duyên" },
     { "value": "100%", "label": "Vật phẩm trì chú & hàng mã chuẩn lễ" },

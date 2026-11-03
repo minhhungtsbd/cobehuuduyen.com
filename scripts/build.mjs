@@ -109,6 +109,7 @@ const indexHtml = `<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/assets/styles.css?v=${cssHash}" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script type="application/ld+json">${JSON.stringify(schemaJsonLd)}</script>
 </head>
 <body>
@@ -393,6 +394,10 @@ const indexHtml = `<!DOCTYPE html>
                     class="form-control"
                     placeholder="Nhập lời cầu bình an, sức khoẻ, tài lộc cho bản thân & gia đình..."
                   ></textarea>
+                </div>
+                <div class="turnstile-guard-wrap">
+                  <span class="turnstile-guard-label">🛡️ Xác thực chống Spam tự động (Cloudflare Turnstile)</span>
+                  <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
                 </div>
                 <button type="submit" class="btn btn-gold" style="width:100%;padding:0.65rem 1rem;font-size:0.88rem;">
                   🏮 Thả Đèn Hoa Đăng & Hồi Hướng Công Đức
@@ -797,6 +802,11 @@ const indexHtml = `<!DOCTYPE html>
                 <textarea id="book-note" rows="3" class="form-control" placeholder="Chia sẻ ngắn gọn điều bạn đang băn khoăn để Cô nắm trước thông tin..."></textarea>
               </div>
 
+              <div class="turnstile-guard-wrap">
+                <span class="turnstile-guard-label">🛡️ Bảo vệ chống Spam đặt lịch ảo (Cloudflare Turnstile)</span>
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+              </div>
+
               <button type="submit" class="btn btn-gold" style="width:100%;margin-top:0.35rem;">
                 📿 Tạo Phiếu Hẹn & Kết Nối Với Cô Bé Hữu Duyên
               </button>
@@ -1048,6 +1058,11 @@ const indexHtml = `<!DOCTYPE html>
         </div>
       </div>
 
+      <div class="turnstile-guard-wrap">
+        <span class="turnstile-guard-label">🛡️ Xác thực chống Spam báo công đức (Cloudflare Turnstile)</span>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+      </div>
+
       <button type="button" class="btn btn-gold" id="btn-confirm-charity-zalo" style="width:100%;">
         💛 Xác Nhận Đã Chuyển Khoản (Ghi Sổ Vàng & Báo Qua Zalo + Telegram)
       </button>
@@ -1120,6 +1135,11 @@ const indexHtml = `<!DOCTYPE html>
               <span class="vietqr-detail-val" style="color:#8b1e1e;font-size:1.05rem;">NGUYỄN THỊ THU HỒNG</span>
             </div>
           </div>
+        </div>
+
+        <div class="turnstile-guard-wrap">
+          <span class="turnstile-guard-label">🛡️ Xác thực chống Spam đơn hàng ảo (Cloudflare Turnstile)</span>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
         </div>
 
         <button type="button" class="btn btn-gold" id="btn-checkout-zalo" style="width:100%;margin-bottom:0.5rem;">

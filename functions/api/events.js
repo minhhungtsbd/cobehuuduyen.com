@@ -1,5 +1,6 @@
 /**
  * Cloudflare Pages Function: /api/events
+ * - Bảo vệ chống Spam/Bot bằng Cloudflare Turnstile (`siteverify` API)
  * - Tự động lưu Đơn hàng (order), Đặt lịch 1-1 (booking), Công đức (charity),
  *   và Hoạt động Phòng Tụng Kinh Online (chant_room) vào Cloudflare D1 Database (`DB`).
  * - Đồng thời tự động bắn tin nhắn thông báo thời gian thực về Nhóm Telegram
@@ -12,6 +13,8 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
   "Content-Type": "application/json; charset=utf-8"
 };
+
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
@@ -73,6 +76,46 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
+    const turnstileToken = String(
+      body["cf-turnstile-response"] || body.turnstileToken || ""
+    ).trim();
+
+    // 0. Kiểm tra Cloudflare Turnstile chống Spam / Bot
+    if (!turnstileToken) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Missing Turnstile token. Vui lòng xác thực chống spam trước khi gửi."
+        }),
+        { status: 403, headers: CORS_HEADERS }
+      );
+    }
+
+    if (env.TURNSTILE_SECRET_KEY) {
+      const remoteIp = request.headers.get("CF-Connecting-IP") || "";
+      const formData = new FormData();
+      formData.append("secret", env.TURNSTILE_SECRET_KEY);
+      formData.append("response", turnstileToken);
+      if (remoteIp) formData.append("remoteip", remoteIp);
+
+      const verifyRes = await fetch(TURNSTILE_VERIFY_URL, {
+        method: "POST",
+        body: formData
+      });
+      const outcome = await verifyRes.json();
+
+      if (!outcome.success) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: "Turnstile verification failed",
+            codes: outcome["error-codes"] || []
+          }),
+          { status: 403, headers: CORS_HEADERS }
+        );
+      }
+    }
+
     const eventType = String(body.eventType || "general").slice(0, 40);
     const roomId = String(body.roomId || "").slice(0, 40);
     const nickname = String(body.nickname || "Tín chủ hữu duyên").slice(0, 80);
@@ -117,6 +160,7 @@ export async function onRequestPost(context) {
         roomId ? `• <b>Phòng / Ban thờ:</b> ${escapeHtml(roomId)}` : "",
         vnd ? `• <b>Số tiền:</b> ${vnd}` : "",
         message ? `• <b>Nội dung:</b>\n<pre>${escapeHtml(message)}</pre>` : "",
+        `🛡️ <i>Đã xác thực Cloudflare Turnstile</i>`,
         `🌐 <i>Nguồn: https://cobehuuduyen.com</i>`
       ].filter(Boolean);
 
@@ -139,6 +183,7 @@ export async function onRequestPost(context) {
     return new Response(
       JSON.stringify({
         ok: true,
+        turnstileVerified: true,
         savedToD1,
         sentToTelegram
       }),

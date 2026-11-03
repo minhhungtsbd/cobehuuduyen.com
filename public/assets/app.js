@@ -73,6 +73,44 @@
     }
   }
 
+  // ---------- Cloudflare Turnstile Anti-Spam & Cooldown Guard ----------
+  const TURNSTILE_SITE_KEY =
+    (CONFIG.turnstile && CONFIG.turnstile.siteKey) || "0x4AAAAAAFxsWkkTeXBYGsul";
+  const lastSubmitTimestamps = {};
+
+  function checkCooldown(actionKey, cooldownMs = 6000) {
+    const now = Date.now();
+    const prev = lastSubmitTimestamps[actionKey] || 0;
+    if (now - prev < cooldownMs) {
+      const waitSec = Math.ceil((cooldownMs - (now - prev)) / 1000);
+      showToast(`⏳ Xin chớ nóng vội! Vui lòng đợi ${waitSec} giây nữa trước khi gửi tiếp.`);
+      return false;
+    }
+    return true;
+  }
+
+  function markCooldown(actionKey) {
+    lastSubmitTimestamps[actionKey] = Date.now();
+  }
+
+  function getTurnstileToken(containerEl) {
+    if (!containerEl) return "";
+    const input = containerEl.querySelector('input[name="cf-turnstile-response"]');
+    return input ? input.value.trim() : "";
+  }
+
+  function resetTurnstileInContainer(containerEl) {
+    if (!containerEl || !window.turnstile) return;
+    const widget = containerEl.querySelector(".cf-turnstile");
+    if (widget) {
+      try {
+        window.turnstile.reset(widget);
+      } catch {
+        // ignore reset error
+      }
+    }
+  }
+
   // ---------- Cloud Sync: Telegram Group + Cloudflare D1 (/api/events) ----------
   async function syncEventToCloud(eventData) {
     try {
@@ -504,11 +542,13 @@
       });
     }
 
-    // Submit Prayer / Lantern to Room & Telegram / D1
+    // Submit Prayer / Lantern to Room & Telegram / D1 (Protected by Cloudflare Turnstile + Cooldown)
     const prayerForm = document.getElementById("sanctuary-prayer-form");
     if (prayerForm) {
       prayerForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        if (!checkCooldown("sanctuary_prayer", 6000)) return;
+
         const wishInput = document.getElementById("sanctuary-wish-input");
         const wish = (wishInput?.value || "").trim();
         if (!wish) {
@@ -516,6 +556,13 @@
           return;
         }
 
+        const tsToken = getTurnstileToken(prayerForm);
+        if (window.turnstile && !tsToken) {
+          showToast("🛡️ Vui lòng tích xác thực bảo mật Cloudflare Turnstile bên dưới trước khi thả đèn!");
+          return;
+        }
+
+        markCooldown("sanctuary_prayer");
         const nick = getNickname();
         localStorage.setItem(STORAGE_NICKNAME_KEY, nick);
         playTempleBellSound();
@@ -546,8 +593,10 @@
           roomId: currentRoom.id,
           nickname: nick,
           message: `[${currentRoom.name}] ${wish}`,
+          "cf-turnstile-response": tsToken,
           payload: { roomName: currentRoom.name, meritCount }
         });
+        resetTurnstileInContainer(prayerForm);
       });
     }
 
@@ -1179,6 +1228,9 @@
   }
 
   async function handleOrderSubmit(targetChannel) {
+    if (!checkCooldown("order_submit", 8000)) return;
+
+    const checkoutArea = document.getElementById("cart-checkout-area");
     const name = (document.getElementById("cart-customer-name")?.value || "").trim();
     const phone = (document.getElementById("cart-customer-phone")?.value || "").trim();
     const address = (document.getElementById("cart-customer-address")?.value || "").trim();
@@ -1190,6 +1242,13 @@
       return;
     }
 
+    const tsToken = getTurnstileToken(checkoutArea);
+    if (window.turnstile && !tsToken) {
+      showToast("🛡️ Vui lòng xác thực bảo mật Cloudflare Turnstile trước khi gửi đơn hàng!");
+      return;
+    }
+
+    markCooldown("order_submit");
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
     const itemsText = cart
       .map((i, idx) => `${idx + 1}. ${i.name} (SL: ${i.qty}) - ${formatVND(i.price * i.qty)}`)
@@ -1215,15 +1274,17 @@
       "✅ Đã sao chép đơn hàng & đồng bộ lên hệ thống Telegram / D1!"
     );
 
-    // 1. Tự động đẩy về Telegram Group & Cloudflare D1 Database
+    // 1. Tự động đẩy về Telegram Group & Cloudflare D1 Database (Kèm Turnstile Token)
     syncEventToCloud({
       eventType: "order",
       nickname: name,
       phone,
       amount: total,
       message: orderSummary,
+      "cf-turnstile-response": tsToken,
       payload: { address, note, blessCheck, items: cart, channel: targetChannel }
     });
+    resetTurnstileInContainer(checkoutArea);
 
     // 2. Mở Zalo hoặc Facebook theo lựa chọn của khách
     setTimeout(() => {
@@ -1266,13 +1327,15 @@
       ?.addEventListener("click", () => handleOrderSubmit("facebook"));
   }
 
-  // ---------- 8. 1-1 Master Booking Form (Auto Telegram & D1) ----------
+  // ---------- 8. 1-1 Master Booking Form (Auto Telegram & D1 + Turnstile) ----------
   function initBookingForm() {
     const form = document.getElementById("master-booking-form");
     if (!form) return;
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (!checkCooldown("booking_submit", 8000)) return;
+
       const name = (document.getElementById("book-name")?.value || "").trim();
       const phone = (document.getElementById("book-phone")?.value || "").trim();
       const dob = (document.getElementById("book-dob")?.value || "").trim();
@@ -1285,6 +1348,13 @@
         return;
       }
 
+      const tsToken = getTurnstileToken(form);
+      if (window.turnstile && !tsToken) {
+        showToast("🛡️ Vui lòng tích xác thực bảo mật Cloudflare Turnstile trước khi tạo phiếu hẹn!");
+        return;
+      }
+
+      markCooldown("booking_submit");
       const bookingMsg = [
         "🙏 ĐẶT LỊCH XEM TRỰC TIẾP 1-1 — CÔ BÉ HỮU DUYÊN",
         `• Họ tên tín chủ: ${name}`,
@@ -1307,8 +1377,10 @@
         nickname: name,
         phone,
         message: bookingMsg,
+        "cf-turnstile-response": tsToken,
         payload: { dob, service, channel, note }
       });
+      resetTurnstileInContainer(form);
 
       const previewBox = document.getElementById("booking-confirmation-preview");
       if (previewBox) {
@@ -1331,7 +1403,7 @@
     });
   }
 
-  // ---------- 9. Charity & Merit Donation Modal (Auto Telegram & D1) ----------
+  // ---------- 9. Charity & Merit Donation Modal (Auto Telegram & D1 + Turnstile) ----------
   function initCharityActions() {
     const modal = document.getElementById("charity-donate-modal");
     const closeBtn = document.getElementById("close-charity-modal");
@@ -1391,6 +1463,15 @@
 
     // Confirm Merit Donation -> Add to Golden Ledger + Send to Telegram & D1 + Open Zalo
     document.getElementById("btn-confirm-charity-zalo")?.addEventListener("click", async () => {
+      if (!checkCooldown("charity_submit", 8000)) return;
+
+      const tsToken = getTurnstileToken(modal);
+      if (window.turnstile && !tsToken) {
+        showToast("🛡️ Vui lòng xác thực bảo mật Cloudflare Turnstile trước khi xác nhận công đức!");
+        return;
+      }
+
+      markCooldown("charity_submit");
       const donor = (donorNameInput?.value || "").trim() || "Phật tử Hữu Duyên";
       const amt = parseInt(customAmountInput?.value || "200000", 10) || 200000;
       const wish =
@@ -1427,8 +1508,10 @@
         nickname: donor,
         amount: amt,
         message: `${currentCampaignName} — Lời nguyện: ${wish}`,
+        "cf-turnstile-response": tsToken,
         payload: { campaign: currentCampaignName, wish }
       });
+      resetTurnstileInContainer(modal);
 
       setTimeout(() => {
         window.open(
