@@ -1,0 +1,32 @@
+{
+  "brandName": "Cô Bé Hữu Duyên",
+  "fullTitle": "Cô Bé Hữu Duyên — Tâm Linh, Phong Thuỷ & Thiện Nguyện",
+  "tagline": "Khơi Nguồn Bình An • Kết Nối Tâm Linh • Gieo Mầm Phước Báo",
+  "domain": "https://cobehuuduyen.com",
+  "description": "Trang web chính thức của Cô Bé Hữu Duyên: Gieo quẻ Kinh Dịch, Xin xăm Quán Âm, Bói bài Tarot, Đặt lịch xem bói thực tế 1-1, Vật phẩm Phong thuỷ - Hàng mã cao cấp - Lưu niệm tâm linh và Quỹ Từ thiện Gieo Duyên Lành.",
+  "contact": {
+    "masterName": "Cô Bé Hữu Duyên",
+    "zalo": "0702311558",
+    "zaloUrl": "https://zalo.me/0702311558",
+    "phoneDisplay": "0702.311.558",
+    "facebookUrl": "https://www.facebook.com/nhu.lam.545518",
+    "facebookDisplay": "fb.com/nhu.lam.545518",
+    "tiktokHandle": "@cobehuuduyen",
+    "tiktokUrl": "https://www.tiktok.com/@cobehuuduyen",
+    "workingHours": "08:00 – 22:00 (Tất cả các ngày trong tuần & Ngày Rằm, Mùng 1)"
+  },
+  "bank": {
+    "bankId": "VCB",
+    "bankName": "Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)",
+    "shortName": "Vietcombank",
+    "accountNo": "0051000567270",
+    "accountName": "NGUYEN THI THU HONG",
+    "accountNameDisplay": "Nguyễn Thị Thu Hồng",
+    "template": "compact2"
+  },
+  "stats": [
+    { "value": "15.000+", "label": "Hữu duyên luận giải & trợ duyên" },
+    { "value": "100%", "label": "Vật phẩm trì chú & hàng mã chuẩn lễ" },
+    { "value": "Minh Bạch", "label": "Quỹ thiện nguyện & phóng sinh định kỳ" }
+  ]
+}

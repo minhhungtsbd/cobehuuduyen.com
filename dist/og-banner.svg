@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#3D0E0E"/>
+      <stop offset="60%" stop-color="#170B09"/>
+      <stop offset="100%" stop-color="#0B0706"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBE59B"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#9C7A1C"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="36" y="36" width="1128" height="558" rx="24" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="600" cy="180" r="76" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <text x="600" y="195" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="44" font-weight="bold">HỮU DUYÊN</text>
+  <text x="600" y="335" text-anchor="middle" fill="#FBE59B" font-family="Georgia, serif" font-size="64" font-weight="bold">CÔ BÉ HỮU DUYÊN</text>
+  <text x="600" y="405" text-anchor="middle" fill="#F7EFE4" font-family="sans-serif" font-size="30">Xem Bói Kinh Dịch • Hàng Mã Chuẩn Lễ • Vật Phẩm Phong Thuỷ • Từ Thiện</text>
+  <text x="600" y="490" text-anchor="middle" fill="#D4AF37" font-family="sans-serif" font-size="26" font-weight="bold">Zalo: 0702.311.558  |  TikTok: @cobehuuduyen  |  cobehuuduyen.com</text>
+</svg>

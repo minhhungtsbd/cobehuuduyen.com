@@ -1,0 +1,14 @@
+/*
+  Header bảo mật & tối ưu bộ nhớ đệm cho Cloudflare Pages (https://cobehuuduyen.com)
+*/
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=604800

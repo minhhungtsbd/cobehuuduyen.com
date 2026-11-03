@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2A1212"/>
+      <stop offset="100%" stop-color="#0D0A08"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7E08B"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#9A7418"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="4"/>
+  <circle cx="60" cy="60" r="46" stroke="url(#goldGrad)" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
+  <!-- Hoa Sen Tâm Linh -->
+  <path d="M60 22C66 36 74 46 74 58C74 68 67.5 76 60 79C52.5 76 46 68 46 58C46 46 54 36 60 22Z" fill="url(#goldGrad)" opacity="0.92"/>
+  <path d="M45 36C36 45 30 56 34 67C37 74 46 78 55 79C46 71 42 58 45 36Z" fill="url(#goldGrad)" opacity="0.75"/>
+  <path d="M75 36C84 45 90 56 86 67C83 74 74 78 65 79C74 71 78 58 75 36Z" fill="url(#goldGrad)" opacity="0.75"/>
+  <path d="M26 56C24 68 32 79 48 82C39 76 34 67 26 56Z" fill="url(#goldGrad)" opacity="0.55"/>
+  <path d="M94 56C96 68 88 79 72 82C81 76 86 67 94 56Z" fill="url(#goldGrad)" opacity="0.55"/>
+  <!-- Đài sen -->
+  <path d="M36 86C48 92 72 92 84 86" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="60" cy="15" r="3" fill="#F7E08B"/>
+</svg>

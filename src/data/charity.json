@@ -1,0 +1,69 @@
+{
+  "summary": {
+    "totalRaised": 148500000,
+    "totalCampaigns": 18,
+    "totalDonors": 642,
+    "commitment": "Cô Bé Hữu Duyên cam kết trích 10% – 20% lợi nhuận từ mỗi vật phẩm phong thuỷ, hàng mã và phí gieo duyên xem quẻ để duy trì các hoạt động phóng sinh, phát gạo và giúp đỡ hoàn cảnh ngặt nghèo vào ngày Rằm & Mùng 1 hàng tháng."
+  },
+  "campaigns": [
+    {
+      "id": "ct-01",
+      "title": "Phóng Sinh Tạo Phước & Cầu An Rằm Hàng Tháng",
+      "category": "Phóng sinh & Hộ sinh",
+      "status": "Đang tiếp nhận gieo duyên",
+      "raised": 28500000,
+      "goal": 35000000,
+      "donorsCount": 186,
+      "location": "Sông lớn & Chùa địa phương (Định kỳ Mùng 1 & Rằm)",
+      "description": "Giải cứu cá, lươn, ốc và chim khỏi lò mổ để trả về tự nhiên kèm nghi thức quy y Tam Bảo, chú nguyện hồi hướng công đức bình an, tiêu trừ bệnh tật cho toàn thể tín chủ phát tâm.",
+      "highlights": [
+        "Quay video & chụp ảnh minh bạch toàn bộ buổi lễ phóng sinh trên TikTok @cobehuuduyen & Zalo",
+        "Đọc danh sách tên gia chủ phát tâm hồi hướng công đức tại buổi lễ",
+        "Nhận phát tâm tuỳ hỷ từ 20.000đ – Góp gió thành bão từ bi"
+      ],
+      "transferSyntax": "PHONGSINH"
+    },
+    {
+      "id": "ct-02",
+      "title": "Trao Phần Quà Gạo & Nhu Yếu Phẩm Cho Cụ Già Neo Đơn",
+      "category": "An sinh xã hội",
+      "status": "Đang triển khai",
+      "raised": 54200000,
+      "goal": 60000000,
+      "donorsCount": 245,
+      "location": "Các mái ấm & Hộ nghèo neo đơn",
+      "description": "Mỗi phần quà gồm 10kg gạo thơm, dầu ăn, nước tương, sữa và phong bao lì xì trao tận tay các cụ già không nơi nương tựa và người khuyết tật bán vé số.",
+      "highlights": [
+        "Mỗi suất quà trị giá 350.000đ trao tận tay không qua trung gian",
+        "Cập nhật nhật ký hành trình thiện nguyện công khai trên Facebook & Website",
+        "Gieo nhân lành ấm no, gặt quả báo phúc lộc bền vững cho gia đình"
+      ],
+      "transferSyntax": "GIUPNGUOI"
+    },
+    {
+      "id": "ct-03",
+      "title": "Cúng Dường Tam Bảo, Ấn Tống Kinh Sách & Đèn Dầu Chùa Nghèo",
+      "category": "Hộ trì Tam Bảo",
+      "status": "Thường xuyên",
+      "raised": 65800000,
+      "goal": 80000000,
+      "donorsCount": 211,
+      "location": "Các tự viện vùng sâu vùng xa",
+      "description": "Hỗ trợ nhang trầm sạch, dầu thắp đèn bàn Phật, ấn tống kinh chú phổ thông và cúng dường trai tăng tại các ngôi chùa vùng sâu đang thiếu thốn kinh phí tu bổ.",
+      "highlights": [
+        "Cúng dường ánh sáng và kinh sách giúp khai mở trí tuệ, gia đạo sáng suốt",
+        "Ghi sớ cầu an cho gia đình các mạnh thường quân tại chùa",
+        "Báo cáo thu chi rõ ràng, minh bạch từng đợt trao tặng"
+      ],
+      "transferSyntax": "CUNGDUONG"
+    }
+  ],
+  "recentDonors": [
+    { "name": "Phật tử Nguyễn Minh Tâm (TP.HCM)", "amount": 500000, "campaign": "Phóng Sinh Rằm", "date": "Hôm nay", "wish": "Cầu gia đạo bình an, mẹ sớm khoẻ mạnh" },
+    { "name": "Chị Trần Thanh Thảo (Hà Nội)", "amount": 350000, "campaign": "Quà Gạo Cụ Già Neo Đơn", "date": "Hôm nay", "wish": "Gieo duyên 1 phần quà tặng các cụ" },
+    { "name": "Gia đình Lê Hoàng Nam (Đà Nẵng)", "amount": 1000000, "campaign": "Cúng Dường Tam Bảo", "date": "Hôm qua", "wish": "Hồi hướng công đức cho cửu huyền thất tổ" },
+    { "name": "Hữu duyên giấu tên (SĐT *8829)", "amount": 200000, "campaign": "Phóng Sinh Rằm", "date": "Hôm qua", "wish": "Cầu công việc thuận buồm xuôi gió" },
+    { "name": "Chị Phạm Ngọc Lan (Bình Dương)", "amount": 500000, "campaign": "Quà Gạo Cụ Già Neo Đơn", "date": "2 ngày trước", "wish": "Tích phúc cho các con học hành đỗ đạt" },
+    { "name": "Trích quỹ Vật Phẩm Cô Bé Hữu Duyên", "amount": 3500000, "campaign": "Quỹ Chung Tháng Này", "date": "Định kỳ", "wish": "Trích từ đơn hàng vật phẩm phong thuỷ & hàng mã của khách hữu duyên" }
+  ]
+}
