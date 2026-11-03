@@ -193,20 +193,31 @@
       const viVoices = voices.filter(
         (v) =>
           (v.lang && v.lang.toLowerCase().replace(/_/g, "-").startsWith("vi")) ||
-          (v.name && /vietnam|tiếng việt/i.test(v.name))
+          (v.name && /vietnamese|tiếng việt/i.test(v.name))
       );
+
+      if (!viVoices.length) {
+        viFemaleVoice = null;
+        viMaleVoice = null;
+        return;
+      }
 
       // Giọng Nữ: Hoài My (Edge/Windows), Linh (macOS/iOS), Google tiếng Việt
       viFemaleVoice =
-        viVoices.find((v) => /hoaimy|female|nữ/i.test(v.name)) ||
+        viVoices.find(
+          (v) => /hoaimy/i.test(v.name) || (/female/i.test(v.name) && !/male/i.test(v.name))
+        ) ||
         viVoices.find((v) => /linh/i.test(v.name)) ||
         viVoices.find((v) => /google/i.test(v.name)) ||
-        viVoices[0] ||
-        null;
+        viVoices[0];
 
       // Giọng Nam: Nam Minh (Edge/Windows), An, Male
       viMaleVoice =
-        viVoices.find((v) => /namminh|male|nam/i.test(v.name)) ||
+        viVoices.find(
+          (v) =>
+            /namminh/i.test(v.name) ||
+            (/\bmale\b/i.test(v.name) && !/female/i.test(v.name))
+        ) ||
         viVoices.find((v) => v !== viFemaleVoice) ||
         viFemaleVoice;
     };
@@ -292,26 +303,52 @@
 
       const isMale = currentVoiceModel === "vi-VN-NamMinhNeural";
 
-      // 1. ƯU TIÊN SỐ 1: Dùng Web Speech Synthesis của trình duyệt (Hoài My / Nam Minh trên Edge/Windows, Google tiếng Việt, Linh)
-      // Cho chất lượng tự nhiên cao nhất, phản hồi tức thì và đổi Nam/Nữ nghe khác biệt ngay lập tức!
-      if (
-        "speechSynthesis" in window &&
-        (viFemaleVoice || viMaleVoice || window.speechSynthesis.getVoices().length > 0)
-      ) {
+      // Nếu chưa nạp được danh sách voice thì quét lại một lần nữa
+      if (!viFemaleVoice && !viMaleVoice && "speechSynthesis" in window) {
+        const voices = window.speechSynthesis.getVoices() || [];
+        const viVoices = voices.filter(
+          (v) =>
+            (v.lang && v.lang.toLowerCase().replace(/_/g, "-").startsWith("vi")) ||
+            (v.name && /vietnamese|tiếng việt/i.test(v.name))
+        );
+        if (viVoices.length > 0) {
+          viFemaleVoice =
+            viVoices.find(
+              (v) => /hoaimy/i.test(v.name) || (/female/i.test(v.name) && !/male/i.test(v.name))
+            ) ||
+            viVoices.find((v) => /linh/i.test(v.name)) ||
+            viVoices.find((v) => /google/i.test(v.name)) ||
+            viVoices[0];
+
+          viMaleVoice =
+            viVoices.find(
+              (v) =>
+                /namminh/i.test(v.name) ||
+                (/\bmale\b/i.test(v.name) && !/female/i.test(v.name))
+            ) ||
+            viVoices.find((v) => v !== viFemaleVoice) ||
+            viFemaleVoice;
+        }
+      }
+
+      const chosenVoice = isMale ? viMaleVoice : viFemaleVoice;
+
+      // 1. Chỉ dùng Web Speech Synthesis NẾU THỰC SỰ CÓ GIỌNG TIẾNG VIỆT HỢP LỆ (chosenVoice)!
+      // Tuyệt đối không dùng khi không có giọng tiếng Việt để tránh việc giọng tiếng Anh (như David trong Brave) đọc bồi tiếng Việt!
+      if ("speechSynthesis" in window && chosenVoice) {
         try {
           window.speechSynthesis.cancel();
           const utter = new SpeechSynthesisUtterance(clauseText);
-          utter.lang = "vi-VN";
+          utter.voice = chosenVoice;
+          utter.lang = chosenVoice.lang || "vi-VN";
 
           if (isMale) {
             // Giọng Nam (Nam Minh): Trầm ấm, âm vực dày dặn, trang nghiêm như thầy tụng
-            if (viMaleVoice) utter.voice = viMaleVoice;
             utter.pitch = 0.74; // Hạ cao độ trầm rõ rệt
             utter.rate = 0.84;  // Đọc từ tốn, khoan thai
             utter.volume = 1.0;
           } else {
             // Giọng Nữ (Hoài My): Thanh thoát, dịu dàng, trong sáng
-            if (viFemaleVoice) utter.voice = viFemaleVoice;
             utter.pitch = 1.06; // Cao độ nữ thanh tịnh
             utter.rate = 0.88;  // Đọc nhịp nhàng
             utter.volume = 1.0;
@@ -343,7 +380,8 @@
         }
       }
 
-      // 2. DỰ PHÒNG: Nếu trình duyệt không hỗ trợ Web Speech
+      // 2. DỰ PHÒNG CHUẨN: Nếu trình duyệt không có sẵn giọng đọc Tiếng Việt (như Brave trên Windows)
+      // -> Luôn phát giọng đọc Tiếng Việt chuẩn qua Audio API!
       speakViaAudioApi(clauseText, isMale, sessionId).then(resolve);
     });
   }
