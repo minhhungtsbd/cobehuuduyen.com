@@ -761,7 +761,24 @@ img, svg {
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-card), var(--shadow-gold);
-  transition: background 0.45s ease, border-color 0.45s ease;
+  transition: all 0.35s ease;
+}
+
+/* Chế độ Chánh Điện Toàn Màn Hình (Cinema View) */
+.altar-chamber.fullscreen-cinema {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 1.5rem 2rem !important;
+  z-index: 99999 !important;
+  background-color: #0b0503 !important;
+  background-image: radial-gradient(circle at 50% 30%, #30190a 0%, #150906 55%, #080302 100%) !important;
+  overflow-y: auto !important;
+  box-shadow: none !important;
 }
 
 /* 3 Themed Sanctuary Room Backgrounds (100% Opaque so Light Mode never bleeds or glares) */
@@ -772,6 +789,7 @@ img, svg {
 }
 .altar-chamber.shrine-theme-tam-bao .altar-stage-visual {
   background: radial-gradient(circle at 50% 38%, #573510 0%, #241409 70%, #110a07 100%);
+  border-color: rgba(212, 175, 55, 0.45);
 }
 
 .altar-chamber.shrine-theme-quan-am {
@@ -792,6 +810,70 @@ img, svg {
 .altar-chamber.shrine-theme-thanh-mau .altar-stage-visual {
   background: radial-gradient(circle at 50% 38%, #611523 0%, #2e0911 70%, #140609 100%);
   border-color: rgba(255, 107, 107, 0.45);
+}
+
+/* Đảm bảo giao diện Sáng không bị chói (choá) mắt: Điện thờ luôn giữ vẻ trang nghiêm, ấm áp của gỗ trầm */
+[data-theme="light"] .altar-chamber {
+  background-color: #170d08;
+  background-image: radial-gradient(circle at 50% 24%, #3a2211 0%, #20100a 52%, #110905 96%);
+  border-color: #b07d18;
+  box-shadow: 0 12px 32px rgba(92, 60, 20, 0.18);
+}
+[data-theme="light"] .altar-chamber.shrine-theme-tam-bao {
+  background-color: #1a0f09;
+  background-image: radial-gradient(circle at 50% 24%, #422610 0%, #22120b 52%, #110804 96%);
+}
+[data-theme="light"] .altar-chamber.shrine-theme-quan-am {
+  background-color: #0b1a20;
+  background-image: radial-gradient(circle at 50% 24%, #153844 0%, #0c2028 52%, #08141a 96%);
+}
+[data-theme="light"] .altar-chamber.shrine-theme-thanh-mau {
+  background-color: #1c0a0e;
+  background-image: radial-gradient(circle at 50% 24%, #46141d 0%, #260a0f 52%, #140608 96%);
+}
+
+/* Live Badge trên đỉnh điện thờ */
+.temple-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+  background: rgba(30, 16, 10, 0.85);
+  border: 1px solid rgba(46, 204, 113, 0.6);
+  color: #2ecc71;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.live-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 8px #2ecc71;
+  animation: pulseGreen 1.8s infinite;
+}
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.cinema-toggle-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(26, 16, 12, 0.9);
+  color: #fbe59b;
+  border: 1px solid rgba(251, 229, 155, 0.5);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cinema-toggle-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fff;
+  border-color: #fbe59b;
 }
 
 /* 12 Meditation Seats Grid (Bồ Đoàn Toạ Thiền Đạo Tràng) */
@@ -834,6 +916,27 @@ img, svg {
   box-shadow: 0 0 18px rgba(251, 229, 155, 0.3);
 }
 
+/* Hiệu ứng lạy Phật / đảnh lễ của Phật tử tại bồ đoàn */
+.meditation-seat.is-bowing .seat-avatar {
+  animation: seatBowingAnim 2.2s ease-in-out forwards;
+}
+.meditation-seat.is-bowing .seat-cushions {
+  animation: cushionGlowAnim 2.2s ease-in-out forwards;
+}
+
+@keyframes seatBowingAnim {
+  0% { transform: scale(1) translateY(0) rotate(0deg); }
+  25% { transform: scale(0.9) translateY(6px) rotate(-14deg); }
+  50% { transform: scale(0.85) translateY(10px) rotate(-22deg); filter: drop-shadow(0 0 10px #fbe59b); }
+  75% { transform: scale(0.9) translateY(4px) rotate(-8deg); }
+  100% { transform: scale(1) translateY(0) rotate(0deg); }
+}
+
+@keyframes cushionGlowAnim {
+  0%, 100% { box-shadow: 0 0 0 rgba(251, 229, 155, 0); }
+  50% { box-shadow: 0 0 25px rgba(251, 229, 155, 0.8), 0 0 45px rgba(212, 175, 55, 0.5); }
+}
+
 .seat-cushions {
   width: 44px;
   height: 44px;
@@ -843,10 +946,13 @@ img, svg {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .seat-avatar {
   font-size: 1.3rem;
+  display: inline-block;
+  transform-origin: bottom center;
 }
 
 .seat-name {
@@ -866,12 +972,13 @@ img, svg {
 
 .ritual-cost-badge {
   display: inline-block;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.65);
   color: #fbe59b;
   font-size: 0.7rem;
   padding: 0.1rem 0.4rem;
   border-radius: 99px;
   border: 1px solid rgba(251, 229, 155, 0.35);
+  font-weight: 700;
 }
 
 .altar-top-bar {
@@ -889,7 +996,7 @@ img, svg {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(212, 175, 55, 0.4);
   padding: 0.35rem 0.75rem;
   border-radius: 99px;
@@ -907,53 +1014,287 @@ img, svg {
   outline: none;
 }
 
-/* Sacred Shrine Visual Stage */
+/* ==========================================================================
+   SACRED SHRINE VISUAL STAGE & HALO SYSTEM (CHÁNH ĐIỆN TÂM LINH)
+   ========================================================================== */
 .altar-stage-visual {
   position: relative;
-  min-height: 290px;
+  min-height: 310px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
-  border-radius: 18px;
-  background: radial-gradient(circle at 50% 42%, rgba(251, 229, 155, 0.26) 0%, rgba(20, 12, 10, 0.75) 75%);
-  border: 1px solid rgba(212, 175, 55, 0.32);
+  padding: 1.25rem 1rem 0.75rem;
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 42%, rgba(251, 229, 155, 0.22) 0%, rgba(20, 12, 10, 0.82) 75%);
+  border: 1.5px solid rgba(212, 175, 55, 0.38);
   margin-bottom: 1.25rem;
   overflow: hidden;
 }
 
-.deity-halo {
-  width: 150px;
-  height: 150px;
+/* Canvas hạt tâm linh phủ bên trên Chánh Điện */
+.altar-particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 12;
+}
+
+/* Hệ Thống Hào Quang Bánh Xe Pháp Luân Đa Lớp */
+.buddha-halo-system {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.halo-sunburst {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(251, 229, 155, 0.45) 0%, rgba(212, 175, 55, 0.12) 60%, transparent 75%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 236, 150, 0.35) 0deg 6deg,
+    rgba(255, 195, 70, 0.03) 6deg 15deg,
+    rgba(255, 245, 190, 0.25) 15deg 20deg,
+    rgba(255, 180, 50, 0.02) 20deg 30deg
+  );
+  animation: haloSpinCw 70s linear infinite;
+  opacity: 0.85;
+}
+
+.halo-pulse-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 238, 160, 0.5);
+  pointer-events: none;
+}
+.halo-pulse-ring.ring-1 {
+  width: 220px;
+  height: 220px;
+  animation: pulseRingAura 4.5s ease-in-out infinite;
+}
+.halo-pulse-ring.ring-2 {
+  width: 280px;
+  height: 280px;
+  border-color: rgba(255, 218, 110, 0.35);
+  animation: pulseRingAura 4.5s ease-in-out infinite 1.2s;
+}
+
+@keyframes pulseRingAura {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.96); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.04); opacity: 0.95; }
+}
+
+.halo-dharma-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dharma-wheel-outer {
+  transform-origin: 200px 200px;
+  animation: haloSpinCw 64s linear infinite;
+}
+.dharma-wheel-inner {
+  transform-origin: 200px 200px;
+  animation: haloSpinCcw 44s linear infinite;
+}
+
+@keyframes haloSpinCw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes haloSpinCcw {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Cột sáng tâm hương chiếu rọi từ trên cao */
+.sacred-light-beam {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 130px;
+  height: 260px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 30%,
+    rgba(255, 248, 210, 0.38) 0%,
+    rgba(255, 220, 120, 0.15) 50%,
+    rgba(255, 210, 100, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 4;
+}
+
+.deity-halo {
+  width: 145px;
+  height: 145px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 229, 155, 0.45) 0%, rgba(212, 175, 55, 0.14) 60%, transparent 75%);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 0 45px rgba(251, 229, 155, 0.35);
+  z-index: 5;
+  box-shadow: 0 0 55px rgba(251, 229, 155, 0.42);
   animation: pulseHalo 4s ease-in-out infinite;
 }
 
 @keyframes pulseHalo {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(251, 229, 155, 0.32); }
-  50% { transform: scale(1.04); box-shadow: 0 0 65px rgba(251, 229, 155, 0.55); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 45px rgba(251, 229, 155, 0.38); }
+  50% { transform: scale(1.05); box-shadow: 0 0 75px rgba(251, 229, 155, 0.65); }
 }
 
-/* Offerings Table on Altar */
+/* Bàn thờ & Pháp khí tương tác */
 .altar-offerings-table {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 14px;
-  background: rgba(28, 16, 12, 0.85);
+  gap: 1.1rem;
+  margin-top: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 16px;
+  background: rgba(26, 14, 10, 0.9);
   border-top: 3px solid #d4af37;
   border-bottom: 2px solid #785407;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   position: relative;
+  z-index: 10;
+  max-width: 95%;
+}
+
+.altar-furnishing-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.altar-furnishing-slot:hover {
+  transform: translateY(-3px) scale(1.06);
+}
+.altar-furnishing-slot:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.bell-station-body, .woodfish-station-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.3rem 0.55rem;
+  border-radius: 10px;
+  background: rgba(40, 22, 14, 0.7);
+  border: 1px solid rgba(251, 229, 155, 0.4);
+}
+.bell-icon, .woodfish-icon {
+  font-size: 1.6rem;
+  display: block;
+}
+.furnishing-label {
+  font-size: 0.68rem;
+  color: #fbe59b;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Đèn Hoa Sen Trí Tuệ với Ngọn Lửa Cháy Bập Bùng */
+.altar-lotus-lamp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.candle-flame {
+  position: relative;
+  width: 10px;
+  height: 18px;
+  border-radius: 50% 50% 25% 25% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 50% 70%, #ff8c00 0%, #ffdf79 40%, rgba(255,255,255,0.9) 70%, transparent 100%);
+  box-shadow: 0 0 12px #ffb300, 0 0 24px rgba(255, 140, 0, 0.6);
+  animation: candleFlicker 1.8s infinite alternate ease-in-out;
+  margin-bottom: -3px;
+}
+.flame-inner {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.95;
+}
+@keyframes candleFlicker {
+  0% { transform: scale(1) rotate(-1deg); }
+  25% { transform: scale(1.08, 0.94) rotate(1.5deg); }
+  50% { transform: scale(0.95, 1.05) rotate(-2deg); }
+  75% { transform: scale(1.04, 0.98) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.lamp-icon, .lotus-flower-icon {
+  font-size: 1.55rem;
+}
+
+/* Lư Hương Đỉnh Đồng với 3 Nén Nhang & Tàn Đỏ Rực */
+.incense-burner-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.incense-sticks-holder {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 38px;
+  margin-bottom: -6px;
+  z-index: 2;
+}
+.incense-stick {
+  width: 3px;
+  height: 36px;
+  background: linear-gradient(to bottom, #d4a359 0%, #8c1d18 80%);
+  border-radius: 1px;
+  position: relative;
+}
+.incense-stick.stick-1 { transform: rotate(-5deg); height: 33px; }
+.incense-stick.stick-2 { transform: rotate(0deg); height: 38px; }
+.incense-stick.stick-3 { transform: rotate(5deg); height: 34px; }
+
+.incense-ember {
+  position: absolute;
+  top: -3px;
+  left: -2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff5722;
+  box-shadow: 0 0 8px #ff7043, 0 0 16px #ffab00;
+  border: 1px solid #ffe082;
+  animation: emberGlow 1.6s ease-in-out infinite alternate;
+}
+@keyframes emberGlow {
+  0% { transform: scale(0.85); opacity: 0.8; }
+  100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #ff3d00, 0 0 20px #ff9100; }
+}
+
+.burner-urn {
+  font-size: 1.85rem;
+  display: block;
 }
 
 .offering-slot {
@@ -962,47 +1303,14 @@ img, svg {
   align-items: center;
   font-size: 0.72rem;
   color: #d7c7b5;
-  opacity: 0.45;
+  opacity: 0.65;
   transition: all 0.35s ease;
 }
 
 .offering-slot.active {
   opacity: 1;
   color: #fbe59b;
-  transform: translateY(-3px);
-}
-
-/* Rising Incense Smoke Animation */
-.incense-smoke-container {
-  position: relative;
-  height: 36px;
-  width: 30px;
-  display: flex;
-  justify-content: center;
-}
-
-.smoke-wisp {
-  position: absolute;
-  bottom: 0;
-  width: 6px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.55);
-  filter: blur(3px);
-  opacity: 0;
-}
-
-.offering-slot.active .smoke-wisp {
-  animation: smokeRise 2.8s ease-in-out infinite;
-}
-.offering-slot.active .smoke-wisp:nth-child(2) {
-  animation-delay: 1.2s;
-}
-
-@keyframes smokeRise {
-  0% { transform: translateY(0) scaleX(1); opacity: 0.7; }
-  50% { transform: translateY(-16px) translateX(4px) scaleX(1.5); opacity: 0.45; }
-  100% { transform: translateY(-32px) translateX(-4px) scaleX(2); opacity: 0; }
+  transform: translateY(-2px);
 }
 
 /* Floating Sky Lanterns inside Altar */

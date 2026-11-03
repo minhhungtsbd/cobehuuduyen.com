@@ -1280,39 +1280,104 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
         <div class="altar-chamber shrine-theme-tam-bao" id="altar-chamber-box">
           <div class="altar-top-bar">
             <div>
-              <h2 id="sanctuary-room-title" style="font-size:1.45rem;color:#fbe59b;">${defaultRoom.name}</h2>
+              <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap;">
+                <h2 id="sanctuary-room-title" style="font-size:1.45rem;color:#fbe59b;margin:0;">${defaultRoom.name}</h2>
+                <span class="temple-live-badge"><span class="live-dot-green"></span> TRỰC TUYẾN</span>
+              </div>
               <small id="sanctuary-deity-title" style="color:#d7c7b5;">${defaultRoom.deityTitle}</small>
             </div>
-            <div class="nickname-box" title="Đặt Pháp danh hoặc Tên tín chủ hiển thị trên chiếu ngồi">
-              <span style="font-size:0.8rem;color:#d7c7b5;">🪷 Pháp danh/Tên:</span>
-              <input type="text" id="sanctuary-nickname-input" placeholder="Nhập tên của bạn..." value="Phật tử Hữu Duyên" />
+            <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline cinema-toggle-btn" id="btn-toggle-cinema" title="Mở rộng chánh điện toàn màn hình để chuyên tâm toạ thiền">
+                <span id="cinema-btn-icon">🖥️</span>
+                <span id="cinema-btn-label">Toàn Màn Hình</span>
+              </button>
+              <div class="nickname-box" title="Đặt Pháp danh hoặc Tên tín chủ hiển thị trên chiếu ngồi">
+                <span style="font-size:0.8rem;color:#d7c7b5;">🪷 Pháp danh/Tên:</span>
+                <input type="text" id="sanctuary-nickname-input" placeholder="Nhập tên của bạn..." value="Phật tử Hữu Duyên" />
+              </div>
             </div>
           </div>
 
-          <!-- Visual Altar Stage with Dynamic Theme Background -->
+          <!-- Visual Altar Stage with Dynamic Theme Background & Interactive Furnishings -->
           <div class="altar-stage-visual" id="altar-stage-visual">
+            <!-- Overlaid Ultra-Low-CPU Particle & Soundwave Canvas -->
+            <canvas class="altar-particle-canvas" id="altar-particle-canvas" width="900" height="420"></canvas>
+
+            <!-- Multi-layered Sacred Halo System -->
+            <div class="buddha-halo-system" id="buddha-halo-system">
+              <div class="halo-sunburst"></div>
+              <div class="halo-pulse-ring ring-1"></div>
+              <div class="halo-pulse-ring ring-2"></div>
+              <svg class="halo-dharma-svg" viewBox="0 0 400 400" aria-hidden="true">
+                <g class="dharma-wheel-outer" stroke="#ffe47a" fill="none">
+                  <circle cx="200" cy="200" r="172" stroke-width="1.8" stroke-dasharray="10 8" stroke-opacity="0.8" />
+                  <circle cx="200" cy="200" r="148" stroke-width="1.4" stroke-opacity="0.6" />
+                  <circle cx="200" cy="200" r="124" stroke-width="2.2" stroke-opacity="0.75" />
+                  <line x1="200" y1="28" x2="200" y2="372" stroke-width="1.5" stroke-opacity="0.65" />
+                  <line x1="28" y1="200" x2="372" y2="200" stroke-width="1.5" stroke-opacity="0.65" />
+                  <line x1="78" y1="78" x2="322" y2="322" stroke-width="1.5" stroke-opacity="0.65" />
+                  <line x1="78" y1="322" x2="322" y2="78" stroke-width="1.5" stroke-opacity="0.65" />
+                </g>
+                <g class="dharma-wheel-inner" stroke="#fff3b0" fill="none">
+                  <circle cx="200" cy="200" r="95" stroke-width="1.8" stroke-dasharray="14 8" stroke-opacity="0.85" />
+                  <circle cx="200" cy="200" r="68" stroke-width="1.5" stroke-opacity="0.7" />
+                </g>
+              </svg>
+            </div>
+
+            <!-- Sacred Light Beam Descending -->
+            <div class="sacred-light-beam"></div>
+
+            <!-- Deity Figure & Halo Centerpiece -->
             <div class="deity-halo" id="sanctuary-deity-halo"></div>
-            <p id="sanctuary-mantra-short" style="margin-top:0.75rem;font-family:'Noto Serif',serif;font-weight:700;color:#fbe59b;text-align:center;font-size:1.08rem;">
+
+            <p id="sanctuary-mantra-short" style="margin-top:0.6rem;margin-bottom:0.8rem;font-family:'Noto Serif',serif;font-weight:700;color:#fbe59b;text-align:center;font-size:1.05rem;text-shadow:0 0 14px rgba(251,229,155,0.7);z-index:10;position:relative;">
               🙏 ${defaultRoom.mantraShort}
             </p>
 
-            <!-- Offerings Table -->
+            <!-- Interactive Altar Furnishings & Offerings Table -->
             <div class="altar-offerings-table">
-              <div class="offering-slot active" id="slot-lamp">
-                <span style="font-size:1.45rem;">🕯️</span>
+              <div class="altar-furnishing-slot" id="altar-bell-station" title="Bấm để Thỉnh Chuông Bát Nhã">
+                <div class="bell-station-body">
+                  <span class="bell-icon">🔔</span>
+                  <span class="furnishing-label">Thỉnh Chuông</span>
+                </div>
+              </div>
+
+              <div class="offering-slot active" id="slot-lamp" title="Đèn Sen Trí Tuệ Chiếu Sáng">
+                <div class="altar-lotus-lamp">
+                  <div class="candle-flame">
+                    <span class="flame-inner"></span>
+                  </div>
+                  <span class="lamp-icon">🪷</span>
+                </div>
                 <span>Đèn Trí Tuệ</span>
               </div>
-              <div class="offering-slot active" id="slot-incense">
-                <div class="incense-smoke-container">
-                  <span class="smoke-wisp"></span>
-                  <span class="smoke-wisp"></span>
-                  <span style="font-size:1.55rem;">🏺</span>
+
+              <div class="offering-slot active" id="slot-incense" title="Bấm để Dâng Hương Trầm">
+                <div class="incense-burner-box" id="altar-incense-station">
+                  <div class="incense-sticks-holder" id="altar-incense-sticks">
+                    <div class="incense-stick stick-1"><span class="incense-ember"></span></div>
+                    <div class="incense-stick stick-2"><span class="incense-ember"></span></div>
+                    <div class="incense-stick stick-3"><span class="incense-ember"></span></div>
+                  </div>
+                  <span class="burner-urn">🏺</span>
                 </div>
                 <span>Lư Hương Trầm</span>
               </div>
-              <div class="offering-slot active" id="slot-flower">
-                <span style="font-size:1.45rem;">🪷</span>
+
+              <div class="offering-slot active" id="slot-flower" title="Dâng Hoa Sen & Mâm Quả">
+                <div class="altar-fruit-flower">
+                  <span class="lotus-flower-icon">🪷</span>
+                </div>
                 <span>Hoa Sen & Quả</span>
+              </div>
+
+              <div class="altar-furnishing-slot" id="altar-woodfish-station" title="Bấm để Gõ Mõ Tụng Kinh">
+                <div class="woodfish-station-body">
+                  <span class="woodfish-icon">🪵</span>
+                  <span class="furnishing-label">Gõ Mõ</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1347,6 +1412,10 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
               <span>📿 Lần Chuỗi 108 Hạt</span>
               <span class="ritual-cost-badge">-2đ</span>
             </button>
+            <button type="button" class="ritual-btn" id="ritual-prostrate-btn">
+              <span>🙏 Lạy Phật / Đảnh Lễ</span>
+              <span class="ritual-cost-badge">-2đ</span>
+            </button>
           </div>
 
           <!-- Synchronized Scripture Teleprompter + Voice Reader Controls -->
@@ -1356,7 +1425,10 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
                 <strong id="sanctuary-chant-title" style="color:#fbe59b;font-size:0.95rem;display:block;">📖 ${defaultRoom.chantTitle}</strong>
                 <small style="color:#bda894;font-size:0.75rem;">🔄 Đồng bộ câu kinh trực tiếp cùng toàn bộ Phật tử trong phòng (+2 Điểm Công Đức / câu)</small>
               </div>
-              <div style="display:flex;gap:0.45rem;flex-wrap:wrap;">
+              <div style="display:flex;gap:0.45rem;flex-wrap:wrap;align-items:center;">
+                <button type="button" class="btn btn-outline" id="btn-toggle-ambience" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Bật nhạc nền chuông thiền định và tiếng nước êm dịu">
+                  🎵 Nhạc Thiền: TẮT
+                </button>
                 <button type="button" class="btn btn-outline" id="btn-switch-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Đổi giữa giọng nữ dịu dàng và giọng nam trầm ấm">
                   🎙️ Giọng: Hoài My (Nữ)
                 </button>
@@ -1382,7 +1454,7 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
           <div class="meditation-hall-box">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
               <strong style="color:#fbe59b;font-size:0.95rem;">🧘 Chỗ Ngồi Toạ Thiền Tại Điện (<span id="online-users-count">5</span> Phật tử đang online)</strong>
-              <small style="color:#d7c7b5;font-size:0.76rem;">Hiển thị thời gian thực các tín chủ đang tụng kinh tại phòng này</small>
+              <small style="color:#d7c7b5;font-size:0.76rem;">Bấm "Lạy Phật / Đảnh Lễ" để kính lễ Tam Bảo cùng đạo tràng</small>
             </div>
             <div class="meditation-seats-grid" id="meditation-seats-grid"></div>
           </div>

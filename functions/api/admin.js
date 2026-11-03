@@ -61,19 +61,33 @@ async function ensureAdminSchema(db) {
 
   // Tự động kiểm tra và thêm cột status nếu bảng cũ chưa có
   try {
-    await db.prepare("ALTER TABLE spiritual_events ADD COLUMN status TEXT DEFAULT 'pending'").run();
+    const info = await db.prepare("PRAGMA table_info(spiritual_events)").all();
+    const cols = new Set((info.results || []).map((r) => r.name));
+    if (!cols.has("status")) {
+      await db.prepare("ALTER TABLE spiritual_events ADD COLUMN status TEXT DEFAULT 'pending'").run();
+    }
+    if (!cols.has("merit_awarded")) {
+      await db.prepare("ALTER TABLE spiritual_events ADD COLUMN merit_awarded INTEGER DEFAULT 0").run();
+    }
   } catch {
-    // column already exists
+    try {
+      await db.prepare("ALTER TABLE spiritual_events ADD COLUMN status TEXT DEFAULT 'pending'").run();
+    } catch {}
+    try {
+      await db.prepare("ALTER TABLE spiritual_events ADD COLUMN merit_awarded INTEGER DEFAULT 0").run();
+    } catch {}
   }
+
   try {
-    await db.prepare("ALTER TABLE spiritual_events ADD COLUMN merit_awarded INTEGER DEFAULT 0").run();
+    const prodInfo = await db.prepare("PRAGMA table_info(products_catalog)").all();
+    const prodCols = new Set((prodInfo.results || []).map((r) => r.name));
+    if (!prodCols.has("image_url")) {
+      await db.prepare("ALTER TABLE products_catalog ADD COLUMN image_url TEXT DEFAULT ''").run();
+    }
   } catch {
-    // column already exists
-  }
-  try {
-    await db.prepare("ALTER TABLE products_catalog ADD COLUMN image_url TEXT DEFAULT ''").run();
-  } catch {
-    // column already exists
+    try {
+      await db.prepare("ALTER TABLE products_catalog ADD COLUMN image_url TEXT DEFAULT ''").run();
+    } catch {}
   }
 }
 
@@ -100,11 +114,28 @@ export async function onRequestGet(context) {
   try {
     await ensureAdminSchema(env.DB);
 
-    const eventsRes = await env.DB.prepare(
-      `SELECT id, event_type, room_id, nickname, phone, amount, message, status, merit_awarded, payload_json, created_at
-       FROM spiritual_events
-       ORDER BY id DESC LIMIT 150`
-    ).all();
+    let rawEvents = [];
+    try {
+      const eventsRes = await env.DB.prepare(
+        `SELECT * FROM spiritual_events ORDER BY id DESC LIMIT 150`
+      ).all();
+      rawEvents = (eventsRes.results || []).map((row) => ({
+        id: row.id,
+        event_type: row.event_type,
+        room_id: row.room_id || "",
+        nickname: row.nickname || "Tín chủ",
+        phone: row.phone || "",
+        amount: Number(row.amount || 0),
+        message: row.message || "",
+        status: row.status || "approved",
+        merit_awarded: Number(row.merit_awarded || 0),
+        payload_json: row.payload_json || "{}",
+        created_at: row.created_at || ""
+      }));
+    } catch (e) {
+      console.error("SELECT spiritual_events fallback error:", e);
+      rawEvents = [];
+    }
 
     let customProducts = [];
     try {
@@ -119,7 +150,7 @@ export async function onRequestGet(context) {
     return new Response(
       JSON.stringify({
         ok: true,
-        events: eventsRes.results || [],
+        events: rawEvents,
         customProducts
       }),
       { status: 200, headers: CORS_HEADERS }

@@ -26,6 +26,7 @@
     bell: { cost: 2, name: "🔔 Thỉnh Chuông Bát Nhã" },
     mo: { cost: 1, name: "🥁 Gõ Mõ Tụng Kinh" },
     mala: { cost: 2, name: "📿 Lần Chuỗi 108 Hạt" },
+    prostrate: { cost: 2, name: "🙏 Lạy Phật / Đảnh Lễ Tam Bảo" },
     lantern: { cost: 10, name: "🏮 Thả Đèn Hoa Đăng" }
   };
 
@@ -176,6 +177,465 @@
     bodyOsc.start(now);
     bodyOsc.stop(now + 0.18);
   }
+
+  function playProstrationChime() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    // Chuông bát tụng kinh đảnh lễ (Âm ba trầm ấm, thanh thoát ngân vang 3.8s)
+    const partials = [
+      { freq: 144, amp: 0.35, decay: 3.8 },
+      { freq: 288, amp: 0.20, decay: 2.8 },
+      { freq: 432, amp: 0.12, decay: 2.0 },
+      { freq: 576, amp: 0.06, decay: 1.4 }
+    ];
+    partials.forEach((p) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(p.freq, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(p.amp, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + p.decay + 0.05);
+    });
+  }
+
+  // ---------- ZenAudioEngine: Nhạc Nền Thiền Định Tự Động Hạ Nhỏ Khi Tụng Kinh (Auto-Ducking) ----------
+  class ZenAudioEngine {
+    constructor() {
+      this.ctx = null;
+      this.ambienceActive = false;
+      this.ambienceTimer = null;
+      this.droneOscs = [];
+      this.droneGain = null;
+      this.baseVol = 0.09;
+    }
+
+    ensureContext() {
+      const ctx = getAudioContext();
+      this.ctx = ctx;
+      return ctx;
+    }
+
+    setDucking(isDucked) {
+      if (!this.droneGain || !this.ctx) return;
+      const now = this.ctx.currentTime;
+      const target = isDucked ? this.baseVol * 0.22 : this.baseVol;
+      this.droneGain.gain.cancelScheduledValues(now);
+      this.droneGain.gain.linearRampToValueAtTime(target, now + 0.4);
+    }
+
+    startAmbience() {
+      const ctx = this.ensureContext();
+      if (!ctx || this.ambienceActive) return;
+      this.ambienceActive = true;
+
+      const now = ctx.currentTime;
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(108, now); // 108Hz nốt thiền Om
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(162, now); // Quãng năm hoàn hảo 162Hz
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(this.baseVol, now + 2.5);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+
+      this.droneOscs = [osc1, osc2];
+      this.droneGain = gain;
+
+      // Điểm chuông thiền ngũ cung nhẹ nhàng mỗi 4.2 giây
+      const PENTATONIC = [261.63, 329.63, 392.0, 523.25, 659.25];
+      let step = 0;
+      const playChimeNote = () => {
+        if (!this.ambienceActive || !this.ctx) return;
+        try {
+          const cnow = this.ctx.currentTime;
+          const freq = PENTATONIC[step % PENTATONIC.length];
+          step++;
+          const noteOsc = this.ctx.createOscillator();
+          const noteGain = this.ctx.createGain();
+          noteOsc.type = "sine";
+          noteOsc.frequency.setValueAtTime(freq, cnow);
+
+          noteGain.gain.setValueAtTime(0.0001, cnow);
+          noteGain.gain.linearRampToValueAtTime(0.045, cnow + 0.08);
+          noteGain.gain.exponentialRampToValueAtTime(0.0001, cnow + 3.4);
+
+          noteOsc.connect(noteGain);
+          noteGain.connect(this.ctx.destination);
+
+          noteOsc.start(cnow);
+          noteOsc.stop(cnow + 3.5);
+        } catch (_) {}
+      };
+
+      this.ambienceTimer = setInterval(playChimeNote, 4200);
+    }
+
+    stopAmbience() {
+      this.ambienceActive = false;
+      if (this.ambienceTimer) {
+        clearInterval(this.ambienceTimer);
+        this.ambienceTimer = null;
+      }
+      if (this.droneGain && this.ctx) {
+        const now = this.ctx.currentTime;
+        this.droneGain.gain.linearRampToValueAtTime(0.0001, now + 0.8);
+        setTimeout(() => {
+          if (this.droneOscs.length) {
+            this.droneOscs.forEach((o) => {
+              try { o.stop(); o.disconnect(); } catch (_) {}
+            });
+            this.droneOscs = [];
+          }
+        }, 900);
+      }
+    }
+  }
+
+  // ---------- TempleParticleEngine: Canvas Hạt Thiền Siêu Nhẹ CPU (30 FPS, Pre-rendered Sprites) ----------
+  class TempleParticleEngine {
+    constructor(canvas) {
+      this.canvas = canvas;
+      if (!this.canvas) return;
+      this.ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
+      this.width = canvas.width || 900;
+      this.height = canvas.height || 420;
+      this.resize();
+
+      this.smokeParticles = [];
+      this.lotusPetals = [];
+      this.goldSparks = [];
+      this.soundWaves = [];
+      this.floatingTexts = [];
+      this.burstSparks = [];
+
+      this.incenseTips = [
+        { x: this.width * 0.5 - 7, y: this.height * 0.80 },
+        { x: this.width * 0.5, y: this.height * 0.77 },
+        { x: this.width * 0.5 + 7, y: this.height * 0.80 }
+      ];
+      this.time = 0;
+      this.lastFrameTime = 0;
+      this.frameInterval = 1000 / 30; // 30 FPS cố định siêu nhẹ CPU
+
+      this.buildSprites();
+      this.initAmbient();
+      this.animate = this.animate.bind(this);
+      requestAnimationFrame(this.animate);
+
+      window.addEventListener("resize", () => this.resize());
+    }
+
+    resize() {
+      if (!this.canvas) return;
+      const rect = this.canvas.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        this.width = Math.round(rect.width);
+        this.height = Math.round(rect.height);
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        this.incenseTips = [
+          { x: this.width * 0.5 - 7, y: this.height * 0.80 },
+          { x: this.width * 0.5, y: this.height * 0.77 },
+          { x: this.width * 0.5 + 7, y: this.height * 0.80 }
+        ];
+      }
+    }
+
+    buildSprites() {
+      // 1. Smoke Sprite (64x64)
+      this.smokeSprite = document.createElement("canvas");
+      this.smokeSprite.width = 64;
+      this.smokeSprite.height = 64;
+      const sctx = this.smokeSprite.getContext("2d");
+      const sgrad = sctx.createRadialGradient(32, 32, 2, 32, 32, 30);
+      sgrad.addColorStop(0, "rgba(255, 246, 218, 0.85)");
+      sgrad.addColorStop(0.5, "rgba(238, 222, 185, 0.35)");
+      sgrad.addColorStop(1, "rgba(220, 200, 160, 0)");
+      sctx.fillStyle = sgrad;
+      sctx.beginPath();
+      sctx.arc(32, 32, 30, 0, Math.PI * 2);
+      sctx.fill();
+
+      // 2. Gold Spark Sprite (16x16)
+      this.sparkSprite = document.createElement("canvas");
+      this.sparkSprite.width = 16;
+      this.sparkSprite.height = 16;
+      const gctx = this.sparkSprite.getContext("2d");
+      const ggrad = gctx.createRadialGradient(8, 8, 1, 8, 8, 7);
+      ggrad.addColorStop(0, "rgba(255, 245, 190, 1)");
+      ggrad.addColorStop(0.5, "rgba(255, 210, 90, 0.6)");
+      ggrad.addColorStop(1, "rgba(255, 190, 50, 0)");
+      gctx.fillStyle = ggrad;
+      gctx.beginPath();
+      gctx.arc(8, 8, 7, 0, Math.PI * 2);
+      gctx.fill();
+
+      // 3. Pink & Gold Lotus Petal Sprites
+      this.pinkPetalSprite = this.createPetalSprite("rgba(248, 165, 194, 0.85)");
+      this.goldPetalSprite = this.createPetalSprite("rgba(255, 218, 110, 0.88)");
+    }
+
+    createPetalSprite(color) {
+      const c = document.createElement("canvas");
+      c.width = 24;
+      c.height = 24;
+      const pctx = c.getContext("2d");
+      const sz = 10;
+      pctx.translate(12, 12);
+      pctx.beginPath();
+      pctx.moveTo(0, -sz);
+      pctx.bezierCurveTo(sz * 0.8, -sz * 0.4, sz * 0.7, sz * 0.7, 0, sz);
+      pctx.bezierCurveTo(-sz * 0.7, sz * 0.7, -sz * 0.8, -sz * 0.4, 0, -sz);
+      pctx.fillStyle = color;
+      pctx.fill();
+      return c;
+    }
+
+    initAmbient() {
+      for (let i = 0; i < 18; i++) {
+        this.goldSparks.push({
+          x: Math.random() * this.width,
+          y: Math.random() * this.height,
+          size: 5 + Math.random() * 6,
+          vy: -(0.4 + Math.random() * 0.7),
+          vx: (Math.random() - 0.5) * 0.4,
+          phase: Math.random() * Math.PI * 2,
+          alpha: 0.3 + Math.random() * 0.5
+        });
+      }
+      for (let i = 0; i < 5; i++) {
+        this.lotusPetals.push(this.createPetal(true));
+      }
+    }
+
+    createPetal(randomY = false) {
+      return {
+        x: Math.random() * this.width,
+        y: randomY ? Math.random() * this.height : -20 - Math.random() * 60,
+        scale: 0.6 + Math.random() * 0.5,
+        vy: 0.85 + Math.random() * 1.1,
+        vx: (Math.random() - 0.5) * 0.6,
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.03,
+        swayPhase: Math.random() * Math.PI * 2,
+        gold: Math.random() > 0.55
+      };
+    }
+
+    spawnSmoke() {
+      if (this.smokeParticles.length >= 22) return;
+      if (Math.random() > 0.4) return;
+      const tip = this.incenseTips[Math.floor(Math.random() * this.incenseTips.length)];
+      this.smokeParticles.push({
+        x: tip.x + (Math.random() - 0.5) * 4,
+        y: tip.y,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: -(1.6 + Math.random() * 0.8),
+        radius: 6 + Math.random() * 4,
+        maxRadius: 20 + Math.random() * 10,
+        alpha: 0.28 + Math.random() * 0.12,
+        age: 0,
+        maxAge: 62 + Math.random() * 18,
+        seed: Math.random() * 50
+      });
+    }
+
+    spawnBellWaves(x, y) {
+      const waveX = x ?? this.width * 0.18;
+      const waveY = y ?? this.height * 0.82;
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          this.soundWaves.push({
+            x: waveX,
+            y: waveY,
+            radius: 12,
+            maxRadius: 180,
+            alpha: 0.85,
+            lineWidth: 2.2
+          });
+        }, i * 220);
+      }
+    }
+
+    spawnFloatingBadge(text, color = "#ffe47a", x, y) {
+      this.floatingTexts.push({
+        text,
+        color,
+        x: x ?? this.width * 0.5,
+        y: y ?? this.height * 0.65,
+        vy: -1.6,
+        alpha: 1.0
+      });
+    }
+
+    spawnLotusRain() {
+      for (let i = 0; i < 14; i++) {
+        this.lotusPetals.push(this.createPetal(false));
+      }
+    }
+
+    spawnGrandSparks(x, y) {
+      const originX = x ?? this.width * 0.5;
+      const originY = y ?? this.height * 0.45;
+      for (let i = 0; i < 24; i++) {
+        const angle = (Math.PI * 2 * i) / 24;
+        const speed = 2.2 + Math.random() * 4.2;
+        this.burstSparks.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: 2.5 + Math.random() * 2.5,
+          alpha: 1.0,
+          decay: 0.026 + Math.random() * 0.015,
+          color: i % 2 === 0 ? "#fff3b0" : "#ffb703"
+        });
+      }
+    }
+
+    animate(timestamp) {
+      requestAnimationFrame(this.animate);
+      if (document.hidden) return;
+      if (timestamp - this.lastFrameTime < this.frameInterval) return;
+      this.lastFrameTime = timestamp;
+
+      this.time += 0.035;
+      const ctx = this.ctx;
+      if (!ctx) return;
+      ctx.clearRect(0, 0, this.width, this.height);
+
+      // 1. Hạt bụi vàng lơ lửng
+      for (let i = 0; i < this.goldSparks.length; i++) {
+        const sp = this.goldSparks[i];
+        sp.y += sp.vy;
+        sp.x += sp.vx + Math.sin(this.time + sp.phase) * 0.35;
+        if (sp.y < -10) {
+          sp.y = this.height + 10;
+          sp.x = Math.random() * this.width;
+        }
+        ctx.globalAlpha = sp.alpha * (0.6 + 0.4 * Math.sin(this.time * 2 + sp.phase));
+        ctx.drawImage(this.sparkSprite, sp.x - sp.size * 0.5, sp.y - sp.size * 0.5, sp.size, sp.size);
+      }
+
+      // 2. Khói tâm hương uốn lượn
+      this.spawnSmoke();
+      for (let i = this.smokeParticles.length - 1; i >= 0; i--) {
+        const p = this.smokeParticles[i];
+        p.age += 1;
+        if (p.age >= p.maxAge || p.y < 35) {
+          this.smokeParticles.splice(i, 1);
+          continue;
+        }
+        const progress = p.age / p.maxAge;
+        const curl = Math.sin(this.time * 1.5 + p.seed + p.y * 0.018) * 0.55;
+        p.x += p.vx + curl * (0.3 + progress * 0.6);
+        p.y += p.vy;
+        const r = p.radius + (p.maxRadius - p.radius) * progress;
+        const fade = Math.sin(progress * Math.PI) * p.alpha * (1 - progress * 0.5);
+        ctx.globalAlpha = Math.max(0, fade);
+        ctx.drawImage(this.smokeSprite, p.x - r, p.y - r, r * 2, r * 2);
+      }
+
+      // 3. Cánh hoa sen rơi
+      ctx.globalAlpha = 1;
+      for (let i = this.lotusPetals.length - 1; i >= 0; i--) {
+        const petal = this.lotusPetals[i];
+        petal.y += petal.vy;
+        petal.x += petal.vx + Math.sin(this.time + petal.swayPhase) * 0.6;
+        petal.rot += petal.vrot;
+        if (petal.y > this.height + 25) {
+          if (this.lotusPetals.length > 6) {
+            this.lotusPetals.splice(i, 1);
+            continue;
+          } else {
+            Object.assign(petal, this.createPetal(false));
+          }
+        }
+        ctx.save();
+        ctx.translate(petal.x, petal.y);
+        ctx.rotate(petal.rot);
+        const sz = 24 * petal.scale;
+        ctx.drawImage(petal.gold ? this.goldPetalSprite : this.pinkPetalSprite, -sz * 0.5, -sz * 0.5, sz, sz);
+        ctx.restore();
+      }
+
+      // 4. Sóng âm Chuông Bát Nhã
+      for (let i = this.soundWaves.length - 1; i >= 0; i--) {
+        const w = this.soundWaves[i];
+        w.radius += 6.5;
+        w.alpha *= 0.94;
+        if (w.radius >= w.maxRadius || w.alpha < 0.02) {
+          this.soundWaves.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = w.alpha;
+        ctx.strokeStyle = "#ffd666";
+        ctx.lineWidth = w.lineWidth;
+        ctx.beginPath();
+        ctx.arc(w.x, w.y, w.radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // 5. Pháo hoa sen vàng (Burst Sparks)
+      for (let i = this.burstSparks.length - 1; i >= 0; i--) {
+        const b = this.burstSparks[i];
+        b.x += b.vx;
+        b.y += b.vy;
+        b.vy += 0.06;
+        b.alpha -= b.decay;
+        if (b.alpha <= 0) {
+          this.burstSparks.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = Math.max(0, b.alpha);
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 6. Chữ Công Đức / Đảnh Lễ bay lên
+      if (this.floatingTexts.length > 0) {
+        ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = "center";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(18, 8, 4, 0.92)";
+        for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+          const ft = this.floatingTexts[i];
+          ft.y += ft.vy;
+          ft.alpha -= 0.024;
+          if (ft.alpha <= 0) {
+            this.floatingTexts.splice(i, 1);
+            continue;
+          }
+          ctx.globalAlpha = Math.max(0, ft.alpha);
+          ctx.strokeText(ft.text, ft.x, ft.y);
+          ctx.fillStyle = ft.color;
+          ctx.fillText(ft.text, ft.x, ft.y);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  let zenAudio = null;
+  let particlesEngine = null;
 
   // ---------- Giọng Đọc Tụng Kinh Tự Nhiên (Cloud Neural TTS + Nhịp Phách Tụng Kinh) ----------
   let viFemaleVoice = null;
@@ -434,14 +894,21 @@
 
   // Đọc trọn vẹn 1 dòng kinh (gồm nhiều vế + nhịp nghỉ lấy hơi + tiếng mõ/khánh) trước khi qua câu mới
   async function chantFullLineAndWait(lineText, sessionId) {
+    if (zenAudio) zenAudio.setDucking(true);
     const clauses = prepareChantClauses(lineText);
     const isTripleInvocation = /\(\s*3\s*lần\s*\)/i.test(lineText);
 
     for (let i = 0; i < clauses.length; i++) {
-      if (sessionId !== activeChantSessionId) return;
+      if (sessionId !== activeChantSessionId) {
+        if (zenAudio) zenAudio.setDucking(false);
+        return;
+      }
       playRealisticWoodenFishSound(0.65);
       await speakSingleClause(clauses[i], sessionId);
-      if (sessionId !== activeChantSessionId) return;
+      if (sessionId !== activeChantSessionId) {
+        if (zenAudio) zenAudio.setDucking(false);
+        return;
+      }
 
       if (isTripleInvocation) {
         // Giữa mỗi lần niệm "Nam Mô..." điểm 1 tiếng chuông/khánh và nghỉ 650ms trang nghiêm
@@ -459,6 +926,7 @@
       playSmallChimeSound();
       await delayMs(950);
     }
+    if (zenAudio) zenAudio.setDucking(false);
   }
 
   function speakChantLine(text) {
@@ -730,9 +1198,14 @@
   function triggerRitualEffect(type) {
     const stage = document.getElementById("altar-stage-visual");
     if (!stage) return;
+    const myNick = getNickname();
 
     if (type === "incense") {
       // 1. Dâng Hương Trầm: 3 nén nhang cháy sáng ngun ngút & khói trầm lượn sóng
+      if (particlesEngine) {
+        particlesEngine.spawnFloatingBadge("🔥 Dâng 3 Nén Hương Trầm", "#ffdd80");
+        particlesEngine.spawnGrandSparks();
+      }
       const wrap = document.createElement("div");
       wrap.className = "fx-incense-ceremony";
       wrap.innerHTML = `
@@ -747,6 +1220,10 @@
       setTimeout(() => wrap.remove(), 4200);
     } else if (type === "flower") {
       // 2. Dâng Hoa Quả: Cơn mưa hoa sen vàng & hoa cúc rải cánh trang nghiêm
+      if (particlesEngine) {
+        particlesEngine.spawnLotusRain();
+        particlesEngine.spawnFloatingBadge("🪷 Dâng Hoa Sen Vàng & Quả", "#ffd666");
+      }
       const icons = ["🪷", "🌸", "✨", "🌺", "🪷"];
       for (let i = 0; i < 9; i++) {
         setTimeout(() => {
@@ -761,12 +1238,20 @@
       }
     } else if (type === "lamp") {
       // 3. Thắp Đèn Trí Tuệ: Ánh hào quang mặt trời Bát Nhã toả sáng rực rỡ
+      if (particlesEngine) {
+        particlesEngine.spawnFloatingBadge("🕯️ Thắp Đèn Trí Tuệ Chiếu Sáng", "#ffe89e");
+        particlesEngine.spawnGrandSparks();
+      }
       const sunburst = document.createElement("div");
       sunburst.className = "fx-wisdom-sunburst";
       stage.appendChild(sunburst);
       setTimeout(() => sunburst.remove(), 4000);
     } else if (type === "bell") {
       // 4. Thỉnh Chuông: Sóng âm đồng tâm lan toả & chuông đồng đung đưa ngân vang
+      if (particlesEngine) {
+        particlesEngine.spawnBellWaves();
+        particlesEngine.spawnFloatingBadge("🔔 Boong... Vạn Sự Cát Tường", "#ffd666");
+      }
       const bell = document.createElement("div");
       bell.className = "fx-swinging-bell";
       bell.textContent = "🔔";
@@ -783,6 +1268,9 @@
       }
     } else if (type === "mo") {
       // 5. Gõ Mõ: Dùi gõ mõ nổi bật + chữ Phật / Vạn linh thiêng bay lên
+      if (particlesEngine) {
+        particlesEngine.spawnFloatingBadge("🪵 Cốc... Tịnh Tâm Niệm Phật", "#ffe47a");
+      }
       const moPop = document.createElement("div");
       moPop.className = "fx-wooden-fish-pop";
       moPop.innerHTML = `<span>🥁</span> <span>CỐC... Tịnh Tâm</span>`;
@@ -798,16 +1286,47 @@
       setTimeout(() => charEl.remove(), 2200);
     } else if (type === "mala") {
       // 6. Lần Chuỗi 108 Hạt: Vòng tràng hạt Bồ Đề vàng xoay tròn quanh điện
+      if (particlesEngine) {
+        particlesEngine.spawnFloatingBadge("📿 Lần Chuỗi 108 Hạt Bồ Đề", "#ffd782");
+      }
       const mala = document.createElement("div");
       mala.className = "fx-mala-ring";
       stage.appendChild(mala);
       setTimeout(() => mala.remove(), 3200);
+    } else if (type === "prostrate") {
+      // 7. Lạy Phật / Đảnh Lễ Tam Bảo
+      if (particlesEngine) {
+        particlesEngine.spawnFloatingBadge(`🙏 ${myNick} Thành Tâm Đảnh Lễ`, "#ffe47a");
+        particlesEngine.spawnGrandSparks();
+        particlesEngine.spawnLotusRain();
+      }
+      const mySeat = document.querySelector(`.meditation-seat[data-seat-idx="${userSeatIndex}"]`);
+      if (mySeat) {
+        mySeat.classList.add("is-bowing");
+        setTimeout(() => mySeat.classList.remove("is-bowing"), 2400);
+      }
+      const halo = document.getElementById("sanctuary-deity-halo");
+      if (halo) {
+        halo.style.transform = "scale(1.15)";
+        halo.style.filter = "drop-shadow(0 0 35px #ffe47a)";
+        setTimeout(() => {
+          halo.style.transform = "";
+          halo.style.filter = "";
+        }, 2200);
+      }
     }
   }
 
   function initSanctuaryEvents() {
     initSpeechVoices();
     updateMeritDisplay(0);
+
+    // Khởi tạo Canvas hạt tâm linh & Zen Audio Engine
+    const canvas = document.getElementById("altar-particle-canvas");
+    if (canvas) {
+      particlesEngine = new TempleParticleEngine(canvas);
+    }
+    zenAudio = new ZenAudioEngine();
 
     const nicknameInput = document.getElementById("sanctuary-nickname-input");
     const savedNick = localStorage.getItem(STORAGE_NICKNAME_KEY) || "";
@@ -840,6 +1359,44 @@
           showToast(`🙏 Đã bước vào ${found.name}`);
         }
       });
+    });
+
+    // Bật / Tắt Nhạc Nền Thiền Định (Ambient Soundscape)
+    const ambienceBtn = document.getElementById("btn-toggle-ambience");
+    ambienceBtn?.addEventListener("click", () => {
+      if (!zenAudio) zenAudio = new ZenAudioEngine();
+      if (zenAudio.ambienceActive) {
+        zenAudio.stopAmbience();
+        ambienceBtn.textContent = "🎵 Nhạc Thiền: TẮT";
+        ambienceBtn.style.borderColor = "rgba(251,229,155,0.55)";
+        ambienceBtn.style.background = "rgba(20,14,10,0.9)";
+        showToast("🔇 Đã tắt nhạc nền thiền định");
+      } else {
+        zenAudio.startAmbience();
+        ambienceBtn.textContent = "🎵 Nhạc Thiền: BẬT";
+        ambienceBtn.style.borderColor = "#2ecc71";
+        ambienceBtn.style.background = "rgba(46,204,113,0.2)";
+        showToast("🎵 Đã bật nhạc chuông thiền định thanh tịnh");
+      }
+    });
+
+    // Chế độ Toàn Màn Hình Chánh Điện (Cinema View)
+    const cinemaBtn = document.getElementById("btn-toggle-cinema");
+    cinemaBtn?.addEventListener("click", () => {
+      const chamber = document.getElementById("altar-chamber-box");
+      const icon = document.getElementById("cinema-btn-icon");
+      const label = document.getElementById("cinema-btn-label");
+      if (!chamber) return;
+      const isCinema = chamber.classList.toggle("fullscreen-cinema");
+      if (isCinema) {
+        if (icon) icon.textContent = "✕";
+        if (label) label.textContent = "Thu Nhỏ";
+        showToast("🖥️ Đã mở Chánh Điện Toàn Màn Hình để chuyên tâm toạ thiền");
+      } else {
+        if (icon) icon.textContent = "🖥️";
+        if (label) label.textContent = "Toàn Màn Hình";
+      }
+      if (particlesEngine) particlesEngine.resize();
     });
 
     // Đổi Giọng Đọc Microsoft Neural TTS (Hoài My - Nữ / Nam Minh - Nam)
@@ -977,6 +1534,37 @@
       playRealisticWoodenFishSound();
       triggerRitualEffect("mala");
       showToast("📿 (-2 điểm) Lần chuỗi 108 hạt Bồ Đề niệm Phật hiệu...");
+    });
+
+    // Nút Lạy Phật / Đảnh Lễ Tam Bảo (-2 Điểm Công Đức)
+    document.getElementById("ritual-prostrate-btn")?.addEventListener("click", () => {
+      if (!spendMerit("prostrate")) return;
+      playProstrationChime();
+      triggerRitualEffect("prostrate");
+      showToast(`🙏 (-2 điểm) ${getNickname()} thành tâm đảnh lễ Tam Bảo!`);
+    });
+
+    // Hotspot tương tác bấm trực tiếp trên Bàn Thờ Chánh Điện
+    document.getElementById("altar-bell-station")?.addEventListener("click", () => {
+      if (!spendMerit("bell")) return;
+      playTempleBellSound();
+      triggerRitualEffect("bell");
+      showToast("🔔 (-2 điểm) Tiếng chuông Bát Nhã ngân vang khắp điện thờ...");
+    });
+
+    document.getElementById("altar-woodfish-station")?.addEventListener("click", () => {
+      if (!spendMerit("mo")) return;
+      playRealisticWoodenFishSound();
+      triggerRitualEffect("mo");
+      const nextIdx = (currentLineIdx + 1) % (currentRoom.chantLines?.length || 1);
+      highlightChantLine(nextIdx, true);
+    });
+
+    document.getElementById("altar-incense-station")?.addEventListener("click", () => {
+      if (!spendMerit("incense")) return;
+      playTempleBellSound();
+      triggerRitualEffect("incense");
+      showToast(`🔥 (-5 điểm) ${getNickname()} đã thành tâm dâng hương trầm!`);
     });
 
     // Thả Đèn Hoa Đăng Cầu Nguyện (-10 Điểm Công Đức, Lưu D1 để mọi người cùng thấy, KHÔNG gửi Telegram)
