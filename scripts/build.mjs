@@ -277,7 +277,7 @@ const indexHtml = `<!DOCTYPE html>
       <div class="container">
         <div class="sanctuary-gateway-banner">
           <div>
-            <span class="result-rank-badge">Không Gian Tụng Kinh Riêng Biệt • Có Giọng Đọc Kinh & Tiếng Mõ Thực Tế</span>
+            <span class="result-rank-badge">Không Gian Tụng Kinh • Đạo Tràng Trực Tuyến</span>
             <h2 style="font-size:2rem;color:var(--gold-light);margin:0.45rem 0 0.65rem;">
               🙏 Điện Thờ & Phòng Tụng Kinh Online Cùng Phật Tử
             </h2>
@@ -285,10 +285,10 @@ const indexHtml = `<!DOCTYPE html>
               Bước vào không gian Đạo Tràng trực tuyến tách biệt trang nghiêm với <strong>3 Điện Thờ theo chủ đề riêng</strong> (Điện Phật Tam Bảo, Điện Quán Thế Âm Bồ Tát, Điện Tam Toà Thánh Mẫu & Cô Bé), <strong>12 Bồ Đoàn toạ thiền hiển thị Phật tử đang online</strong>, đồng bộ câu kinh theo thời gian thực cùng <strong>Giọng Đọc Kinh & Tiếng Chuông Mõ</strong>.
             </p>
             <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
-              <a href="/phong-tung-kinh.html" class="btn btn-gold" style="padding:0.85rem 1.5rem;font-size:0.96rem;">
+              <a href="/phong-tung-kinh.html" class="btn btn-gold" style="padding:0.85rem 1.25rem;font-size:0.95rem;text-align:center;width:100%;max-width:440px;">
                 🪷 Bước Vào Điện Thờ & Phòng Tụng Kinh Online →
               </a>
-              <span style="font-size:0.85rem;color:var(--gold-light);background:var(--bg-secondary);padding:0.55rem 0.95rem;border-radius:99px;border:1px solid var(--border-subtle);">
+              <span style="font-size:0.85rem;color:var(--gold-light);background:var(--bg-secondary);padding:0.55rem 0.95rem;border-radius:99px;border:1px solid var(--border-subtle);display:inline-block;max-width:100%;box-sizing:border-box;text-align:center;">
                 📿 Điểm Công Đức hiện có của bạn: <strong id="home-merit-points">30</strong> điểm
               </span>
             </div>
@@ -522,7 +522,7 @@ const indexHtml = `<!DOCTYPE html>
           </div>
 
           <div class="shop-filter-right">
-            <select id="shop-element-filter" class="form-control" style="width:auto;min-width:170px;" aria-label="Lọc theo mệnh ngũ hành">
+            <select id="shop-element-filter" class="form-control" aria-label="Lọc theo mệnh ngũ hành">
               <option value="all">☯️ Tất cả bản mệnh</option>
               <option value="Kim">Hợp mệnh Kim</option>
               <option value="Mộc">Hợp mệnh Mộc</option>
@@ -535,7 +535,6 @@ const indexHtml = `<!DOCTYPE html>
               type="search"
               id="shop-search-input"
               class="form-control"
-              style="width:auto;min-width:210px;"
               placeholder="🔍 Tìm hàng mã, chu sa, trầm..."
               aria-label="Tìm kiếm vật phẩm"
             />
@@ -606,7 +605,7 @@ const indexHtml = `<!DOCTYPE html>
             </ul>
           </div>
 
-          <div style="background:var(--bg-card);padding:1.4rem;border-radius:18px;border:1px solid var(--border-subtle);">
+          <div class="wholesale-form-card">
             <h4 style="font-size:1.2rem;color:var(--gold-light);margin-bottom:0.65rem;">📝 Đăng Ký Nhận Bảng Giá Sỉ Qua Zalo</h4>
             <form id="wholesale-inquiry-form">
               <div class="oracle-form-row">
@@ -872,12 +871,12 @@ const indexHtml = `<!DOCTYPE html>
                 Thành tâm tri ân công đức của các tín chủ và mạnh thường quân gần xa.
               </p>
             </div>
-            <button type="button" class="btn btn-outline" id="btn-copy-bank-no" style="padding:0.5rem 0.95rem;font-size:0.82rem;">
+            <button type="button" class="btn btn-outline" id="btn-copy-bank-no" style="padding:0.5rem 0.95rem;font-size:0.82rem;max-width:100%;">
               📋 Sao chép STK Vietcombank: ${config.bank.accountNo}
             </button>
           </div>
 
-          <div style="overflow-x:auto;">
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;">
             <table class="ledger-table">
               <thead>
                 <tr>
@@ -1169,8 +1168,8 @@ const notFoundHtml = `<!DOCTYPE html>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="/assets/styles.css?v=${cssHash}" />
 </head>
-<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;">
-  <main style="max-width:540px;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:22px;padding:2.5rem;">
+<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem 1rem;box-sizing:border-box;">
+  <main style="width:100%;max-width:540px;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:22px;padding:2rem 1.25rem;box-sizing:border-box;">
     <img src="/favicon.svg" alt="${config.brandName}" width="72" height="72" style="margin:0 auto 1rem;" />
     <h1 style="font-size:2rem;color:var(--gold-light);margin-bottom:0.75rem;">Hữu Duyên Quay Về Trang Chủ</h1>
     <p style="color:var(--text-secondary);margin-bottom:1.5rem;">
@@ -1563,7 +1562,7 @@ const adminPageHtml = `<!DOCTYPE html>
   <main class="section" style="padding-top:2rem;">
     <div class="container">
       <!-- Login Box -->
-      <div id="admin-login-box" style="max-width:460px;margin:2rem auto;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;padding:2rem;box-shadow:var(--shadow-card);">
+      <div id="admin-login-box" style="width:100%;max-width:460px;margin:2rem auto;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;padding:1.5rem 1.25rem;box-shadow:var(--shadow-card);box-sizing:border-box;">
         <h1 style="font-size:1.5rem;color:var(--gold-light);margin-bottom:1.2rem;">🔐 Đăng Nhập Quản Trị</h1>
         <form id="admin-login-form">
           <div class="form-group">
