@@ -244,29 +244,47 @@ export async function onRequestPost(context) {
       );
     }
 
-    if (env.TURNSTILE_SECRET_KEY) {
+    const turnstileSecret = env.TURNSTILE_SECRET || env.TURNSTILE_SECRET_KEY;
+
+    if (turnstileSecret) {
       const remoteIp = request.headers.get("CF-Connecting-IP") || "";
-      const formData = new FormData();
-      formData.append("secret", env.TURNSTILE_SECRET_KEY);
-      formData.append("response", turnstileToken);
-      if (remoteIp) formData.append("remoteip", remoteIp);
+      const params = new URLSearchParams();
+      params.append("secret", turnstileSecret);
+      params.append("response", turnstileToken);
+      if (remoteIp) params.append("remoteip", remoteIp);
 
-      const verifyRes = await fetch(TURNSTILE_VERIFY_URL, {
-        method: "POST",
-        body: formData
-      });
-      const outcome = await verifyRes.json();
+      try {
+        const verifyRes = await fetch(TURNSTILE_VERIFY_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params,
+          signal: AbortSignal.timeout(10000)
+        });
+        const outcome = await verifyRes.json();
 
-      if (!outcome.success) {
+        if (!outcome.success) {
+          console.error("Turnstile siteverify failed:", outcome["error-codes"]);
+          return new Response(
+            JSON.stringify({
+              ok: false,
+              error: "Xác thực chống bot (Cloudflare Turnstile) không thành công. Vui lòng thử lại.",
+              codes: outcome["error-codes"] || []
+            }),
+            { status: 403, headers: CORS_HEADERS }
+          );
+        }
+      } catch (err) {
+        console.error("Turnstile siteverify connection error:", err);
         return new Response(
           JSON.stringify({
             ok: false,
-            error: "Turnstile verification failed",
-            codes: outcome["error-codes"] || []
+            error: "Không thể kết nối đến máy chủ xác thực Turnstile. Vui lòng thử lại sau giây lát."
           }),
-          { status: 403, headers: CORS_HEADERS }
+          { status: 502, headers: CORS_HEADERS }
         );
       }
+    } else {
+      console.warn("Lưu ý: Chưa cấu hình biến TURNSTILE_SECRET trên Cloudflare Pages. Hãy thêm biến TURNSTILE_SECRET trong Settings -> Variables and secrets.");
     }
 
     const roomId = String(body.roomId || "").slice(0, 40);

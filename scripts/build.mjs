@@ -643,7 +643,7 @@ const indexHtml = `<!DOCTYPE html>
 
               <div class="turnstile-guard-wrap">
                 <span class="turnstile-guard-label">🛡️ Xác thực chống Spam báo giá sỉ (Cloudflare Turnstile)</span>
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible" data-action="wholesale"></div>
               </div>
 
               <button type="submit" class="btn btn-gold" style="width:100%;">
@@ -780,7 +780,7 @@ const indexHtml = `<!DOCTYPE html>
 
               <div class="turnstile-guard-wrap">
                 <span class="turnstile-guard-label">🛡️ Bảo vệ chống Spam đặt lịch ảo (Cloudflare Turnstile)</span>
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible" data-action="booking"></div>
               </div>
 
               <button type="submit" class="btn btn-gold" style="width:100%;margin-top:0.35rem;">
@@ -1037,7 +1037,7 @@ const indexHtml = `<!DOCTYPE html>
 
       <div class="turnstile-guard-wrap">
         <span class="turnstile-guard-label">🛡️ Xác thực chống Spam báo công đức (Cloudflare Turnstile)</span>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible" data-action="charity"></div>
       </div>
 
       <button type="button" class="btn btn-gold" id="btn-confirm-charity-zalo" style="width:100%;">
@@ -1116,7 +1116,7 @@ const indexHtml = `<!DOCTYPE html>
 
         <div class="turnstile-guard-wrap">
           <span class="turnstile-guard-label">🛡️ Xác thực chống Spam đơn hàng ảo (Cloudflare Turnstile)</span>
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible" data-action="order"></div>
         </div>
 
         <button type="button" class="btn btn-gold" id="btn-checkout-zalo" style="width:100%;margin-bottom:0.5rem;">
@@ -1496,7 +1496,7 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
               </div>
               <div class="turnstile-guard-wrap">
                 <span class="turnstile-guard-label">🛡️ Xác thực chống Spam (Cloudflare Turnstile)</span>
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible"></div>
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFxsWkkTeXBYGsul" data-theme="dark" data-size="flexible" data-action="prayer"></div>
               </div>
               <button type="submit" class="btn btn-gold" style="width:100%;padding:0.65rem 1rem;font-size:0.86rem;">
                 🏮 Thả Đèn Hoa Đăng & Hồi Hướng (-10 Điểm)
