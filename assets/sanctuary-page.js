@@ -979,16 +979,48 @@
     };
   }
 
-  // ---------- Đồng Bộ Dòng Kinh Đang Đọc Giữa Tất Cả Phật Tử Trong Phòng ----------
-  function getSyncedLineIndex(room) {
-    const lines = room.chantLines || [];
-    if (!lines.length) return 0;
-    // Mỗi câu kinh kéo dài 5.5 giây theo đồng hồ chung, đảm bảo mọi người vào cùng phòng đều thấy cùng 1 câu đang tụng
-    const slot = Math.floor(Date.now() / 5500);
-    return slot % lines.length;
+  // ---------- Trình Phát Kinh MP3 & Đồng Bộ Chạy Chữ Theo Nhạc ----------
+  let currentTrackIdx = 0;
+  let lastAwardedLineIdx = -1;
+
+  function formatAudioTime(seconds) {
+    const s = Math.max(0, Math.floor(Number(seconds) || 0));
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   }
 
-  function highlightChantLine(idx, shouldSpeak = false) {
+  function getRoomTracks(room) {
+    if (room && Array.isArray(room.tracks) && room.tracks.length > 0) {
+      return room.tracks;
+    }
+    return [
+      {
+        id: (room && room.id) || "default",
+        title: (room && room.chantTitle) || "Kinh Tụng Đạo Tràng",
+        artist: "Đạo Tràng Trực Tuyến",
+        duration: "03:00",
+        durationSec: 180,
+        audioUrl: "",
+        lyrics: (room && room.chantLines) || []
+      }
+    ];
+  }
+
+  function getCurrentTrack() {
+    const tracks = getRoomTracks(currentRoom);
+    return tracks[currentTrackIdx] || tracks[0];
+  }
+
+  function getSyncedLineIndex(room) {
+    const track = getRoomTracks(room)[0];
+    const lines = (track && track.lyrics) || room.chantLines || [];
+    if (!lines.length) return 0;
+    return 0;
+  }
+
+  function highlightChantLine(idx) {
+    const listEl = document.getElementById("sanctuary-chant-lines");
     const lines = document.querySelectorAll("#sanctuary-chant-lines .chant-line");
     if (!lines.length) return;
     lines.forEach((l) => l.classList.remove("current"));
@@ -996,10 +1028,120 @@
     const activeEl = lines[currentLineIdx];
     if (activeEl) {
       activeEl.classList.add("current");
-      activeEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      if (shouldSpeak) {
-        speakChantLine(activeEl.textContent || "");
+      if (listEl) {
+        const targetTop = Math.max(0, activeEl.offsetTop - listEl.offsetTop - 44);
+        listEl.scrollTo({ top: targetTop, behavior: "smooth" });
       }
+    }
+  }
+
+  function setMp3PlayUi(playing) {
+    isSyncChanting = playing;
+    const autoBtn = document.getElementById("btn-auto-chant");
+    if (autoBtn) {
+      autoBtn.textContent = playing
+        ? "⏸️ Đang Phát Kinh MP3 (Tạm Dừng)"
+        : "▶️ Bắt Đầu Phát Kinh MP3";
+    }
+  }
+
+  function pauseCurrentMp3() {
+    const audio = document.getElementById("sanctuary-mp3-player");
+    if (audio && !audio.paused) {
+      try {
+        audio.pause();
+      } catch {
+        // ignore
+      }
+    }
+    setMp3PlayUi(false);
+  }
+
+  async function playCurrentMp3() {
+    const audio = document.getElementById("sanctuary-mp3-player");
+    const track = getCurrentTrack();
+    if (!audio || !track || !track.audioUrl) {
+      showToast("⚠️ Bài kinh này chưa có tệp âm thanh MP3.");
+      return;
+    }
+    try {
+      await audio.play();
+      setMp3PlayUi(true);
+      sendPresenceHeartbeat();
+    } catch (err) {
+      console.warn("MP3 play blocked or error:", err);
+      setMp3PlayUi(false);
+      showToast("🔊 Vui lòng bấm lại nút Phát Kinh MP3 để trình duyệt cho phép phát âm thanh.");
+    }
+  }
+
+  function loadTrack(trackIdx, autoPlay = false) {
+    const tracks = getRoomTracks(currentRoom);
+    currentTrackIdx = Math.max(0, Math.min(trackIdx, tracks.length - 1));
+    const track = tracks[currentTrackIdx];
+    const audio = document.getElementById("sanctuary-mp3-player");
+    const chantTitleEl = document.getElementById("sanctuary-chant-title");
+    const chantArtistEl = document.getElementById("sanctuary-chant-artist");
+    const chantListEl = document.getElementById("sanctuary-chant-lines");
+    const progressEl = document.getElementById("mp3-progress-bar");
+    const curTimeEl = document.getElementById("mp3-time-current");
+    const totalTimeEl = document.getElementById("mp3-time-total");
+
+    pauseCurrentMp3();
+    currentLineIdx = 0;
+    lastAwardedLineIdx = -1;
+
+    if (chantTitleEl) chantTitleEl.textContent = `📖 ${track.title}`;
+    if (chantArtistEl) {
+      chantArtistEl.textContent = `🎧 ${track.artist} • Chữ chạy tự động theo bài MP3 (+2 Điểm Công Đức / câu)`;
+    }
+
+    document.querySelectorAll("#sanctuary-track-list .mp3-track-pill").forEach((pill, i) => {
+      const isActive = i === currentTrackIdx;
+      pill.classList.toggle("active", isActive);
+      const iconEl = pill.querySelector(".mp3-track-icon");
+      if (iconEl) iconEl.textContent = isActive ? "🔊" : "🎵";
+    });
+
+    const lyrics = track.lyrics || [];
+    if (chantListEl) {
+      chantListEl.innerHTML = lyrics
+        .map(
+          (line, idx) =>
+            `<div class="chant-line ${idx === 0 ? "current" : ""}" data-line-idx="${idx}" title="Bấm vào câu này để tua nhanh đến đoạn tương ứng">${line}</div>`
+        )
+        .join("");
+      chantListEl.scrollTo({ top: 0, behavior: "auto" });
+
+      chantListEl.querySelectorAll(".chant-line").forEach((el) => {
+        el.addEventListener("click", () => {
+          const lineIdx = Number(el.getAttribute("data-line-idx") || 0);
+          highlightChantLine(lineIdx);
+          if (audio) {
+            const dur = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : (track.durationSec || 180);
+            audio.currentTime = (lineIdx / Math.max(1, lyrics.length)) * dur;
+            if (audio.paused) {
+              playCurrentMp3();
+            }
+          }
+        });
+      });
+    }
+
+    if (progressEl) progressEl.value = "0";
+    if (curTimeEl) curTimeEl.textContent = "00:00";
+    if (totalTimeEl) totalTimeEl.textContent = track.duration || "00:00";
+
+    if (audio) {
+      audio.src = track.audioUrl || "";
+      audio.currentTime = 0;
+      audio.load();
+    }
+
+    if (autoPlay) {
+      playTempleBellSound();
+      playCurrentMp3();
+      showToast(`🎵 Đang phát: ${track.title}`);
     }
   }
 
@@ -1165,18 +1307,33 @@
     if (bannerEl) bannerEl.textContent = themeInfo.bannerTitle;
     if (mantraEl) mantraEl.textContent = `🙏 ${room.mantraShort}`;
     if (haloEl) haloEl.innerHTML = themeInfo.svg;
-    if (chantTitleEl) chantTitleEl.textContent = `📖 ${room.chantTitle}`;
 
-    const syncedIdx = getSyncedLineIndex(room);
-    if (chantListEl) {
-      chantListEl.innerHTML = (room.chantLines || [])
+    // Render danh sách chọn bài MP3 của điện thờ hiện tại
+    const trackListEl = document.getElementById("sanctuary-track-list");
+    const tracks = getRoomTracks(room);
+    if (trackListEl) {
+      trackListEl.innerHTML = tracks
         .map(
-          (line, idx) =>
-            `<div class="chant-line ${idx === syncedIdx ? "current" : ""}" data-line-idx="${idx}">${line}</div>`
+          (track, idx) => `
+        <button type="button" class="mp3-track-pill ${idx === 0 ? "active" : ""}" data-track-idx="${idx}">
+          <span class="mp3-track-icon">${idx === 0 ? "🔊" : "🎵"}</span>
+          <span class="mp3-track-meta">
+            <strong class="mp3-track-name">${track.title}</strong>
+            <small class="mp3-track-sub">${track.artist} • ${track.duration}</small>
+          </span>
+        </button>`
         )
         .join("");
+
+      trackListEl.querySelectorAll(".mp3-track-pill").forEach((pill) => {
+        pill.addEventListener("click", () => {
+          const idx = Number(pill.getAttribute("data-track-idx") || 0);
+          loadTrack(idx, true);
+        });
+      });
     }
-    currentLineIdx = syncedIdx;
+
+    loadTrack(0, false);
 
     renderPrayerFeed([]);
     sendPresenceHeartbeat();
@@ -1348,12 +1505,8 @@
         const id = card.getAttribute("data-room-id");
         const found = ROOMS.find((r) => r.id === id);
         if (found) {
-          isSyncChanting = false;
+          pauseCurrentMp3();
           stopCurrentSpeechAndRhythm();
-          const autoBtnEl = document.getElementById("btn-auto-chant");
-          if (autoBtnEl) {
-            autoBtnEl.textContent = "▶️ Bắt Đầu Tụng Kinh & Gõ Mõ (+2đ/câu)";
-          }
           renderRoom(found);
           playTempleBellSound();
           showToast(`🙏 Đã bước vào ${found.name}`);
@@ -1380,6 +1533,16 @@
       }
     });
 
+    // Bật / Tắt Lặp Lại Bài MP3
+    const loopBtn = document.getElementById("btn-toggle-loop");
+    loopBtn?.addEventListener("click", () => {
+      const audio = document.getElementById("sanctuary-mp3-player");
+      if (!audio) return;
+      audio.loop = !audio.loop;
+      loopBtn.textContent = audio.loop ? "🔁 Lặp Bài: BẬT" : "🔁 Lặp Bài: TẮT";
+      showToast(audio.loop ? "🔁 Đã bật tự động lặp lại bài kinh" : "➡️ Đã tắt lặp lại bài kinh");
+    });
+
     // Chế độ Toàn Màn Hình Chánh Điện (Cinema View)
     const cinemaBtn = document.getElementById("btn-toggle-cinema");
     cinemaBtn?.addEventListener("click", () => {
@@ -1399,90 +1562,86 @@
       if (particlesEngine) particlesEngine.resize();
     });
 
-    // Đổi Giọng Đọc Microsoft Neural TTS (Hoài My - Nữ / Nam Minh - Nam)
-    const switchVoiceBtn = document.getElementById("btn-switch-voice");
-    switchVoiceBtn?.addEventListener("click", () => {
-      stopCurrentSpeechAndRhythm(); // Dừng ngay âm thanh cũ
+    // Trình Phát Kinh MP3 & Đồng Bộ Chữ Chạy Theo Thời Gian Thực
+    const mp3Audio = document.getElementById("sanctuary-mp3-player");
+    const mp3Progress = document.getElementById("mp3-progress-bar");
+    const mp3TimeCur = document.getElementById("mp3-time-current");
+    const mp3TimeTotal = document.getElementById("mp3-time-total");
+    const autoBtn = document.getElementById("btn-auto-chant");
 
-      if (currentVoiceModel === "vi-VN-HoaiMyNeural") {
-        currentVoiceModel = "vi-VN-NamMinhNeural";
-        switchVoiceBtn.textContent = "🎙️ Giọng: Nam Minh (Nam)";
-        showToast("🎙️ Đã chuyển sang Giọng Nam (Nam Minh) trầm ấm, trang nghiêm");
+    autoBtn?.addEventListener("click", () => {
+      if (!mp3Audio) return;
+      if (!mp3Audio.paused) {
+        pauseCurrentMp3();
+        sendPresenceHeartbeat();
       } else {
-        currentVoiceModel = "vi-VN-HoaiMyNeural";
-        switchVoiceBtn.textContent = "🎙️ Giọng: Hoài My (Nữ)";
-        showToast("🎙️ Đã chuyển sang Giọng Nữ (Hoài My) thanh tịnh, từ tốn");
-      }
-
-      if (isVoiceEnabled) {
-        const lines = currentRoom.chantLines || [];
-        if (lines[currentLineIdx]) {
-          speakChantLine(lines[currentLineIdx]);
-        }
+        playTempleBellSound();
+        playCurrentMp3();
       }
     });
 
-    // Bật / Tắt Giọng Đọc Tụng Kinh
-    const voiceToggleBtn = document.getElementById("btn-toggle-voice");
-    voiceToggleBtn?.addEventListener("click", () => {
-      isVoiceEnabled = !isVoiceEnabled;
-      voiceToggleBtn.textContent = isVoiceEnabled
-        ? "🔊 Giọng Đọc Kinh: BẬT"
-        : "🔇 Giọng Đọc Kinh: TẮT";
-      if (!isVoiceEnabled) {
-        if (currentTtsAudio) {
-          try {
-            currentTtsAudio.pause();
-          } catch {
-            // ignore
+    mp3Audio?.addEventListener("loadedmetadata", () => {
+      if (mp3TimeTotal && Number.isFinite(mp3Audio.duration) && mp3Audio.duration > 0) {
+        mp3TimeTotal.textContent = formatAudioTime(mp3Audio.duration);
+      }
+    });
+
+    mp3Audio?.addEventListener("timeupdate", () => {
+      const track = getCurrentTrack();
+      const lyrics = (track && track.lyrics) || [];
+      const dur =
+        Number.isFinite(mp3Audio.duration) && mp3Audio.duration > 0
+          ? mp3Audio.duration
+          : (track && track.durationSec) || 180;
+      const cur = mp3Audio.currentTime || 0;
+
+      if (mp3TimeCur) mp3TimeCur.textContent = formatAudioTime(cur);
+      if (mp3Progress) {
+        mp3Progress.value = String(Math.min(100, (cur / dur) * 100));
+      }
+
+      if (lyrics.length > 0) {
+        const targetIdx = Math.min(lyrics.length - 1, Math.floor((cur / dur) * lyrics.length));
+        if (targetIdx !== currentLineIdx) {
+          highlightChantLine(targetIdx);
+          if (!mp3Audio.paused && targetIdx !== lastAwardedLineIdx && cur > 1.5) {
+            lastAwardedLineIdx = targetIdx;
+            updateMeritDisplay(2);
+            showToast("✨ +2 Điểm Công Đức (Thành tâm nghe & tụng kinh)");
           }
         }
-        if ("speechSynthesis" in window) {
-          window.speechSynthesis.cancel();
-        }
-      } else if (!isSyncChanting) {
-        const lines = currentRoom.chantLines || [];
-        if (lines[currentLineIdx]) speakChantLine(lines[currentLineIdx]);
       }
     });
 
-    // Chế độ Đồng Tụng Kinh Tự Động (Đọc hết trọn vẹn từng câu kinh + Gõ mõ theo nhịp + Cộng +2 Điểm Công Đức mỗi câu!)
-    const autoBtn = document.getElementById("btn-auto-chant");
-    autoBtn?.addEventListener("click", async () => {
-      if (isSyncChanting) {
-        isSyncChanting = false;
-        stopCurrentSpeechAndRhythm();
-        autoBtn.textContent = "▶️ Bắt Đầu Tụng Kinh & Gõ Mõ (+2đ/câu)";
+    mp3Audio?.addEventListener("ended", () => {
+      if (!mp3Audio.loop) {
+        setMp3PlayUi(false);
         sendPresenceHeartbeat();
-        return;
+        showToast("🙏 Đã hoàn thành trọn vẹn 1 biến kinh. Công đức vô lượng!");
+      } else {
+        lastAwardedLineIdx = -1;
       }
+    });
 
-      isSyncChanting = true;
-      stopCurrentSpeechAndRhythm();
-      const mySession = activeChantSessionId;
-      autoBtn.textContent = "⏸️ Đang Tụng Kinh Cùng Đạo Tràng (Bấm Để Dừng)";
+    mp3Audio?.addEventListener("error", () => {
+      setMp3PlayUi(false);
+      showToast("⚠️ Không thể tải tệp MP3. Vui lòng thử chọn bài khác hoặc tải lại trang.");
+    });
 
-      playTempleBellSound();
-      startSteadyWoodenFishRhythm();
-      sendPresenceHeartbeat();
-
-      let idx = getSyncedLineIndex(currentRoom);
-
-      while (isSyncChanting && mySession === activeChantSessionId) {
-        const lines = currentRoom.chantLines || [];
-        if (!lines.length) break;
-
-        idx = ((idx % lines.length) + lines.length) % lines.length;
-        highlightChantLine(idx, false);
-
-        // Chờ giọng đọc tụng XONG HOÀN TOÀN câu kinh hiện tại (kể cả câu dài) mới chuyển sang câu kế tiếp
-        await chantFullLineAndWait(lines[idx], mySession);
-
-        if (!isSyncChanting || mySession !== activeChantSessionId) break;
-
-        updateMeritDisplay(2);
-        showToast("✨ +2 Điểm Công Đức (Hoàn thành 1 câu kinh)");
-        idx = (idx + 1) % lines.length;
+    mp3Progress?.addEventListener("input", () => {
+      if (!mp3Audio) return;
+      const track = getCurrentTrack();
+      const lyrics = (track && track.lyrics) || [];
+      const dur =
+        Number.isFinite(mp3Audio.duration) && mp3Audio.duration > 0
+          ? mp3Audio.duration
+          : (track && track.durationSec) || 180;
+      const newTime = (Number(mp3Progress.value) / 100) * dur;
+      mp3Audio.currentTime = newTime;
+      if (mp3TimeCur) mp3TimeCur.textContent = formatAudioTime(newTime);
+      if (lyrics.length > 0) {
+        const targetIdx = Math.min(lyrics.length - 1, Math.floor((newTime / dur) * lyrics.length));
+        highlightChantLine(targetIdx);
       }
     });
 
@@ -1525,8 +1684,12 @@
       if (!spendMerit("mo")) return;
       playRealisticWoodenFishSound();
       triggerRitualEffect("mo");
-      const nextIdx = (currentLineIdx + 1) % (currentRoom.chantLines?.length || 1);
-      highlightChantLine(nextIdx, true);
+      const track = getCurrentTrack();
+      const lyrics = (track && track.lyrics) || [];
+      if (mp3Audio && mp3Audio.paused && lyrics.length > 0) {
+        const nextIdx = (currentLineIdx + 1) % lyrics.length;
+        highlightChantLine(nextIdx);
+      }
     });
 
     document.getElementById("ritual-mala-btn")?.addEventListener("click", () => {

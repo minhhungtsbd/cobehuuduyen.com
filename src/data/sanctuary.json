@@ -9,9 +9,56 @@
       "themeColor": "#D4AF37",
       "auraColor": "rgba(212, 175, 55, 0.35)",
       "mantraShort": "Nam Mô Bổn Sư Thích Ca Mâu Ni Phật • Nam Mô A Di Đà Phật",
-      "chantTitle": "Bát Nhã Ba La Mật Đa Tâm Kinh & Niệm Phật hiệu",
+      "chantTitle": "Bát Nhã Ba La Mật Đa Tâm Kinh & Niệm Phật Hiệu",
+      "tracks": [
+        {
+          "id": "bat-nha-tam-kinh",
+          "title": "Bát Nhã Ba La Mật Đa Tâm Kinh",
+          "artist": "TT. Thích Trí Thoát trì tụng",
+          "duration": "02:09",
+          "durationSec": 129,
+          "audioUrl": "/assets/audio/bat-nha-tam-kinh.mp3",
+          "lyrics": [
+            "Ma Ha Bát Nhã Ba La Mật Đa Tâm Kinh",
+            "Quán Tự Tại Bồ Tát hành thâm Bát Nhã Ba La Mật Đa thời, chiếu kiến ngũ uẩn giai không, độ nhất thiết khổ ách.",
+            "Xá Lợi Tử! Sắc bất dị không, không bất dị sắc, sắc tức thị không, không tức thị sắc, thọ tưởng hành thức diệc phục như thị.",
+            "Xá Lợi Tử! Thị chư pháp không tướng, bất sanh bất diệt, bất cấu bất tịnh, bất tăng bất giảm.",
+            "Thị cố không trung vô sắc, vô thọ tưởng hành thức, vô nhãn nhĩ tỷ thiệt thân ý, vô sắc thanh hương vị xúc pháp.",
+            "Vô nhãn giới nãi chí vô ý thức giới, vô vô minh diệc vô vô minh tận, nãi chí vô lão tử diệc vô lão tử tận.",
+            "Vô khổ, tập, diệt, đạo, vô trí diệc vô đắc, dĩ vô sở đắc cố.",
+            "Bồ Đề Tát Đoả y Bát Nhã Ba La Mật Đa cố, tâm vô quái ngại. Vô quái ngại cố, vô hữu khủng bố, viễn ly điên đảo mộng tưởng, cứu cánh Niết Bàn.",
+            "Tam thế chư Phật y Bát Nhã Ba La Mật Đa cố, đắc A Nậu Đa La Tam Miệu Tam Bồ Đề.",
+            "Cố tri Bát Nhã Ba La Mật Đa thị đại thần chú, thị đại minh chú, thị vô thượng chú, thị vô đẳng đẳng chú, năng trừ nhất thiết khổ, chân thật bất hư.",
+            "Cố thuyết Bát Nhã Ba La Mật Đa chú, tức thuyết chú viết: Yết đế yết đế, ba la yết đế, ba la tăng yết đế, Bồ đề tát bà ha. (3 lần)",
+            "Nguyện đem công đức này, hướng về khắp tất cả, đệ tử và chúng sanh, đều trọn thành Phật đạo."
+          ]
+        },
+        {
+          "id": "niem-a-di-da",
+          "title": "Niệm Nam Mô A Di Đà Phật (108 Biến)",
+          "artist": "ĐĐ. Thích Trí Thoát tụng niệm",
+          "duration": "06:37",
+          "durationSec": 397,
+          "audioUrl": "/assets/audio/niem-a-di-da.mp3",
+          "lyrics": [
+            "Nam Mô Tây Phương Cực Lạc Thế Giới Đại Từ Đại Bi A Di Đà Phật.",
+            "Nam Mô A Di Đà Phật • Nam Mô A Di Đà Phật • Nam Mô A Di Đà Phật.",
+            "Lắng tâm thanh tịnh, buông bỏ muộn phiền, nhất tâm niệm hồng danh Đức Phật A Di Đà.",
+            "Nam Mô A Di Đà Phật • Thân tâm an lạc, trí tuệ sáng suốt, nghiệp chướng tiêu trừ.",
+            "Nam Mô A Di Đà Phật • Cầu cho cha mẹ hiện tiền tăng phúc thọ, cửu huyền thất tổ siêu sanh Tịnh Độ.",
+            "Nam Mô A Di Đà Phật • Ánh hào quang từ bi chiếu rọi khắp mười phương pháp giới.",
+            "Nam Mô A Di Đà Phật • Nam Mô A Di Đà Phật • Nam Mô A Di Đà Phật.",
+            "Tâm tịnh thì cõi Phật tịnh, mỗi câu Phật hiệu gieo một hạt giống bình an trong tâm thức.",
+            "Nam Mô A Di Đà Phật • Gia đạo thuận hoà, tật bệnh tiêu tan, tai qua nạn khỏi.",
+            "Nam Mô A Di Đà Phật • Nam Mô A Di Đà Phật • Nam Mô A Di Đà Phật.",
+            "Nguyện sanh Tây Phương Tịnh Độ trung, Cửu phẩm liên hoa vi phụ mẫu.",
+            "Hoa khai kiến Phật ngộ Vô Sanh, Bất thối Bồ Tát vi bạn lữ.",
+            "Nguyện đem công đức này, trang nghiêm Phật Tịnh Độ, trên đền bốn ơn nặng, dưới cứu khổ ba đường."
+          ]
+        }
+      ],
       "chantLines": [
-        "Nam Mô Bổn Sư Thích Ca Mâu Ni Phật (3 lần)",
+        "Ma Ha Bát Nhã Ba La Mật Đa Tâm Kinh",
         "Quán Tự Tại Bồ Tát hành thâm Bát Nhã Ba La Mật Đa thời, chiếu kiến ngũ uẩn giai không, độ nhất thiết khổ ách.",
         "Xá Lợi Tử! Sắc bất dị không, không bất dị sắc, sắc tức thị không, không tức thị sắc, thọ tưởng hành thức diệc phục như thị.",
         "Xá Lợi Tử! Thị chư pháp không tướng, bất sanh bất diệt, bất cấu bất tịnh, bất tăng bất giảm.",
@@ -36,6 +83,54 @@
       "auraColor": "rgba(92, 225, 230, 0.28)",
       "mantraShort": "Nam Mô Đại Từ Đại Bi Quán Thế Âm Bồ Tát",
       "chantTitle": "Thiên Thủ Thiên Nhãn Vô Ngại Đại Bi Tâm Đà La Ni (Chú Đại Bi)",
+      "tracks": [
+        {
+          "id": "chu-dai-bi",
+          "title": "Chú Đại Bi (1 Biến Trọn Vẹn)",
+          "artist": "Thiên Thủ Thiên Nhãn Đại Bi Tâm Đà La Ni",
+          "duration": "04:15",
+          "durationSec": 255,
+          "audioUrl": "/assets/audio/chu-dai-bi.mp3",
+          "lyrics": [
+            "Nam Mô Đại Bi Hội Thượng Phật Bồ Tát (3 lần)",
+            "Thiên thủ thiên nhãn, vô ngại Đại Bi tâm đà la ni. Nam mô hắc ra đát na đa ra dạ da.",
+            "Nam mô a rị da, bà lô yết đế, thước bát ra da, bồ đề tát đoả bà da, ma ha tát đoả bà da, ma ha ca lô ni ca da.",
+            "Án, tát bàn ra phạt duệ, số đát na đát toả. Nam mô tất kiết lật đoả, y mông a rị da, bà lô kiết đế, thất Phật ra lăng đà bà.",
+            "Nam mô na ra cẩn trì, hê rị ma ha bàn đa sa mế, tát bà a tha đậu du bằng, a thệ dựng.",
+            "Tát bà tát đa, na ma bà già, ma phạt đạt đậu, đát điệt tha. Án, a bà lô hê, lô ca đế, ca ra đế, di hê rị.",
+            "Ma ha bồ đề tát đoả, tát bà tát bà, ma ra ma ra, ma hê ma hê rị đà dựng, cu lô cu lô kiết mông, độ lô độ lô phạt xà da đế.",
+            "Ma ha phạt xà da đế, đà ra đà ra, địa rị ni, thất Phật ra da, dá ra dá ra. Mạ mạ phạt ma ra, mục đế lệ.",
+            "Y hê y hê, thất na thất na, a ra sâm Phật ra xá lợi, phạt sa phạt sâm, Phật ra xá da.",
+            "Hô lô hô lô ma ra, hô lô hô lô hê rị, ta ra ta ra, tất rị tất rị, tô rô tô rô, bồ đề dạ bồ đề dạ, bồ đà dạ bồ đà dạ.",
+            "Di đế rị dạ, na ra cẩn trì, địa rị sắc ni na, ba dạ ma na ta bà ha. Tất đà dạ ta bà ha. Ma ha tất đà dạ ta bà ha.",
+            "Tất đà du nghệ, thất bàn ra dạ ta bà ha. Na ra cẩn trì ta bà ha. Ma ra na ra ta bà ha. Tất ra tăng a mục khê da ta bà ha.",
+            "Ta bà ma ha a tất đà dạ ta bà ha. Giả kiết ra a tất đà dạ ta bà ha. Ba đà ma yết tất đà dạ ta bà ha.",
+            "Na ra cẩn trì bàn đà ra dạ ta bà ha. Ma bà lợi thắng yết ra dạ ta bà ha.",
+            "Nam mô hắc ra đát na đa ra dạ da. Nam mô a rị da, bà lô yết đế, thước bàn ra dạ ta bà ha.",
+            "Án, tất điện đô, mạn đa ra, bạt đà dạ ta bà ha. (3 lần)"
+          ]
+        },
+        {
+          "id": "niem-quan-am",
+          "title": "Niệm Nam Mô Quán Thế Âm Bồ Tát",
+          "artist": "Âm Hưởng Thiền Tịnh Cầu An",
+          "duration": "05:00",
+          "durationSec": 300,
+          "audioUrl": "/assets/audio/niem-quan-am.mp3",
+          "lyrics": [
+            "Nam Mô Đại Từ Đại Bi Cứu Khổ Cứu Nạn Linh Cảm Quán Thế Âm Bồ Tát.",
+            "Nam Mô Quán Thế Âm Bồ Tát • Nam Mô Quán Thế Âm Bồ Tát.",
+            "Nhành dương liễu rưới nước Cam Lộ thanh lương, gột rửa mọi ưu phiền, bệnh tật, tai ương.",
+            "Nam Mô Quán Thế Âm Bồ Tát • Cầu cho gia quyến thân tâm an lạc, tai qua nạn khỏi.",
+            "Ngàn mắt soi thấu nỗi khổ nhân gian, ngàn tay cứu độ chúng sanh vượt qua sóng gió.",
+            "Nam Mô Quán Thế Âm Bồ Tát • Tâm từ bi lan toả, hoá giải oán kết, tăng trưởng phước lành.",
+            "Nam Mô Quán Thế Âm Bồ Tát • Nam Mô Quán Thế Âm Bồ Tát.",
+            "Cúi xin Đức Mẹ Hiền Quán Thế Âm gia hộ cho toàn thể tín chủ trong phòng tụng kinh hôm nay.",
+            "Thân không tật bệnh, tâm không phiền não, sở cầu như ý, vạn sự cát tường.",
+            "Nam Mô Đại Bi Quán Thế Âm Bồ Tát Ma Ha Tát."
+          ]
+        }
+      ],
       "chantLines": [
         "Nam Mô Đại Bi Hội Thượng Phật Bồ Tát (3 lần)",
         "Thiên thủ thiên nhãn, vô ngại Đại Bi tâm đà la ni. Nam mô hắc ra đát na đa ra dạ da.",
@@ -61,7 +156,50 @@
       "themeColor": "#FF5E5E",
       "auraColor": "rgba(255, 94, 94, 0.32)",
       "mantraShort": "Con lạy Tam Toà Thánh Mẫu • Cô Bé Hữu Duyên độ trì",
-      "chantTitle": "Văn Khấn Tam Toà Thánh Mẫu & Cô Bé Thượng Ngàn",
+      "chantTitle": "Chầu Văn Cô Bé Thượng Ngàn & Văn Thỉnh Tam Toà Thánh Mẫu",
+      "tracks": [
+        {
+          "id": "van-co-be",
+          "title": "Chầu Văn Cô Bé Thượng Ngàn",
+          "artist": "Hát Văn Sơn Trang Linh Thiêng",
+          "duration": "04:52",
+          "durationSec": 292,
+          "audioUrl": "/assets/audio/van-co-be.mp3",
+          "lyrics": [
+            "Con Nam Mô A Di Đà Phật! Con kính lạy Cô Bé Thượng Ngàn, Cô Bé Hữu Duyên chứng giám tâm thành.",
+            "Xinh thay Cô Bé trên ngàn, bầu trời cảnh Phật phong quang bốn mùa.",
+            "Rừng xanh hoa nở đua tươi, suối reo róc rách vui cười tiếng chim.",
+            "Đèn nhang dâng trước án tiền, tâm thành kính thỉnh Cô về chứng tâm.",
+            "Cô Bé Thượng Ngàn phép tắc thần thông, ban tài tiếp lộc cho người nhất tâm.",
+            "Khai thông vận mệnh hanh thông, quý nhân phù trợ, công danh vẹn toàn.",
+            "Cầu tài đắc tài, cầu lộc đắc lộc, buôn may bán đắt, gặp dữ hoá lành.",
+            "Xin Cô giáng phúc lưu ân, gia đạo bình an, bách niên giai lão.",
+            "Đầu năm chí giữa, nửa năm chí cuối, vạn sự cát tường, sở cầu như ý.",
+            "Cung thỉnh Cô Bé Thượng Ngàn • Cô Bé Hữu Duyên độ trì cho trăm họ bình an."
+          ]
+        },
+        {
+          "id": "van-thinh-mau",
+          "title": "Văn Thỉnh Tam Toà Thánh Mẫu",
+          "artist": "Nghệ nhân Thế Hoàn Hát Văn",
+          "duration": "06:57",
+          "durationSec": 417,
+          "audioUrl": "/assets/audio/van-thinh-mau.mp3",
+          "lyrics": [
+            "Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.",
+            "Con kính lạy Đức Hiệu Thiên Kim Quyết Ngọc Hoàng Huyền Cung Cao Thượng Đế.",
+            "Con kính lạy Tam Toà Thánh Mẫu: Mẫu Đệ Nhất Thượng Thiên, Mẫu Đệ Nhị Thượng Ngàn, Mẫu Đệ Tam Thoải Phủ.",
+            "Đệ Nhất Thánh Mẫu Thượng Thiên, ngôi cao chín bệ quyền hành tam thiên.",
+            "Đệ Nhị Thánh Mẫu Thượng Ngàn, cai quản tám mươi mốt cửa rừng sơn trang.",
+            "Đệ Tam Thánh Mẫu Thoải Cung, độ trì sông nước, ban tài lộc xa gần.",
+            "Con kính lạy Tứ Phủ Chầu Bà, Ngũ Vị Tôn Quan, Tứ Phủ Thánh Hoàng, Tứ Phủ Thánh Cô, Tứ Phủ Thánh Cậu.",
+            "Hôm nay tín chủ nhất tâm dâng hương hoa đăng trà quả trước điện Tam Toà.",
+            "Cúi xin các Ngài mở lượng hải hà, xá tội tiêu tai, giải trừ vận hạn.",
+            "Ban cho gia quyến chúng con sức khoẻ dồi dào, tài lộc vượng tiến, vạn sự hanh thông.",
+            "Tâm thành lễ bạc kính dâng, cúi xin Thánh Mẫu chứng minh độ trì."
+          ]
+        }
+      ],
       "chantLines": [
         "Con Nam Mô A Di Đà Phật! (3 lần)",
         "Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.",

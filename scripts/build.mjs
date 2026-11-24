@@ -1417,33 +1417,58 @@ const sanctuaryPageHtml = `<!DOCTYPE html>
             </button>
           </div>
 
-          <!-- Synchronized Scripture Teleprompter + Voice Reader Controls -->
+          <!-- MP3 Chanting Player + Track Selector + Synchronized Scripture Teleprompter -->
           <div class="scripture-scroll-box">
             <div class="scripture-header">
               <div>
-                <strong id="sanctuary-chant-title" style="color:#fbe59b;font-size:0.95rem;display:block;">📖 ${defaultRoom.chantTitle}</strong>
-                <small style="color:#bda894;font-size:0.75rem;">🔄 Đồng bộ câu kinh trực tiếp cùng toàn bộ Phật tử trong phòng (+2 Điểm Công Đức / câu)</small>
+                <strong id="sanctuary-chant-title" style="color:#fbe59b;font-size:0.98rem;display:block;">📖 ${(defaultRoom.tracks && defaultRoom.tracks[0] ? defaultRoom.tracks[0].title : defaultRoom.chantTitle)}</strong>
+                <small id="sanctuary-chant-artist" style="color:#bda894;font-size:0.76rem;">🎧 ${(defaultRoom.tracks && defaultRoom.tracks[0] ? defaultRoom.tracks[0].artist : "Đạo Tràng Trực Tuyến")} • Chữ chạy tự động theo bài MP3 (+2 Điểm Công Đức / câu)</small>
               </div>
               <div style="display:flex;gap:0.45rem;flex-wrap:wrap;align-items:center;">
-                <button type="button" class="btn btn-outline" id="btn-toggle-ambience" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Bật nhạc nền chuông thiền định và tiếng nước êm dịu">
+                <button type="button" class="btn btn-outline" id="btn-toggle-ambience" style="padding:0.36rem 0.72rem;font-size:0.75rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Bật thêm tiếng chuông xoay thiền định & suối nước nền">
                   🎵 Nhạc Thiền: TẮT
                 </button>
-                <button type="button" class="btn btn-outline" id="btn-switch-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Đổi giữa giọng nữ dịu dàng và giọng nam trầm ấm">
-                  🎙️ Giọng: Hoài My (Nữ)
-                </button>
-                <button type="button" class="btn btn-outline" id="btn-toggle-voice" style="padding:0.38rem 0.75rem;font-size:0.76rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);">
-                  🔊 Giọng Đọc Kinh: BẬT
-                </button>
-                <button type="button" class="btn btn-gold" id="btn-auto-chant" style="padding:0.38rem 0.85rem;font-size:0.78rem;">
-                  ▶️ Bắt Đầu Tụng Kinh & Gõ Mõ (+2đ/câu)
+                <button type="button" class="btn btn-outline" id="btn-toggle-loop" style="padding:0.36rem 0.72rem;font-size:0.75rem;background:rgba(20,14,10,0.9);color:#fbe59b;border:1px solid rgba(251,229,155,0.55);" title="Tự động lặp lại bài kinh khi kết thúc">
+                  🔁 Lặp Bài: BẬT
                 </button>
               </div>
             </div>
+
+            <!-- Danh sách chọn bài MP3 của Điện Thờ -->
+            <div class="mp3-track-selector" id="sanctuary-track-list" role="listbox" aria-label="Chọn bài tụng kinh MP3">
+              ${(defaultRoom.tracks || [])
+                .map(
+                  (track, idx) => `
+                <button type="button" class="mp3-track-pill ${idx === 0 ? "active" : ""}" data-track-idx="${idx}">
+                  <span class="mp3-track-icon">${idx === 0 ? "🔊" : "🎵"}</span>
+                  <span class="mp3-track-meta">
+                    <strong class="mp3-track-name">${track.title}</strong>
+                    <small class="mp3-track-sub">${track.artist} • ${track.duration}</small>
+                  </span>
+                </button>`
+                )
+                .join("")}
+            </div>
+
+            <!-- Thanh điều khiển phát MP3 -->
+            <div class="mp3-player-controls">
+              <audio id="sanctuary-mp3-player" preload="metadata" loop src="${defaultRoom.tracks && defaultRoom.tracks[0] ? defaultRoom.tracks[0].audioUrl : ""}"></audio>
+              <button type="button" class="btn btn-gold mp3-play-btn" id="btn-auto-chant">
+                ▶️ Bắt Đầu Phát Kinh MP3
+              </button>
+              <div class="mp3-progress-wrap">
+                <span id="mp3-time-current" class="mp3-time-label">00:00</span>
+                <input type="range" id="mp3-progress-bar" class="mp3-range-slider" min="0" max="100" value="0" step="0.1" aria-label="Tua tiến độ bài tụng kinh" />
+                <span id="mp3-time-total" class="mp3-time-label">${defaultRoom.tracks && defaultRoom.tracks[0] ? defaultRoom.tracks[0].duration : "00:00"}</span>
+              </div>
+            </div>
+
+            <!-- Khung lời kinh / văn khấn chạy đồng bộ theo MP3 -->
             <div class="chant-lines-list" id="sanctuary-chant-lines">
-              ${defaultRoom.chantLines
+              ${(defaultRoom.tracks && defaultRoom.tracks[0] ? defaultRoom.tracks[0].lyrics : defaultRoom.chantLines)
                 .map(
                   (line, idx) =>
-                    `<div class="chant-line ${idx === 0 ? "current" : ""}" data-line-idx="${idx}">${line}</div>`
+                    `<div class="chant-line ${idx === 0 ? "current" : ""}" data-line-idx="${idx}" title="Bấm vào câu này để tua nhanh đến đoạn tương ứng">${line}</div>`
                 )
                 .join("")}
             </div>
